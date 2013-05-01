@@ -26,13 +26,11 @@
 
 (define-type ExprC
   [numC (n : number)]
-  [idC (s : symbol)]
+  [varC (s : symbol)]
   [appC (fun : symbol) (arg : ExprC)]
   [plusC (l : ExprC) (r : ExprC)]
   [multC (l : ExprC) (r : ExprC)]
-  [boxC (arg : ExprC)]
-  [unboxC (arg : ExprC)]
-  [setboxC (b : ExprC) (v : ExprC)]
+  [setC (s : symbol) (v : ExprC)]
   [seqC (b1 : ExprC) (b2 : ExprC)]
 )
 
@@ -91,7 +89,7 @@
 (define (interp [expr : ExprC] [env : Env] [fds : (listof FunDefC)] [sto : Store]) : Result
   (type-case ExprC expr
     [numC (n) (v*s (numV n) sto)]
-    [idC (n) (v*s (fetch (lookup n env) sto) sto)]
+    [varC (n) (v*s (fetch (lookup n env) sto) sto)]
     [appC (f a) (local ([define fd (get-fundef f fds)])
            (type-case Result (interp a env fds sto)
                  [v*s (v-a s-a)
@@ -116,25 +114,13 @@
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [boxC (a) (type-case Result (interp a env fds sto)
-            [v*s (v-a s-a)
-                 (let ([where (new-loc)])
-                   (v*s (boxV where)
-                        (override-store (cell where v-a)
-                                        s-a)))])]
-    
-    [unboxC (a) (type-case Result (interp a env fds sto)
-              [v*s (v-a s-a)
-                   (v*s (fetch (boxV-l v-a) s-a) s-a)])]
-
-    [setboxC (b v) (type-case Result (interp b env fds sto)
-                 [v*s (v-b s-b)
-                      (type-case Result (interp v env fds s-b)
+    [setC (var val) (type-case Result (interp val env fds sto)
                         [v*s (v-v s-v)
-                             (v*s v-v
-                                  (override-store (cell (boxV-l v-b)
-                                                        v-v)
-                                                  s-v))])])]
+                             (let ([where (lookup var env)])
+                               (v*s v-v (override-store (cell where v-v) s-v))
+                             )
+                        ]
+                      )]
     
     [seqC (b1 b2) (type-case Result (interp b1 env fds sto)
                 [v*s (v-b1 s-b1)
@@ -150,13 +136,20 @@
  
 (test (v*s-v (interp (plusC (numC 10) (appC 'double (plusC (numC 1) (numC 2))))
               mt-env
-              (list (fdC 'double 'x (plusC (idC 'x) (idC 'x))))
+              (list (fdC 'double 'x (plusC (varC 'x) (varC 'x))))
               mt-store))
       (numV 16))
  
 (test (v*s-v (interp (plusC (numC 10) (appC 'quadruple (plusC (numC 1) (numC 2))))
               mt-env
-              (list (fdC 'quadruple 'x (appC 'double (appC 'double (idC 'x))))
-                    (fdC 'double 'x (plusC (idC 'x) (idC 'x))))
+              (list (fdC 'quadruple 'x (appC 'double (appC 'double (varC 'x))))
+                    (fdC 'double 'x (plusC (varC 'x) (varC 'x))))
+              mt-store))
+      (numV 22))
+
+(test (v*s-v (interp (plusC (numC 10) (appC 'quadruple (plusC (numC 1) (numC 2))))
+              mt-env
+              (list (fdC 'quadruple 'x (appC 'double (appC 'double (varC 'x))))
+                    (fdC 'double 'x (seqC (setC 'x (plusC (varC 'x) (varC 'x))) (varC 'x))))
               mt-store))
       (numV 22))
