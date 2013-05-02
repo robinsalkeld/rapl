@@ -6,7 +6,6 @@
 
 (define-type Value
   [numV (n : number)]
-  [boxV (l : Location)]
 )
 
 (define (num+ [l : Value] [r : Value]) : Value
@@ -32,6 +31,7 @@
   [multC (l : ExprC) (r : ExprC)]
   [setC (s : symbol) (v : ExprC)]
   [seqC (b1 : ExprC) (b2 : ExprC)]
+  [proceedC (v : ExprC)]
 )
 
 (define-type-alias Location number)
@@ -83,38 +83,62 @@
                    [(equal? n (fdC-name (first fds))) (first fds)]
                    [else (get-fundef n (rest fds))])]))
 
+(define-type AdviceDefC
+  [aroundC (name : symbol) (arg : symbol) (body : ExprC)])
+(define no-advice empty)
+
+(define (apply-advice [n : symbol] [fds : (listof FunDefC)] [ads : (listof AdviceDefC)] [advice : AdviceDefC] [proceed : (Value Store -> Result)]) : (Value Store -> Result)
+  (type-case AdviceDefC advice
+      [aroundC (name param body)
+               (cond
+                 [(symbol=? n name) (lambda (val sto) (interp-with-binding body param val fds ads sto proceed))]
+                 [else proceed])]))
+
 (define-type Result
   [v*s (v : Value) (s : Store)])
 
-(define (interp [expr : ExprC] [env : Env] [fds : (listof FunDefC)] [sto : Store]) : Result
+(define (interp-with-binding [expr : ExprC] [name : symbol] [a : Value] [fds : (listof FunDefC)] [ads : (listof AdviceDefC)] [sto : Store] [proceed : (Value Store -> Result)]) : Result
+  (let ([where (new-loc)])
+  (interp expr
+          (extend-env (bind name where) mt-env)
+          fds
+          ads
+          (override-store (cell where a) sto)
+          proceed)
+))
+
+(define (no-proceed (val : Value) (sto : Store)) : Result
+  (error 'no-proceed "proceed called outside of advice"))
+
+(define (weave [n : symbol] [fds : (listof FunDefC)] [ads : (listof AdviceDefC)] [proceed : (Value Store -> Result)]) : (Value Store -> Result)
+  (foldr (lambda (val sto) (apply-advice n fds ads val sto)) proceed ads))
+
+
+  
+(define (interp [expr : ExprC] [env : Env] [fds : (listof FunDefC)] [ads : (listof AdviceDefC)] [sto : Store] [proceed : (Value Store -> Result)]) : Result
   (type-case ExprC expr
     [numC (n) (v*s (numV n) sto)]
     [varC (n) (v*s (fetch (lookup n env) sto) sto)]
-    [appC (f a) (local ([define fd (get-fundef f fds)])
-           (type-case Result (interp a env fds sto)
-                 [v*s (v-a s-a)
-                      (let ([where (new-loc)])
-                        (interp (fdC-body fd)
-                                (extend-env (bind (fdC-arg fd) where) mt-env)
-                                fds
-                                (override-store (cell where v-a) s-a))
-                      )
-                 ]
-           ))]
+    [appC (f a) (type-case Result (interp a env fds ads sto proceed)
+               [v*s (v-a s-a) 
+                    (local ([define fd (get-fundef f fds)]
+                            [define call-closure (lambda (closure-val closure-sto) (interp-with-binding (fdC-body fd) (fdC-arg fd) closure-val fds ads closure-sto no-proceed))]
+                            [define woven-closure (weave f fds ads call-closure)]) 
+                           (woven-closure v-a s-a))])]
     
-    [plusC (l r) (type-case Result (interp l env fds sto)
+    [plusC (l r) (type-case Result (interp l env fds ads sto proceed)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env fds s-l)
+                    (type-case Result (interp r env fds ads s-l proceed)
                       [v*s (v-r s-r)
                            (v*s (num+ v-l v-r) s-r)])])]
 
-    [multC (l r) (type-case Result (interp l env fds sto)
+    [multC (l r) (type-case Result (interp l env fds ads sto proceed)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env fds s-l)
+                    (type-case Result (interp r env fds ads s-l proceed)
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [setC (var val) (type-case Result (interp val env fds sto)
+    [setC (var val) (type-case Result (interp val env fds ads sto proceed)
                         [v*s (v-v s-v)
                              (let ([where (lookup var env)])
                                (v*s v-v (override-store (cell where v-v) s-v))
@@ -122,34 +146,71 @@
                         ]
                       )]
     
-    [seqC (b1 b2) (type-case Result (interp b1 env fds sto)
+    [seqC (b1 b2) (type-case Result (interp b1 env fds ads sto proceed)
                 [v*s (v-b1 s-b1)
-                     (interp b2 env fds s-b1)])]
+                     (interp b2 env fds ads s-b1 proceed)])]
+    
+    [proceedC (a) (type-case Result (interp a env fds ads sto proceed)
+               [v*s (v-a s-a) (proceed v-a s-a)])]
   )
 )
 
 (test (v*s-v (interp (plusC (numC 10) (appC 'const5 (numC 10)))
               mt-env
               (list (fdC 'const5 '_ (numC 5)))
-              mt-store))
+              no-advice
+              mt-store
+              no-proceed))
       (numV 15))
  
 (test (v*s-v (interp (plusC (numC 10) (appC 'double (plusC (numC 1) (numC 2))))
               mt-env
               (list (fdC 'double 'x (plusC (varC 'x) (varC 'x))))
-              mt-store))
+              no-advice
+              mt-store
+              no-proceed))
       (numV 16))
  
 (test (v*s-v (interp (plusC (numC 10) (appC 'quadruple (plusC (numC 1) (numC 2))))
               mt-env
               (list (fdC 'quadruple 'x (appC 'double (appC 'double (varC 'x))))
                     (fdC 'double 'x (plusC (varC 'x) (varC 'x))))
-              mt-store))
+              no-advice
+              mt-store
+              no-proceed))
       (numV 22))
 
 (test (v*s-v (interp (plusC (numC 10) (appC 'quadruple (plusC (numC 1) (numC 2))))
               mt-env
               (list (fdC 'quadruple 'x (appC 'double (appC 'double (varC 'x))))
                     (fdC 'double 'x (seqC (setC 'x (plusC (varC 'x) (varC 'x))) (varC 'x))))
-              mt-store))
+              no-advice
+              mt-store
+              no-proceed))
       (numV 22))
+
+(test (v*s-v (interp (appC 'change (numC 2))
+              mt-env
+              (list (fdC 'change 'x (plusC (varC 'x) (numC 5))))
+              (list (aroundC 'change 'y (proceedC (multC (varC 'y) (numC 2))))
+                    (aroundC 'change 'y (proceedC (plusC (varC 'y) (numC 3)))))
+              mt-store
+              no-proceed))
+      (numV 12))
+
+(test (v*s-v (interp (appC 'change (numC 2))
+              mt-env
+              (list (fdC 'change 'x (plusC (varC 'x) (numC 5))))
+              (list (aroundC 'change 'y (proceedC (plusC (varC 'y) (numC 3))))
+                    (aroundC 'change 'y (proceedC (multC (varC 'y) (numC 2)))))
+              mt-store
+              no-proceed))
+      (numV 15))
+
+(test/exn (v*s-v (interp (appC 'foo (numC 2))
+              mt-env
+              (list (fdC 'foo 'x (proceedC (varC 'x))))
+              empty
+              mt-store
+              no-proceed))
+      "proceed called outside of advice")
