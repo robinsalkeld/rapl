@@ -38,9 +38,10 @@
   [setC (s symbol?) (v ExprC?)]
   [letC (s symbol?) (val ExprC?) (in ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
-  [ifZeroC (c ExprC?) (t ExprC?) (f ExprC?)]
+  [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
   [proceedC (v ExprC?)]
   [writeC (v ExprC?)]
+  [readC]
 )
 
 (define Location? number?)
@@ -163,10 +164,10 @@
                 [v*s (v-b1 s-b1)
                      (interp b2 env fds ads s-b1 proceed)])]
     
-    [ifZeroC (c t f) (type-case Result (interp c env fds ads sto proceed)
+    [ifZeroOrLessC (c t f) (type-case Result (interp c env fds ads sto proceed)
                 [v*s (v-c s-c)
                      (cond 
-                       [(= (numV-n v-c) 0) (interp t env fds ads s-c proceed)]
+                       [(<= (numV-n v-c) 0) (interp t env fds ads s-c proceed)]
                        [else (interp f env fds ads s-c proceed)])])]
     
     [proceedC (a) (type-case Result (interp a env fds ads sto proceed)
@@ -174,6 +175,8 @@
     
     [writeC (a) (type-case Result (interp a env fds ads sto proceed)
                [v*s (v-a s-a) (begin (numWrite v-a) (display "\n") (v*s v-a s-a))])]
+    
+    [readC () (v*s (numV (string->number (read-line))) sto)]
   )
 )
 
