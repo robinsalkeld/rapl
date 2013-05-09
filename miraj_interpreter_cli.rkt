@@ -2,15 +2,29 @@
 
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
+(require "miraj_recording.rkt")
 
 ;;
 ;; Miraj interpreter CLI
 ;;
 
-(define (interp-program [mp MirajProgram?])
-  (interp (miraj-exp mp) mt-env (miraj-fds mp) (miraj-ads mp) mt-store no-proceed)
-)
+(define recording-path (make-parameter #f))
+(define replay-path (make-parameter #f))
+(define files (make-parameter '()))
 
-(define program-path (command-line #:args (filename) filename))
-(define program (read-struct-from-file program-path))
-(begin (write (v*s-v (interp-program program))) (newline))
+(command-line 
+ #:once-each
+ [("-r" "--recording") r "Record execution"
+                       (recording-path r)]
+ [("-r" "--replay") r "Replay execution"
+                    (replay-path r)]
+ #:args fs (files fs))
+
+(define program (lambda () (read-struct-from-file (list-ref (files) 0))))
+
+(let ([result 
+       (cond
+         [(recording-path) (interp-with-recording (program) (recording-path))]
+         [(replay-path) (replay-interp (replay-path))]
+         [else (interp-program (program))])])
+  (begin (write (v*s-v result)) (newline)))

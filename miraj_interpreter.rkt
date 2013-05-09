@@ -44,6 +44,14 @@
   [readC]
 )
 
+(define read-source (box (lambda () (string->number (read-line)))))
+
+(define interp-input (box '()))
+(define (record-interp-input (x number?))
+  (set-box! interp-input (cons x (unbox interp-input))))
+(define get-interp-input 
+  (lambda () (reverse (unbox interp-input))))
+
 (define Location? number?)
 
 (define new-loc
@@ -176,11 +184,19 @@
     [writeC (a) (type-case Result (interp a env fds ads sto proceed)
                [v*s (v-a s-a) (begin (numWrite v-a) (display "\n") (v*s v-a s-a))])]
     
-    [readC () (v*s (numV (string->number (read-line))) sto)]
+    [readC () (let ([val ((unbox read-source))]) 
+                (begin (record-interp-input val) (v*s (numV val) sto)))]
   )
 )
 
 (define-type MirajProgram
   [miraj (fds FunEnv?) (ads AdvEnv?) (exp ExprC?)]
 )
+
+(define (interp-program [mp MirajProgram?])
+  (interp (miraj-exp mp) mt-env (miraj-fds mp) (miraj-ads mp) mt-store no-proceed)
+)
+
+(define-type MirajRecording
+  [mirajRecForReplay (program MirajProgram?) (input list?)])
 
