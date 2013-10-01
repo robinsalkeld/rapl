@@ -14,10 +14,8 @@
 
 (command-line 
  #:once-each
- [("-r" "--recording") r "Record execution"
-                       (recording-path r)]
- [("-r" "--replay") r "Replay execution"
-                    (replay-path r)]
+ [("-r" "--recording") r "Record execution" (recording-path r)]
+ [("-r" "--replay") r "Replay execution" (replay-path r)]
  #:args fs (files fs))
 
 (define program (lambda () (read-struct-from-file (list-ref (files) 0))))

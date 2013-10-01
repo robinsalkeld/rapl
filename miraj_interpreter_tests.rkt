@@ -3,8 +3,6 @@
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
 
-(read-line)
-
 (test (v*s-v (interp (plusC (numC 10) (appC 'const5 (numC 10)))
               mt-env
               (list (fdC 'const5 '_ (numC 5)))
@@ -75,7 +73,7 @@
 
 (test (v*s-v (interp (writeC (appC 'fact (numC 3)))
               mt-env
-              (list (fdC 'fact 'x (ifZeroC (varC 'x) (numC 1) (multC (varC 'x) (appC 'fact (plusC (varC 'x) (numC -1)))))))
+              (list (fdC 'fact 'x (ifZeroOrLessC (varC 'x) (numC 1) (multC (varC 'x) (appC 'fact (plusC (varC 'x) (numC -1)))))))
               (list (aroundC 'fact 'y (letC 'result (proceedC (varC 'y))
                                        (seqC (writeC (varC 'y))
                                         (seqC (writeC (varC 'result))

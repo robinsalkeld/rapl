@@ -52,6 +52,17 @@
 (define get-interp-input 
   (lambda () (reverse (unbox interp-input))))
 
+(define-type JoinPoint
+  [call (name symbol?) (a Value?)]
+  [return (name symbol?) (result Value?)]
+  )
+
+(define interp-jps (box '()))
+(define (record-interp-jps (jp JoinPoint?))
+  (set-box! interp-jps (cons jp (unbox interp-jps))))
+(define get-interp-jps
+  (lambda () (reverse (unbox interp-jps))))
+
 (define Location? number?)
 
 (define new-loc
@@ -111,7 +122,8 @@
   (type-case AdviceDefC advice
       [aroundC (name param body)
                (cond
-                 [(symbol=? n name) (lambda (val sto) (interp-with-binding body param val mt-env fds ads sto proceed))]
+                 [(symbol=? n name) 
+                  (lambda (val sto) (interp-with-binding body param val mt-env fds ads sto proceed))]
                  [else proceed])]))
 
 (define-type Result
