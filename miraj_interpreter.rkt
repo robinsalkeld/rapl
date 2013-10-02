@@ -44,6 +44,13 @@
   [readC]
 )
 
+(define (list-box-push! b x)
+  (set-box! b (cons x (unbox b))))
+(define (list-box-pop! b)
+  (let* ([next (first (unbox b))]
+         [_ (set-box! b (rest (unbox b)))])
+         next))
+
 (define read-source (box (lambda () (string->number (read-line)))))
 
 (define interp-input (box '()))
@@ -53,9 +60,8 @@
   (lambda () (reverse (unbox interp-input))))
 
 (define-type JoinPoint
-  [call (name symbol?) (a Value?)]
-  [return (name symbol?) (result Value?)]
-  )
+  [call (name symbol?) (a Value?) (sto Store?)]
+  [return (name symbol?) (result Result?)])
 
 (define interp-jps (box '()))
 (define (record-interp-jps (jp JoinPoint?))
@@ -152,7 +158,12 @@
     [appC (f a) (type-case Result (interp a env fds ads sto proceed)
                [v*s (v-a s-a) 
                     (local ([define fd (get-fundef f fds)]
-                            [define call-closure (lambda (closure-val closure-sto) (interp-with-binding (fdC-body fd) (fdC-arg fd) closure-val mt-env fds ads closure-sto no-proceed))]
+                            [define call-closure (lambda (closure-val closure-sto) 
+                                     (let* ([_ (record-interp-jps (call f v-a s-a))]
+                                            [result (interp-with-binding (fdC-body fd) (fdC-arg fd) closure-val mt-env fds ads closure-sto no-proceed)]
+                                            [_ (record-interp-jps (return f result))])
+                                       result
+                                      ))]
                             [define woven-closure (weave f fds ads call-closure)]) 
                            (woven-closure v-a s-a))])]
     
@@ -205,6 +216,14 @@
   [miraj (fds FunEnv?) (ads AdvEnv?) (exp ExprC?)]
 )
 
+(define mt-program (miraj empty empty (numC 0)))
+
+(define (append-programs [p1 MirajProgram?] [p2 MirajProgram?])
+  ;; TODO-RS: Should verify that the environments are mutatually exclusive
+  (miraj (append (miraj-fds p1) (miraj-fds p2))
+         (append (miraj-ads p1) (miraj-ads p2))
+         (seqC (miraj-exp p1) (miraj-exp p2))))
+
 (define (interp-program [mp MirajProgram?])
   (interp (miraj-exp mp) mt-env (miraj-fds mp) (miraj-ads mp) mt-store no-proceed)
 )
@@ -212,3 +231,5 @@
 (define-type MirajRecording
   [mirajRecForReplay (program MirajProgram?) (input list?)])
 
+(define-type MirajTrace
+  [mirajTrace (program MirajProgram?) (joinpoints list?)])
