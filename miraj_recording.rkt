@@ -29,23 +29,24 @@
     [mirajTrace (trace-program jps)
       (type-case MirajProgram (append-programs trace-program program)
         [miraj (fds ads exp) 
-           (weave-trace jps fds ads)])]))
+           (retroactive-weave jps fds ads)])]))
                             
-(define (weave-trace (jps list?) (fds FunEnv?) (ads AdvEnv?))
-  (weave-trace-box (box jps) fds ads mt-store))
+(define (retroactive-weave [jps list?] [fds FunEnv?] [ads AdvEnv?])
+  (begin (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))
+         (retroactive-weave-box (box jps) fds ads mt-store)))
 
-(define (weave-trace-box (jps box?) (fds FunEnv?) (ads AdvEnv?) (advice-store Store?)) 
+(define (retroactive-weave-box [jps box?] [fds FunEnv?] [ads AdvEnv?] [advice-store Store?]) 
   (cond
-    [(empty? (unbox jps)) empty]
+    [(empty? (unbox jps)) '()]
     [else 
      (type-case JoinPoint (list-box-pop! jps)
        [call (name arg jp-store) 
              (let* ([proceed (lambda (val sto) 
                                ;; TODO-RS: Verify that val == arg!
                                ;; Not to mention verifying the same thing on return somehow.
-                               (weave-trace-box jps fds ads sto))]
+                               (retroactive-weave-box jps fds ads sto))]
                     [result ((weave name fds ads proceed) arg advice-store)])
-               (weave-trace-box jps fds ads (v*s-s result)))]
+               (retroactive-weave-box jps fds ads (v*s-s result)))]
        [return (name result) (v*s (v*s-v result) advice-store)])]))
 
                

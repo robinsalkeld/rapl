@@ -64,7 +64,7 @@
   [return (name symbol?) (result Result?)])
 
 (define interp-jps (box '()))
-(define (record-interp-jps (jp JoinPoint?))
+(define (record-interp-jp (jp JoinPoint?))
   (set-box! interp-jps (cons jp (unbox interp-jps))))
 (define get-interp-jps
   (lambda () (reverse (unbox interp-jps))))
@@ -129,7 +129,8 @@
       [aroundC (name param body)
                (cond
                  [(symbol=? n name) 
-                  (lambda (val sto) (interp-with-binding body param val mt-env fds ads sto proceed))]
+                  (lambda (val sto) 
+                    (interp-with-binding body param val mt-env fds ads sto proceed))]
                  [else proceed])]))
 
 (define-type Result
@@ -137,12 +138,12 @@
 
 (define (interp-with-binding [expr ExprC?] [name symbol?] [a Value?] [env Env?] [fds FunEnv?] [ads AdvEnv?] [sto Store?] [proceed procedure?]) Result?
   (let ([where (new-loc)])
-  (interp expr
-          (extend-env (bind name where) env)
-          fds
-          ads
-          (override-store (cell where a) sto)
-          proceed)
+    (interp expr
+            (extend-env (bind name where) env)
+            fds
+            ads
+            (override-store (cell where a) sto)
+            proceed)
 ))
 
 (define (no-proceed (val Value?) (sto Store?)) Result?
@@ -151,21 +152,24 @@
 (define (weave [n symbol?] [fds FunEnv?] [ads AdvEnv?] [proceed procedure?]) procedure?
   (foldr (lambda (val sto) (apply-advice n fds ads val sto)) proceed ads))
 
+(define (call-closure [fd FunDefC?] [fds FunEnv?] [ads AdvEnv?]) procedure? 
+  (lambda (val sto)
+    (let* ([_ (record-interp-jp (call (fdC-name fd) val sto))]
+           [result (interp-with-binding (fdC-body fd) (fdC-arg fd) val mt-env fds ads sto no-proceed)]
+           [_ (record-interp-jp (return (fdC-name fd) result))])
+      result
+    )))
+
 (define (interp [expr ExprC?] [env Env?] [fds FunEnv?] [ads AdvEnv?] [sto Store?] [proceed procedure?]) Result?
   (type-case ExprC expr
     [numC (n) (v*s (numV n) sto)]
     [varC (n) (v*s (fetch (lookup n env) sto) sto)]
     [appC (f a) (type-case Result (interp a env fds ads sto proceed)
                [v*s (v-a s-a) 
-                    (local ([define fd (get-fundef f fds)]
-                            [define call-closure (lambda (closure-val closure-sto) 
-                                     (let* ([_ (record-interp-jps (call f v-a s-a))]
-                                            [result (interp-with-binding (fdC-body fd) (fdC-arg fd) closure-val mt-env fds ads closure-sto no-proceed)]
-                                            [_ (record-interp-jps (return f result))])
-                                       result
-                                      ))]
-                            [define woven-closure (weave f fds ads call-closure)]) 
-                           (woven-closure v-a s-a))])]
+                    (let* ([fd (get-fundef f fds)]
+                           [cc (call-closure fd fds ads)]
+                           [woven-closure (weave f fds ads cc)])
+                      (woven-closure v-a s-a))])]
     
     [plusC (l r) (type-case Result (interp l env fds ads sto proceed)
                [v*s (v-l s-l)
