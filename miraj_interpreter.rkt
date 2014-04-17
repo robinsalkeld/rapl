@@ -184,24 +184,21 @@
                            (v*s (num* v-l v-r) s-r)])])]
     
     [setC (var val) (type-case Result (interp val env fds ads sto proceed)
-                        [v*s (v-v s-v)
-                             (let ([where (lookup var env)])
-                               (v*s v-v (override-store (cell where v-v) s-v))
-                             )
-                        ]
-                      )]
+               [v*s (v-v s-v)
+                    (let ([where (lookup var env)])
+                         (v*s v-v (override-store (cell where v-v) s-v)))])]
     
     [letC (s val in) (type-case Result (interp val env fds ads sto proceed)
-                [v*s (v-val s-val)
-                     (interp-with-binding in s v-val env fds ads s-val proceed)])]
+               [v*s (v-val s-val)
+                    (interp-with-binding in s v-val env fds ads s-val proceed)])]
     
     [seqC (b1 b2) (type-case Result (interp b1 env fds ads sto proceed)
-                [v*s (v-b1 s-b1)
-                     (interp b2 env fds ads s-b1 proceed)])]
+               [v*s (v-b1 s-b1)
+                    (interp b2 env fds ads s-b1 proceed)])]
     
     [ifZeroOrLessC (c t f) (type-case Result (interp c env fds ads sto proceed)
-                [v*s (v-c s-c)
-                     (cond 
+               [v*s (v-c s-c)
+                    (cond 
                        [(<= (numV-n v-c) 0) (interp t env fds ads s-c proceed)]
                        [else (interp f env fds ads s-c proceed)])])]
     
@@ -212,7 +209,7 @@
                [v*s (v-a s-a) (begin (numWrite v-a) (display "\n") (v*s v-a s-a))])]
     
     [readC () (let ([val ((unbox read-source))]) 
-                (begin (record-interp-input val) (v*s (numV val) sto)))]
+               (begin (record-interp-input val) (v*s (numV val) sto)))]
   )
 )
 
