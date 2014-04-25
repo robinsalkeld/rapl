@@ -1,5 +1,6 @@
 #lang plai
 
+(require "miraj.rkt")
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
 (require "miraj_recording.rkt")

@@ -1,5 +1,6 @@
 (miraj 
        empty
+       empty
        
        (list (aroundC 'fact 'y (letC 'result (proceedC (varC 'y))
                                     (seqC (writeC (readC))

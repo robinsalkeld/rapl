@@ -1,211 +1,115 @@
 #lang plai
 
+(require "miraj.rkt")
+
 ;;
 ;; Miraj interpreter
 ;;
 
-(define-type Value
-  (numV (n number?))
-)
+(define-type Env
+  [envV (vars VarEnv?) (fds FunEnv?) (ads AdvEnv?)])
+(define mt-env (envV empty empty empty))
 
-(define (num+ l r)
+(define (with-defs [vars VarDefs?] [fds FunDefs?] [ads AdvDefs?] [env Env?] [sto Store?] [cc procedure?]) 
+  (with-vars vars env sto (lambda (env sto)
+                            (let* ([define-func (lambda (f) (funV (fdC-name f) (fdC-arg f) (fdC-body f) (box mt-env)))]
+                                   [define-adv (lambda (a) (aroundV (aroundC-name a) (aroundC-arg a) (aroundC-body a) (box mt-env)))]
+                                   [new-env (envV (envV-vars env) 
+                                                  (append (envV-fds env) (map define-func fds)) 
+                                                  (append (envV-ads env) (map define-adv ads)))]
+                                   [_ (map (lambda (f) (set-box! (funV-env f) new-env)) (envV-fds new-env))]
+                                   [_ (map (lambda (a) (set-box! (aroundV-env a) new-env)) (envV-ads new-env))])
+                              (cc new-env sto)))))
+
+(define (with-vars [vars VarDefs?] [env Env?] [sto Store?] [cc procedure?])
   (cond
-    [(and (numV? l) (numV? r))
-     (numV (+ (numV-n l) (numV-n r)))]
+    [(empty? vars) 
+     (cc env sto)]
     [else
-     (error 'num+ "one argument was not a number")]))
+     (let ([var (first vars)])
+       (with-var (vdC-name var) (vdC-value var) env sto 
+                 (lambda (new-env new-sto)
+                   (with-vars (rest vars) new-env new-sto))))]))
 
-(define (num* l r) Value?
-  (cond
-    [(and (numV? l) (numV? r))
-     (numV (* (numV-n l) (numV-n r)))]
-    [else
-     (error 'num* "one argument was not a number")]))
+(define (with-var [name symbol?] [a Value?] [env Env?] [sto Store?] [cc procedure?]) 
+  (type-case Env env
+    [envV (vars fds ads)
+          (let ([where (new-loc)])
+            (cc (envV (cons (bind name where) vars) fds ads) (override-store (cell where a) sto)))]))
 
-(define (numWrite (v Value?))
-   (cond
-    [(numV? v)
-     (write (numV-n v))]
-    [else
-     (error 'numWrite "argument was not a number")]))
+(define (interp-with-binding [name symbol?] [a Value?] [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
+  (with-var name a env sto (lambda (new-env new-sto) (interp expr new-env new-sto proceed))))
 
-(define-type ExprC
-  [numC (n number?)]
-  [varC (s symbol?)]
-  [appC (fun symbol?) (arg ExprC?)]
-  [plusC (l ExprC?) (r ExprC?)]
-  [multC (l ExprC?) (r ExprC?)]
-  [setC (s symbol?) (v ExprC?)]
-  [letC (s symbol?) (val ExprC?) (in ExprC?)]
-  [seqC (b1 ExprC?) (b2 ExprC?)]
-  [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
-  [proceedC (v ExprC?)]
-  [writeC (v ExprC?)]
-  [readC]
-)
-
-(define (list-box-push! b x)
-  (set-box! b (cons x (unbox b))))
-(define (list-box-pop! b)
-  (let* ([next (first (unbox b))]
-         [_ (set-box! b (rest (unbox b)))])
-         next))
-
-(define read-source (box (lambda () (string->number (read-line)))))
-
-(define interp-input (box '()))
-(define (record-interp-input (x number?))
-  (set-box! interp-input (cons x (unbox interp-input))))
-(define get-interp-input 
-  (lambda () (reverse (unbox interp-input))))
-
-(define-type JoinPoint
-  [call (name symbol?) (a Value?) (sto Store?)]
-  [return (name symbol?) (result Result?)])
-
-(define interp-jps (box '()))
-(define (record-interp-jp (jp JoinPoint?))
-  (set-box! interp-jps (cons jp (unbox interp-jps))))
-(define get-interp-jps
-  (lambda () (reverse (unbox interp-jps))))
-
-(define Location? number?)
-
-(define new-loc
-  (let ([n (box 0)])
-    (lambda ()
-      (begin
-        (set-box! n (add1 (unbox n)))
-        (unbox n)))))
-
-(define-type Binding
-  [bind (name symbol?) (val Location?)])
- 
-(define Env? (curry andmap Binding?))
-(define mt-env empty)
-(define extend-env cons)
-
-(define-type Storage
-  [cell (location Location?) (val Value?)])
- 
-(define Store? (curry andmap Storage?))
-(define mt-store empty)
-(define override-store cons)
-
-(define (lookup [for symbol?] [env Env?]) Location?
-  (cond
-    [(empty? env) (error 'lookup "name not found")]
-    [else (cond
-            [(symbol=? for (bind-name (first env)))
-             (bind-val (first env))]
-            [else (lookup for (rest env))])]))
-
-(define (fetch [loc Location?] [sto Store?]) Value?
-  (cond
-    [(empty? sto) (error 'fetch "location not found")]
-    [else (cond
-            [(= loc (cell-location (first sto)))
-             (cell-val (first sto))]
-            [else (fetch loc (rest sto))])]))
-
-(define-type FunDefC
-  [fdC (name symbol?) (arg symbol?) (body ExprC?)])
-(define FunEnv? (curry andmap FunDefC?))
-
-(define (get-fundef [n symbol?] [fds FunEnv?]) FunDefC?
-  (cond
-    [(empty? fds) (error 'get-fundef "reference to undefined function")]
-    [(cons? fds) (cond
-                   [(equal? n (fdC-name (first fds))) (first fds)]
-                   [else (get-fundef n (rest fds))])]))
-
-(define-type AdviceDefC
-  [aroundC (name symbol?) (arg symbol?) (body ExprC?)])
-(define no-advice empty)
-(define AdvEnv? (curry andmap AdviceDefC?))
-
-(define (apply-advice [n symbol?] [fds FunEnv?] [ads AdvEnv?] [advice AdviceDefC?] [proceed procedure?]) procedure?
-  (type-case AdviceDefC advice
-      [aroundC (name param body)
+(define (apply-advice [n symbol?] [advice AdviceV?] [proceed procedure?]) procedure?
+  (type-case AdviceV advice
+      [aroundV (name param body env)
                (cond
                  [(symbol=? n name) 
                   (lambda (val sto) 
-                    (interp-with-binding body param val mt-env fds ads sto proceed))]
+                    (interp-with-binding param val body (unbox env) sto proceed))]
                  [else proceed])]))
-
-(define-type Result
-  [v*s (v Value?) (s Store?)])
-
-(define (interp-with-binding [expr ExprC?] [name symbol?] [a Value?] [env Env?] [fds FunEnv?] [ads AdvEnv?] [sto Store?] [proceed procedure?]) Result?
-  (let ([where (new-loc)])
-    (interp expr
-            (extend-env (bind name where) env)
-            fds
-            ads
-            (override-store (cell where a) sto)
-            proceed)
-))
 
 (define (no-proceed (val Value?) (sto Store?)) Result?
   (error 'no-proceed "proceed called outside of advice"))
 
-(define (weave [n symbol?] [fds FunEnv?] [ads AdvEnv?] [proceed procedure?]) procedure?
-  (foldr (lambda (val sto) (apply-advice n fds ads val sto)) proceed ads))
+(define (weave [n symbol?] [ads AdvEnv?] [proceed procedure?]) procedure?
+  (foldr (lambda (advice p) (apply-advice n advice p)) proceed ads))
 
-(define (call-closure [fd FunDefC?] [fds FunEnv?] [ads AdvEnv?]) procedure? 
-  (lambda (val sto)
-    (let* ([_ (record-interp-jp (call (fdC-name fd) val sto))]
-           [result (interp-with-binding (fdC-body fd) (fdC-arg fd) val mt-env fds ads sto no-proceed)]
-           [_ (record-interp-jp (return (fdC-name fd) result))])
-      result
-    )))
+(define (call-closure [fd FunV?]) procedure? 
+  (type-case FunV fd
+    [funV (name arg body env)
+          (lambda (val sto)
+            (let* ([_ (record-interp-jp (call name val sto))]
+                   [result (interp-with-binding arg val body (unbox env) sto no-proceed)]
+                   [_ (record-interp-jp (return name result))])
+                  result))]))
 
-(define (interp [expr ExprC?] [env Env?] [fds FunEnv?] [ads AdvEnv?] [sto Store?] [proceed procedure?]) Result?
+(define (interp [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
   (type-case ExprC expr
     [numC (n) (v*s (numV n) sto)]
-    [varC (n) (v*s (fetch (lookup n env) sto) sto)]
-    [appC (f a) (type-case Result (interp a env fds ads sto proceed)
+    [varC (n) (v*s (fetch (lookup n (envV-vars env)) sto) sto)]
+    [appC (f a) (type-case Result (interp a env sto proceed)
                [v*s (v-a s-a) 
-                    (let* ([fd (get-fundef f fds)]
-                           [cc (call-closure fd fds ads)]
-                           [woven-closure (weave f fds ads cc)])
+                    (let* ([fd (get-fundef f (envV-fds env))]
+                           [cc (call-closure fd)]
+                           [woven-closure (weave f (envV-ads env) cc)])
                       (woven-closure v-a s-a))])]
     
-    [plusC (l r) (type-case Result (interp l env fds ads sto proceed)
+    [plusC (l r) (type-case Result (interp l env sto proceed)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env fds ads s-l proceed)
+                    (type-case Result (interp r env s-l proceed)
                       [v*s (v-r s-r)
                            (v*s (num+ v-l v-r) s-r)])])]
 
-    [multC (l r) (type-case Result (interp l env fds ads sto proceed)
+    [multC (l r) (type-case Result (interp l env sto proceed)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env fds ads s-l proceed)
+                    (type-case Result (interp r env s-l proceed)
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [setC (var val) (type-case Result (interp val env fds ads sto proceed)
+    [setC (var val) (type-case Result (interp val env sto proceed)
                [v*s (v-v s-v)
                     (let ([where (lookup var env)])
                          (v*s v-v (override-store (cell where v-v) s-v)))])]
     
-    [letC (s val in) (type-case Result (interp val env fds ads sto proceed)
+    [letC (s val in) (type-case Result (interp val env sto proceed)
                [v*s (v-val s-val)
-                    (interp-with-binding in s v-val env fds ads s-val proceed)])]
+                    (interp-with-binding s v-val in env s-val proceed)])]
     
-    [seqC (b1 b2) (type-case Result (interp b1 env fds ads sto proceed)
+    [seqC (b1 b2) (type-case Result (interp b1 env sto proceed)
                [v*s (v-b1 s-b1)
-                    (interp b2 env fds ads s-b1 proceed)])]
+                    (interp b2 env s-b1 proceed)])]
     
-    [ifZeroOrLessC (c t f) (type-case Result (interp c env fds ads sto proceed)
+    [ifZeroOrLessC (c t f) (type-case Result (interp c env sto proceed)
                [v*s (v-c s-c)
                     (cond 
-                       [(<= (numV-n v-c) 0) (interp t env fds ads s-c proceed)]
-                       [else (interp f env fds ads s-c proceed)])])]
+                       [(<= (numV-n v-c) 0) (interp t env s-c proceed)]
+                       [else (interp f env s-c proceed)])])]
     
-    [proceedC (a) (type-case Result (interp a env fds ads sto proceed)
+    [proceedC (a) (type-case Result (interp a env sto proceed)
                [v*s (v-a s-a) (proceed v-a s-a)])]
     
-    [writeC (a) (type-case Result (interp a env fds ads sto proceed)
+    [writeC (a) (type-case Result (interp a env sto proceed)
                [v*s (v-a s-a) (begin (numWrite v-a) (display "\n") (v*s v-a s-a))])]
     
     [readC () (let ([val ((unbox read-source))]) 
@@ -214,20 +118,23 @@
 )
 
 (define-type MirajProgram
-  [miraj (fds FunEnv?) (ads AdvEnv?) (exp ExprC?)]
+  [miraj (vars VarDefs?) (fds FunDefs?) (ads AdvDefs?) (exp ExprC?)]
 )
 
-(define mt-program (miraj empty empty (numC 0)))
+(define mt-program (miraj empty empty empty (numC 0)))
 
 (define (append-programs [p1 MirajProgram?] [p2 MirajProgram?])
   ;; TODO-RS: Should verify that the environments are mutatually exclusive
-  (miraj (append (miraj-fds p1) (miraj-fds p2))
+  (miraj (append (miraj-vars p1) (miraj-vars p2))
+         (append (miraj-fds p1) (miraj-fds p2))
          (append (miraj-ads p1) (miraj-ads p2))
          (seqC (miraj-exp p1) (miraj-exp p2))))
 
 (define (interp-program [mp MirajProgram?])
-  (interp (miraj-exp mp) mt-env (miraj-fds mp) (miraj-ads mp) mt-store no-proceed)
-)
+  (type-case MirajProgram mp
+    [miraj (vars fds ads exp)
+           (with-defs vars fds ads mt-env mt-store (lambda (env sto)
+                                                    (interp exp env sto no-proceed)))]))
 
 (define-type MirajRecording
   [mirajRecForReplay (program MirajProgram?) (input list?)])

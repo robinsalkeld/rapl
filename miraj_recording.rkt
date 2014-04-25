@@ -1,5 +1,6 @@
 #lang plai
 
+(require "miraj.rkt")
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
 
@@ -28,14 +29,18 @@
   (type-case MirajTrace (read-struct-from-file trace-path) 
     [mirajTrace (trace-program jps)
       (type-case MirajProgram (append-programs trace-program program)
-        [miraj (fds ads exp) 
-           (retroactive-weave jps fds ads)])]))
+        [miraj (vars fds ads exp) 
+               ;; This is wrong - should not be re-defining variables from the original program.
+               ;; I'm not yet combining the two stores together. There should be a combination
+               ;; store that allows reading from either but only writing to the advice store.
+               (with-defs vars fds ads mt-env mt-store (lambda (env sto)
+                                                         (retroactive-weave jps env sto)))])]))
                             
-(define (retroactive-weave [jps list?] [fds FunEnv?] [ads AdvEnv?])
+(define (retroactive-weave [jps list?] [env Env?] [sto Store?])
   (begin (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))
-         (retroactive-weave-box (box jps) fds ads mt-store)))
+         (retroactive-weave-box (box jps) env sto)))
 
-(define (retroactive-weave-box [jps box?] [fds FunEnv?] [ads AdvEnv?] [advice-store Store?]) 
+(define (retroactive-weave-box [jps box?] [env Env?] [advice-store Store?]) 
   (cond
     [(empty? (unbox jps)) '()]
     [else 
@@ -44,9 +49,9 @@
              (let* ([proceed (lambda (val sto) 
                                ;; TODO-RS: Verify that val == arg!
                                ;; Not to mention verifying the same thing on return somehow.
-                               (retroactive-weave-box jps fds ads sto))]
-                    [result ((weave name fds ads proceed) arg advice-store)])
-               (retroactive-weave-box jps fds ads (v*s-s result)))]
+                               (retroactive-weave-box jps env sto))]
+                    [result ((weave name (envV-ads env) proceed) arg advice-store)])
+               (retroactive-weave-box jps env (v*s-s result)))]
        [return (name result) (v*s (v*s-v result) advice-store)])]))
 
                

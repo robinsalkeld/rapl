@@ -1,4 +1,7 @@
 (miraj 
+ 
+  empty
+ 
   (list (fdC 'fact 'x 
              (ifZeroOrLessC (varC 'x) 
                             (numC 1) 
