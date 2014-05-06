@@ -25,21 +25,6 @@
     [else
      (error 'numWrite "argument was not a number")]))
 
-(define-type ExprC
-  [numC (n number?)]
-  [varC (s symbol?)]
-  [appC (fun symbol?) (arg ExprC?)]
-  [plusC (l ExprC?) (r ExprC?)]
-  [multC (l ExprC?) (r ExprC?)]
-  [setC (s symbol?) (v ExprC?)]
-  [letC (s symbol?) (val ExprC?) (in ExprC?)]
-  [seqC (b1 ExprC?) (b2 ExprC?)]
-  [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
-  [proceedC (v ExprC?)]
-  [writeC (v ExprC?)]
-  [readC]
-)
-
 (define (list-box-push! b x)
   (set-box! b (cons x (unbox b))))
 (define (list-box-pop! b)
@@ -56,8 +41,8 @@
   (lambda () (reverse (unbox interp-input))))
 
 (define-type JoinPoint
-  [call (name symbol?) (a Value?) (sto Store?)]
-  [return (name symbol?) (result Result?)])
+  [call (name symbol?) (a Value?)]
+  [return (name symbol?) (result Value?)])
 
 (define interp-jps (box '()))
 (define (record-interp-jp (jp JoinPoint?))
@@ -67,14 +52,7 @@
 
 ;; Variables and the store
 
-(define Location? number?)
-
-(define new-loc
-  (let ([n (box 0)])
-    (lambda ()
-      (begin
-        (set-box! n (add1 (unbox n)))
-        (unbox n)))))
+(define (Location? x) true)
 
 (define-type VarDefC
   [vdC (name symbol?) (value ExprC?)])
@@ -87,10 +65,6 @@
 (define-type Storage
   [cell (location Location?) (val Value?)])
  
-(define Store? (curry andmap Storage?))
-(define mt-store empty)
-(define override-store cons)
-
 (define (lookup [for symbol?] [env VarEnv?]) Location?
   (cond
     [(empty? env) (error 'lookup "name not found")]
@@ -99,13 +73,32 @@
              (bind-val (first env))]
             [else (lookup for (rest env))])]))
 
-(define (fetch [loc Location?] [sto Store?]) Value?
+(define (fetch-cell [loc Location?] [cells (curry andmap Storage?)]) Value?
   (cond
-    [(empty? sto) (error 'fetch "location not found")]
+    [(empty? cells) (error 'fetch-cell "location not found")]
     [else (cond
-            [(= loc (cell-location (first sto)))
-             (cell-val (first sto))]
-            [else (fetch loc (rest sto))])]))
+            [(= loc (cell-location (first cells)))
+             (cell-val (first cells))]
+            [else (fetch-cell loc (rest cells))])]))
+
+(define-type Store 
+  [store (newer procedure?) (getter procedure?) (setter procedure?)])
+
+(define (new-loc [sto Store?]) Location?
+  ((store-newer sto)))
+
+(define (fetch [sto Store?] [loc Location?]) Value?
+  ((store-getter sto) loc))
+
+(define (override-store [sto Store?] [loc Location?] [value Value?])
+  ((store-setter sto) loc value))
+
+(define (list-store [cells (curry andmap Storage?)])
+  (store (lambda () (length cells))
+         (lambda (loc) (fetch-cell loc cells))
+         (lambda (loc value) (list-store (cons (cell loc value) cells)))))
+  
+(define mt-store (list-store empty))
 
 (define-type Result
   [v*s (v Value?) (s Store?)])
@@ -133,3 +126,20 @@
                    [(equal? n (funV-name (first fds))) (first fds)]
                    [else (get-fundef n (rest fds))])]))
 
+(define-type ExprC
+  [numC (n number?)]
+  [varC (s symbol?)]
+  [appC (fun symbol?) (arg ExprC?)]
+  [plusC (l ExprC?) (r ExprC?)]
+  [multC (l ExprC?) (r ExprC?)]
+  [setC (s symbol?) (v ExprC?)]
+  [letC (s symbol?) (val ExprC?) (in ExprC?)]
+  [funC (fun FunDefC?) (in ExprC?)]
+  [advC (adv AdviceDefC?) (in ExprC?)]
+  [seqC (b1 ExprC?) (b2 ExprC?)]
+  [chainC (b1 ExprC?) (b2 ExprC?)]
+  [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
+  [proceedC (v ExprC?)]
+  [writeC (v ExprC?)]
+  [readC]
+)

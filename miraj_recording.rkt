@@ -5,7 +5,7 @@
 (require "miraj_serialization.rkt")
 
 
-(define (interp-with-recording (program MirajProgram?) (recording-path path-string?))
+(define (interp-with-recording (program ExprC?) (recording-path path-string?))
   (let* ([result (interp-program program)]
          [input (get-interp-input)]
          [recording (mirajRecForReplay program input)]
@@ -18,40 +18,57 @@
          [_ (set-box! read-source (lambda () (list-box-pop! remaining-input)))])
     (interp-program (mirajRecForReplay-program recording))))
          
-(define (interp-with-tracing (program MirajProgram?) (trace-path path-string?))
+(define (interp-with-tracing (program ExprC?) (trace-path path-string?))
   (let* ([result (interp-program program)]
          [jps (get-interp-jps)]
          [trace (mirajTrace program jps)]
          [_ (write-struct-to-file trace trace-path)])
     result))
-           
-(define (interp-query (trace-path path-string?) (program MirajProgram?))
+      
+(define-type HybridLocation
+  [left-loc (loc Location?)]
+  [right-loc (loc Location?)])
+   
+(define (append-env (left-env Env?) (right-env Env?))
+  (type-case Env left-env
+    [envV (left-vars left-fds left-ads)
+          (type-case Env right-env
+            [envV (right-vars right-fds right-ads)
+                  ;; TODO-RS
+                  (envV left-vars left-fds 
+                        (append left-ads right-ads))])]))
+                  
+(define (append-store (left-sto Store?) (right-sto Store?))
+  (store (lambda () (right-loc (new-loc right-sto)))
+         
+         (lambda (loc) (type-case HybridLocation loc
+                         [left-loc (l-loc) (fetch l-loc left-sto)]
+                         [right-loc (r-loc) (fetch r-loc right-sto)]))
+                         
+         (lambda (loc value) (type-case HybridLocation loc
+                         [left-loc (l-loc) (error 'hybrid-store "attempt to write to old location")]
+                         [right-loc (r-loc) (append-store left-sto (override-store right-sto r-loc value))]))))
+
+(define (interp-query (trace-path path-string?) (program ExprC?))
   (type-case MirajTrace (read-struct-from-file trace-path) 
     [mirajTrace (trace-program jps)
-      (type-case MirajProgram (append-programs trace-program program)
-        [miraj (vars fds ads exp) 
-               ;; This is wrong - should not be re-defining variables from the original program.
-               ;; I'm not yet combining the two stores together. There should be a combination
-               ;; store that allows reading from either but only writing to the advice store.
-               (with-defs vars fds ads mt-env mt-store (lambda (env sto)
-                                                         (retroactive-weave jps env sto)))])]))
+                (begin (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))
+                       (interp program mt-env mt-store (lambda (val env sto)
+                                                         (retroactive-weave (box jps) env sto))))]))
                             
-(define (retroactive-weave [jps list?] [env Env?] [sto Store?])
-  (begin (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))
-         (retroactive-weave-box (box jps) env sto)))
-
-(define (retroactive-weave-box [jps box?] [env Env?] [advice-store Store?]) 
+(define (retroactive-weave [jps box?] [env Env?] [sto Store?]) 
   (cond
     [(empty? (unbox jps)) '()]
     [else 
      (type-case JoinPoint (list-box-pop! jps)
-       [call (name arg jp-store) 
-             (let* ([proceed (lambda (val sto) 
+       [call (name arg) 
+             ;; TODO-RS: Need to record env and store in joinpoint!
+             (let* ([proceed (lambda (val old-env old-sto) 
                                ;; TODO-RS: Verify that val == arg!
                                ;; Not to mention verifying the same thing on return somehow.
-                               (retroactive-weave-box jps env sto))]
-                    [result ((weave name (envV-ads env) proceed) arg advice-store)])
-               (retroactive-weave-box jps env (v*s-s result)))]
-       [return (name result) (v*s (v*s-v result) advice-store)])]))
+                               (retroactive-weave jps env sto))]
+                    [result ((weave name (envV-ads env) proceed) arg sto)])
+               (retroactive-weave jps env (v*s-s result)))]
+       [return (name result) (v*s result sto)])]))
 
                

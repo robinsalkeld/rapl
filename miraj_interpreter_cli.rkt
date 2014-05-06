@@ -23,7 +23,7 @@
  [("-q" "--query") r "Query execution" (query-path r)]
  #:args fs (files fs))
 
-(define program (lambda () (foldl append-programs mt-program (map read-struct-from-file (files)))))
+(define program (lambda () (foldr chainC (numC 0) (map read-struct-from-file (files)))))
 
 (cond
   [(recording-path) 
@@ -33,6 +33,7 @@
   [(trace-path) 
    (begin (write (v*s-v (interp-with-tracing (program) (trace-path)))))]
   [(query-path) 
-   (interp-query (query-path) (program))]
-  [else (write (v*s-v (interp-program (program))))])
+   (write (v*s-v (interp-query (query-path) (program))))]
+  [else 
+   (write (v*s-v (interp-program (program))))])
 
