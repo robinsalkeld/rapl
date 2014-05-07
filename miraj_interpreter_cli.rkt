@@ -23,17 +23,17 @@
  [("-q" "--query") r "Query execution" (query-path r)]
  #:args fs (files fs))
 
-(define program (lambda () (foldr chainC (numC 0) (map read-struct-from-file (files)))))
+(define exps (map read-struct-from-file (files)))
 
 (cond
   [(recording-path) 
-   (begin (write (v*s-v (interp-with-recording (program) (recording-path)))))]
+   (write (v*s-v (interp-with-recording exps (recording-path))))]
   [(replay-path) 
-   (begin (write (v*s-v (replay-interp (replay-path)))))]
+   (write (v*s-v (replay-interp (replay-path))))]
   [(trace-path) 
-   (begin (write (v*s-v (interp-with-tracing (program) (trace-path)))))]
+   (write (v*s-v (interp-with-tracing exps (trace-path))))]
   [(query-path) 
-   (write (v*s-v (interp-query (query-path) (program))))]
+   (interp-query (query-path) exps)]
   [else 
-   (write (v*s-v (interp-program (program))))])
+   (write (v*s-v (chain-interp exps no-proceed)))])
 

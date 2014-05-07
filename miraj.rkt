@@ -137,7 +137,6 @@
   [funC (fun FunDefC?) (in ExprC?)]
   [advC (adv AdviceDefC?) (in ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
-  [chainC (b1 ExprC?) (b2 ExprC?)]
   [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
   [proceedC (v ExprC?)]
   [writeC (v ExprC?)]

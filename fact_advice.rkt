@@ -3,4 +3,4 @@
                                      (seqC (writeC (varC 'result))
                                       (varC 'result)))))
       
-       (proceedC (numC 0)))
+       (proceedC (numC 42)))

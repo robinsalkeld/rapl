@@ -43,6 +43,7 @@
                   result))]))
 
 (define (interp [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
+;  (begin (write "interp: ") (write expr) (newline)
   (type-case ExprC expr
     [numC (n) (v*s (numV n) sto)]
     [varC (n) (v*s (fetch sto (lookup n (envV-vars env))) sto)]
@@ -96,9 +97,6 @@
                [v*s (v-b1 s-b1)
                     (interp b2 env s-b1 proceed)])]
     
-    [chainC (b1 b2) (interp b1 env sto (lambda (val new-env new-sto)
-                                         (interp b2 new-env new-sto proceed)))]
-    
     [ifZeroOrLessC (c t f) (type-case Result (interp c env sto proceed)
                [v*s (v-c s-c)
                     (cond 
@@ -109,18 +107,23 @@
                [v*s (v-a s-a) (proceed v-a env s-a)])]
     
     [writeC (a) (type-case Result (interp a env sto proceed)
-               [v*s (v-a s-a) (begin (numWrite v-a) (display "\n") (v*s v-a s-a))])]
+               [v*s (v-a s-a) (begin (numWrite v-a) (newline) (v*s v-a s-a))])]
     
     [readC () (let ([val ((unbox read-source))]) 
                (begin (record-interp-input val) (v*s (numV val) sto)))]
   )
 )
+;)
 
-(define (interp-program [exp ExprC?])
-  (interp exp mt-env mt-store no-proceed))
+(define (chain-interp [exps list?] [base-proceed procedure?]) Result?
+  (let* ([fold-fn (lambda (exp proceed) (lambda (val env sto) (interp exp env sto proceed)))])
+    ((foldr fold-fn base-proceed exps) (numV 0) mt-env mt-store)))
+
+(define (interp-program [exps list?])
+  (chain-interp exps no-proceed))
 
 (define-type MirajRecording
-  [mirajRecForReplay (program ExprC?) (input list?)])
+  [mirajRecForReplay (program list?) (input list?)])
 
 (define-type MirajTrace
-  [mirajTrace (program ExprC?) (joinpoints list?)])
+  [mirajTrace (program list?) (joinpoints list?)])
