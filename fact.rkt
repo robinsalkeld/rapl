@@ -1,11 +1,11 @@
-(funC (fdC 'fact 'x 
+(letC (funC 'fact 'x 
            (ifZeroOrLessC (varC 'x) 
                             (numC 1) 
                             (multC (varC 'x) 
                                    (appC 'fact (plusC (varC 'x) (numC -1))))))
       
-      (funC (fdC 'fact_loop 'x 
-                 (letC 'in (readC) 
+      (letC (funC 'fact_loop 'x 
+                 (letC (bindC 'in (readC))
                        (ifZeroOrLessC (varC 'in) 
                                       (varC 'in) 
                                       (seqC (writeC (appC 'fact (varC 'in)))

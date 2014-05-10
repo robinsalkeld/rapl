@@ -1,8 +1,9 @@
 #lang plai
 
+(define (Any? x) true)
+
 (define-type Value
-  (numV (n number?))
-)
+  (numV (n number?)))
 
 (define (num+ l r)
   (cond
@@ -40,39 +41,30 @@
 (define get-interp-input 
   (lambda () (reverse (unbox interp-input))))
 
-(define-type JoinPoint
-  [call (name symbol?) (a Value?)]
-  [return (name symbol?) (result Value?)])
-
-(define interp-jps (box '()))
-(define (record-interp-jp (jp JoinPoint?))
-  (set-box! interp-jps (cons jp (unbox interp-jps))))
-(define get-interp-jps
-  (lambda () (reverse (unbox interp-jps))))
+(define-type DefC
+  [bindC (name symbol?) (loc Location?)]
+  [funC (name symbol?) (arg symbol?) (body ExprC?)]
+  [aroundC (name symbol?) (arg symbol?) (body ExprC?)])
+(define Env? (curry andmap DefC?))
 
 ;; Variables and the store
 
+(define (lookup [for symbol?] [env Env?]) Location?
+  (cond
+    [(empty? env) (error 'lookup "name not found")]
+    [else 
+     (type-case DefC (first env)
+       [bindC (name loc)
+             (cond
+            [(symbol=? for name) loc]
+            [else (lookup for (rest env))])]
+       [else (lookup for (rest env))])]))
+       
 (define (Location? x) true)
-
-(define-type VarDefC
-  [vdC (name symbol?) (value ExprC?)])
-(define VarDefs? (curry andmap VarDefC?))
-
-(define-type Binding
-  [bind (name symbol?) (val Location?)])
-(define VarEnv? (curry andmap Binding?))
 
 (define-type Storage
   [cell (location Location?) (val Value?)])
  
-(define (lookup [for symbol?] [env VarEnv?]) Location?
-  (cond
-    [(empty? env) (error 'lookup "name not found")]
-    [else (cond
-            [(symbol=? for (bind-name (first env)))
-             (bind-val (first env))]
-            [else (lookup for (rest env))])]))
-
 (define (fetch-cell [loc Location?] [cells (curry andmap Storage?)]) Value?
   (cond
     [(empty? cells) (error 'fetch-cell "location not found")]
@@ -82,7 +74,7 @@
             [else (fetch-cell loc (rest cells))])]))
 
 (define-type Store 
-  [store (newer procedure?) (getter procedure?) (setter procedure?)])
+  [store (newer procedure?) (getter procedure?) (setter procedure?) (serializer procedure?) (loader procedure?)])
 
 (define (new-loc [sto Store?]) Location?
   ((store-newer sto)))
@@ -93,10 +85,18 @@
 (define (override-store [sto Store?] [loc Location?] [value Value?])
   ((store-setter sto) loc value))
 
+(define (serialize-store [sto Store?])
+  ((store-serializer sto)))
+  
+(define (deserialize-store [sto Store?] [data struct?])
+  ((store-loader sto) data))
+
 (define (list-store [cells (curry andmap Storage?)])
   (store (lambda () (length cells))
          (lambda (loc) (fetch-cell loc cells))
-         (lambda (loc value) (list-store (cons (cell loc value) cells)))))
+         (lambda (loc value) (list-store (cons (cell loc value) cells)))
+         (lambda () cells)
+         (lambda (cs) (list-store cs))))
   
 (define mt-store (list-store empty))
 
@@ -105,26 +105,30 @@
 
 ;; Functions and advice
 
-(define-type FunDefC
-  [fdC (name symbol?) (arg symbol?) (body ExprC?)])
-(define FunDefs? (curry andmap FunDefC?))
-(define-type FunV
-  [funV (name symbol?) (arg symbol?) (body ExprC?) (env box?)])
-(define FunEnv? (curry andmap FunV?))
+(define-type ClosureC
+  [closureC (arg symbol?) (body ExprC?) (env Env?)])
 
-(define-type AdviceDefC
-  [aroundC (name symbol?) (arg symbol?) (body ExprC?)])
-(define AdvDefs? (curry andmap AdviceDefC?))
-(define-type AdviceV
-  [aroundV (name symbol?) (arg symbol?) (body ExprC?) (env box?)])
-(define AdvEnv? (curry andmap AdviceV?))
-
-(define (get-fundef [n symbol?] [fds FunEnv?]) FunV?
+(define (get-fundef [n symbol?] [env Env?]) ClosureC?
   (cond
-    [(empty? fds) (error 'get-fundef "reference to undefined function")]
-    [(cons? fds) (cond
-                   [(equal? n (funV-name (first fds))) (first fds)]
-                   [else (get-fundef n (rest fds))])]))
+    [(empty? env) (error 'get-fundef "reference to undefined function")]
+    [(cons? env) 
+     (type-case DefC (first env)
+       [funC (name arg body)
+             (cond
+                   [(equal? n name) (closureC arg body env)]
+                   [else (get-fundef n (rest env))])]
+       [else (get-fundef n (rest env))])]))
+   
+(define (get-advice [n symbol?] [env Env?]) (curry andmap ClosureC?)
+  (cond
+    [(empty? env) empty]
+    [(cons? env) 
+     (type-case DefC (first env)
+       [aroundC (name arg body)
+                (cond
+                   [(equal? n name) (cons (closureC arg body env) (get-advice n (rest env)))]
+                   [else (get-advice n (rest env))])]
+       [else (get-advice n (rest env))])]))
 
 (define-type ExprC
   [numC (n number?)]
@@ -133,9 +137,7 @@
   [plusC (l ExprC?) (r ExprC?)]
   [multC (l ExprC?) (r ExprC?)]
   [setC (s symbol?) (v ExprC?)]
-  [letC (s symbol?) (val ExprC?) (in ExprC?)]
-  [funC (fun FunDefC?) (in ExprC?)]
-  [advC (adv AdviceDefC?) (in ExprC?)]
+  [letC (d DefC?) (in ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
   [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
   [proceedC (v ExprC?)]

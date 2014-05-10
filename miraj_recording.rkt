@@ -28,15 +28,6 @@
 (define-type HybridLocation
   [left-loc (loc Location?)]
   [right-loc (loc Location?)])
-   
-(define (append-env (left-env Env?) (right-env Env?))
-  (type-case Env left-env
-    [envV (left-vars left-fds left-ads)
-          (type-case Env right-env
-            [envV (right-vars right-fds right-ads)
-                  ;; TODO-RS
-                  (envV left-vars left-fds 
-                        (append left-ads right-ads))])]))
                   
 (define (append-store (left-sto Store?) (right-sto Store?))
   (store (lambda () (right-loc (new-loc right-sto)))
@@ -47,7 +38,11 @@
                          
          (lambda (loc value) (type-case HybridLocation loc
                          [left-loc (l-loc) (error 'hybrid-store "attempt to write to old location")]
-                         [right-loc (r-loc) (append-store left-sto (override-store right-sto r-loc value))]))))
+                         [right-loc (r-loc) (append-store left-sto (override-store right-sto r-loc value))]))
+         
+         (lambda () (error 'not-implemented "todo"))
+           
+         (lambda (data) (error 'not-implemented "todo"))))
 
 (define (interp-query (trace-path path-string?) (exprs list?))
   (type-case MirajTrace (read-struct-from-file trace-path) 
@@ -61,14 +56,16 @@
     [(empty? (unbox jps)) '()]
     [else 
      (type-case JoinPoint (list-box-pop! jps)
-       [call (name arg) 
-             ;; TODO-RS: Need to record env and store in joinpoint!
-             (let* ([proceed (lambda (val old-env old-sto) 
+       [call (name arg jp-env jp-sto-serialized) 
+             (let* ([jp-sto (deserialize-store (list-store (list)) jp-sto-serialized)]
+                    [proceed (lambda (val old-env old-sto) 
                                ;; TODO-RS: Verify that val == arg!
                                ;; Not to mention verifying the same thing on return somehow.
-                               (retroactive-weave jps env sto))]
-                    [result ((weave name (envV-ads env) proceed) arg env sto)])
+                               ;; TODO-RS: Need to make hybrid store!
+                               (retroactive-weave jps env jp-sto))]
+                    [result ((weave name env proceed) arg jp-env jp-sto)])
                (retroactive-weave jps env (v*s-s result)))]
-       [return (name result) (v*s result sto)])]))
+       [return (name result jp-env jp-sto-serialized) 
+               (v*s result sto)])]))
 
                

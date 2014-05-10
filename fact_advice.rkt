@@ -1,4 +1,4 @@
-(advC (aroundC 'fact 'y (letC 'result (proceedC (varC 'y))
+(letC (aroundC 'fact 'y (letC (bindC 'result (proceedC (varC 'y)))
                                     (seqC (writeC (varC 'y))
                                      (seqC (writeC (varC 'result))
                                       (varC 'result)))))
