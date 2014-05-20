@@ -23,7 +23,7 @@
  [("-q" "--query") r "Query execution" (query-path r)]
  #:args fs (files fs))
 
-(define exps (map read-struct-from-file (files)))
+(define exps (map (curry read-struct-from-file miraj-ns) (files)))
 
 (cond
   [(recording-path) 

@@ -4,6 +4,13 @@
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
 
+(define miraj-ns (module->namespace "miraj_recording.rkt"))
+
+(define-type MirajRecording
+  [mirajRecForReplay (program list?) (input list?)])
+
+(define-type MirajTrace
+  [mirajTrace (joinpoints list?)])
 
 (define (interp-with-recording (exps list?) (recording-path path-string?))
   (let* ([result (interp-program exps)]
@@ -21,51 +28,49 @@
 (define (interp-with-tracing (exps list?) (trace-path path-string?))
   (let* ([result (interp-program exps)]
          [jps (get-interp-jps)]
-         [trace (mirajTrace exps jps)]
+         [trace (mirajTrace jps)]
          [_ (write-struct-to-file trace trace-path)])
     result))
-      
-(define-type HybridLocation
-  [left-loc (loc Location?)]
-  [right-loc (loc Location?)])
-                  
-(define (append-store (left-sto Store?) (right-sto Store?))
-  (store (lambda () (right-loc (new-loc right-sto)))
-         
-         (lambda (loc) (type-case HybridLocation loc
-                         [left-loc (l-loc) (fetch l-loc left-sto)]
-                         [right-loc (r-loc) (fetch r-loc right-sto)]))
-                         
-         (lambda (loc value) (type-case HybridLocation loc
-                         [left-loc (l-loc) (error 'hybrid-store "attempt to write to old location")]
-                         [right-loc (r-loc) (append-store left-sto (override-store right-sto r-loc value))]))
-         
-         (lambda () (error 'not-implemented "todo"))
-           
-         (lambda (data) (error 'not-implemented "todo"))))
+       
+; TODO-RS: append-def and append-context are probably not doing the right thing in edge cases yet
+
+(define (append-def (context Context?) (def DefC?) (def-sto Store?)) Context?
+  (type-case Context context
+    [e*s (env sto)
+         (type-case DefC def
+           [bindC (name loc) 
+                  (let ([where (new-loc sto)])
+                    (e*s (cons (bindC name where) env) (override-store sto where (fetch def-sto loc))))]
+           [else (e*s (cons def env) sto)])]))
+                     
+(define (append-context (left-c Context?) (right-c Context?)) Context?
+  (type-case Context right-c
+    (e*s (right-env right-sto)
+         ; TODO-RS: foldl or foldr?
+         (foldl (lambda (def c) (append-def c def right-sto)) left-c right-env))))
 
 (define (interp-query (trace-path path-string?) (exprs list?))
-  (type-case MirajTrace (read-struct-from-file trace-path) 
-    [mirajTrace (trace-program jps)
+  (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
+    [mirajTrace (jps)
                 (let* ([proceed (lambda (val env sto) (retroactive-weave (box jps) env sto))]
                        [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))])
                   (chain-interp exprs proceed))]))
-                            
+
 (define (retroactive-weave [jps box?] [env Env?] [sto Store?]) Result?
   (cond
     [(empty? (unbox jps)) '()]
     [else 
      (type-case JoinPoint (list-box-pop! jps)
-       [call (name arg jp-env jp-sto-serialized) 
-             (let* ([jp-sto (deserialize-store (list-store (list)) jp-sto-serialized)]
-                    [proceed (lambda (val old-env old-sto) 
+       [call (name arg jp-context) 
+             (let* ([proceed (lambda (val new-env new-sto) 
                                ;; TODO-RS: Verify that val == arg!
                                ;; Not to mention verifying the same thing on return somehow.
-                               ;; TODO-RS: Need to make hybrid store!
-                               (retroactive-weave jps env jp-sto))]
-                    [result ((weave name env proceed) arg jp-env jp-sto)])
+                               (retroactive-weave jps new-env new-sto))]
+                    [context (append-context (e*s env sto) jp-context)]
+                    [woven-proceed (weave name (e*s-e context) proceed)]
+                    [result (woven-proceed arg (e*s-e context) (e*s-s context))])
                (retroactive-weave jps env (v*s-s result)))]
-       [return (name result jp-env jp-sto-serialized) 
+       [return (name result jp-context) 
                (v*s result sto)])]))
 
                

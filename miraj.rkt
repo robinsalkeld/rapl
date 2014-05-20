@@ -44,14 +44,15 @@
 (define-type DefC
   [bindC (name symbol?) (loc Location?)]
   [funC (name symbol?) (arg symbol?) (body ExprC?)]
-  [aroundC (name symbol?) (arg symbol?) (body ExprC?)])
+  [aroundC (name symbol?) (arg symbol?) (body ExprC?)]
+  [inlineC (name symbol?) (arg symbol?) (body ExprC?)])
 (define Env? (curry andmap DefC?))
 
 ;; Variables and the store
 
 (define (lookup [for symbol?] [env Env?]) Location?
   (cond
-    [(empty? env) (error 'lookup "name not found")]
+    [(empty? env) (error 'lookup (string-append "name not found: " (symbol->string for)))]
     [else 
      (type-case DefC (first env)
        [bindC (name loc)
@@ -60,46 +61,38 @@
             [else (lookup for (rest env))])]
        [else (lookup for (rest env))])]))
        
-(define (Location? x) true)
+(define Location? number?)
 
 (define-type Storage
   [cell (location Location?) (val Value?)])
  
-(define (fetch-cell [loc Location?] [cells (curry andmap Storage?)]) Value?
-  (cond
-    [(empty? cells) (error 'fetch-cell "location not found")]
-    [else (cond
-            [(= loc (cell-location (first cells)))
-             (cell-val (first cells))]
-            [else (fetch-cell loc (rest cells))])]))
-
-(define-type Store 
-  [store (newer procedure?) (getter procedure?) (setter procedure?) (serializer procedure?) (loader procedure?)])
-
-(define (new-loc [sto Store?]) Location?
-  ((store-newer sto)))
-
 (define (fetch [sto Store?] [loc Location?]) Value?
-  ((store-getter sto) loc))
+  (cond
+    [(empty? sto) (error 'fetch "location not found")]
+    [else (cond
+            [(= loc (cell-location (first sto)))
+             (cell-val (first sto))]
+            [else (fetch (rest sto) loc)])]))
+
+(define Store? (curry andmap Storage?))
+  
+(define (new-loc [sto Store?]) Location?
+  (length sto))
 
 (define (override-store [sto Store?] [loc Location?] [value Value?])
-  ((store-setter sto) loc value))
+  (cons (cell loc value) sto))
 
-(define (serialize-store [sto Store?])
-  ((store-serializer sto)))
-  
-(define (deserialize-store [sto Store?] [data struct?])
-  ((store-loader sto) data))
+(define mt-store empty)
 
-(define (list-store [cells (curry andmap Storage?)])
-  (store (lambda () (length cells))
-         (lambda (loc) (fetch-cell loc cells))
-         (lambda (loc value) (list-store (cons (cell loc value) cells)))
-         (lambda () cells)
-         (lambda (cs) (list-store cs))))
-  
-(define mt-store (list-store empty))
+(define-type Context
+  [e*s (e Env?) (s Store?)])
 
+(define (display-context [c Context?])
+  (begin (display "Environment: \n")
+         (map (lambda (def) (begin (display "\t") (display def) (display "\n"))) (e*s-e c))
+         (display "Store: \n")
+         (map (lambda (c) (begin (display "\t") (display c) (display "\n"))) (e*s-s c))))
+         
 (define-type Result
   [v*s (v Value?) (s Store?)])
 
@@ -119,16 +112,21 @@
                    [else (get-fundef n (rest env))])]
        [else (get-fundef n (rest env))])]))
    
-(define (get-advice [n symbol?] [env Env?]) (curry andmap ClosureC?)
+(define (get-advice [n symbol?] [env Env?] [calling-env Env?]) (curry andmap ClosureC?)
   (cond
     [(empty? env) empty]
     [(cons? env) 
-     (type-case DefC (first env)
-       [aroundC (name arg body)
-                (cond
-                   [(equal? n name) (cons (closureC arg body env) (get-advice n (rest env)))]
-                   [else (get-advice n (rest env))])]
-       [else (get-advice n (rest env))])]))
+     (let ([others (get-advice n (rest env) calling-env)])
+       (type-case DefC (first env)
+         [aroundC (name arg body)
+                  (cond
+                    [(equal? n name) (cons (closureC arg body env) others)]
+                    [else others])]
+         [inlineC (name arg body)
+                  (cond
+                    [(equal? n name) (cons (closureC arg body calling-env) others)]
+                    [else others])]
+         [else others]))]))
 
 (define-type ExprC
   [numC (n number?)]
@@ -137,10 +135,11 @@
   [plusC (l ExprC?) (r ExprC?)]
   [multC (l ExprC?) (r ExprC?)]
   [setC (s symbol?) (v ExprC?)]
-  [letC (d DefC?) (in ExprC?)]
+  [letC (s symbol?) (v ExprC?) (in ExprC?)]
+  [defC (d DefC?) (in ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
   [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
   [proceedC (v ExprC?)]
-  [writeC (v ExprC?)]
-  [readC]
+  [writeC (l string?) (v ExprC?)]
+  [readC (l string?)]
 )

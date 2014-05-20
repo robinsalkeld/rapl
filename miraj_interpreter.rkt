@@ -24,11 +24,11 @@
   (error 'no-proceed "proceed called outside of advice"))
 
 (define (weave [n symbol?] [env Env?] [proceed procedure?]) procedure?
-  (foldr (lambda (advice p) (apply-advice advice p)) proceed (get-advice n env)))
+  (foldr (lambda (advice p) (apply-advice advice p)) proceed (get-advice n env env)))
 
 (define-type JoinPoint
-  [call (name symbol?) (a Value?) (env Env?) (sto Any?)]
-  [return (name symbol?) (result Value?) (env Env?) (sto Any?)])
+  [call (name symbol?) (a Value?) (c Context?)]
+  [return (name symbol?) (result Value?) (c Context?)])
 
 (define interp-jps (box '()))
 (define (record-interp-jp (jp JoinPoint?))
@@ -40,13 +40,14 @@
   (type-case ClosureC closure
     [closureC (arg body fun-env)
               (lambda (val env sto)
-                (let* ([_ (record-interp-jp (call name val env (serialize-store sto)))]
+                (let* ([_ (record-interp-jp (call name val (e*s env sto)))]
                        [result (interp-with-binding arg val body fun-env sto no-proceed)]
-                       [_ (record-interp-jp (return name (v*s-v result) env (serialize-store (v*s-s result))))])
+                       [_ (record-interp-jp (return name (v*s-v result) (e*s env (v*s-s result))))])
                   result))]))
 
 (define (interp [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
-;  (begin (write "interp: ") (write expr) (newline)
+;(begin (display "Expression: ") (display expr) (newline)
+;       (display-context (e*s env sto)) (newline)
   (type-case ExprC expr
     [numC (n) (v*s (numV n) sto)]
     [varC (n) (v*s (fetch sto (lookup n env)) sto)]
@@ -74,12 +75,11 @@
                     (let ([where (lookup var env)])
                          (v*s v-v (override-store s-v where v-v)))])]
     
-    [letC (d in) (type-case DefC d
-                   [bindC (s val)
-                          (type-case Result (interp val env sto proceed)
+    [letC (s val in) (type-case Result (interp val env sto proceed)
                             [v*s (v-val s-val)
                                  (interp-with-binding s v-val in env s-val proceed)])]
-                   [else (interp in (cons d env) sto proceed)])]
+    
+    [defC (d in) (interp in (cons d env) sto proceed)]
     
     [seqC (b1 b2) (type-case Result (interp b1 env sto proceed)
                [v*s (v-b1 s-b1)
@@ -94,11 +94,14 @@
     [proceedC (a) (type-case Result (interp a env sto proceed)
                [v*s (v-a s-a) (proceed v-a env s-a)])]
     
-    [writeC (a) (type-case Result (interp a env sto proceed)
-               [v*s (v-a s-a) (begin (numWrite v-a) (newline) (v*s v-a s-a))])]
+    [writeC (l a) (type-case Result (interp a env sto proceed)
+               [v*s (v-a s-a) (begin (display l) (display ": ") (numWrite v-a) (newline) (v*s v-a s-a))])]
     
-    [readC () (let ([val ((unbox read-source))]) 
-               (begin (record-interp-input val) (v*s (numV val) sto)))]))
+    [readC (l) (let* ([_ (display l)]
+                      [_ (display "> ")]
+                      [val ((unbox read-source))]
+                      [_ (record-interp-input val)])
+                 (v*s (numV val) sto))]))
 ;)
 
 (define (chain-interp [exps list?] [base-proceed procedure?]) Result?
@@ -108,8 +111,3 @@
 (define (interp-program [exps list?])
   (chain-interp exps no-proceed))
 
-(define-type MirajRecording
-  [mirajRecForReplay (program list?) (input list?)])
-
-(define-type MirajTrace
-  [mirajTrace (program list?) (joinpoints list?)])

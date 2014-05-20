@@ -1,8 +1,5 @@
 #lang plai
 
-(require "miraj_interpreter.rkt")
-(define miraj-ns (module->namespace "miraj_interpreter.rkt"))
-
 (define (struct->list/recursive s) list?
   (if (struct? s)
   (let* ([l (vector->list (struct->vector s))]
@@ -16,11 +13,11 @@
         (cons cons-symbol (map recurse (cdr l))))
   s))
 
-(define (list->struct/recursive (l list?)) struct?
-  (eval l miraj-ns))
+(define (list->struct/recursive (ns namespace?) (l list?)) struct?
+  (eval l ns))
 
 (define (write-struct-to-file (s struct?) (path path-string?))
   (call-with-output-file path (lambda (port) (write (struct->list/recursive s) port))))
 
-(define (read-struct-from-file (path path-string?)) struct?
-  (call-with-input-file path (lambda (port) (list->struct/recursive (read port)))))
+(define (read-struct-from-file (ns namespace?) (path path-string?)) struct?
+  (call-with-input-file path (lambda (port) (list->struct/recursive ns (read port)))))

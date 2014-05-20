@@ -1,0 +1,2 @@
+#!/bin/sh
+racket ~/Documents/UBC/Code/Miraj/miraj_interpreter_cli.rkt $*

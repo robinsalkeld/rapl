@@ -59,7 +59,7 @@
       (numV 42))
 
 (test (v*s-v (interp (writeC (appC 'fact (numC 3)))
-              (list (aroundC 'fact 'y (letC (bindC 'result (proceedC (varC 'y)))
+              (list (aroundC 'fact 'y (letC 'result (proceedC (varC 'y))
                                        (seqC (writeC (varC 'y))
                                         (seqC (writeC (varC 'result))
                                               (varC 'result)))))
