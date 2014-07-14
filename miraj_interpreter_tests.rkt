@@ -3,6 +3,7 @@
 (require "miraj.rkt")
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
+(require "miraj_recording.rkt")
 
 (test (v*s-v (interp (plusC (numC 10) (appC 'const5 (numC 10)))
               (list (funC 'const5 '_ (numC 5)))
@@ -52,16 +53,16 @@
               no-proceed))
       "proceed called outside of advice")
 
-(test (v*s-v (interp (writeC (numC 42))
+(test (v*s-v (interp (writeC "The answer" (numC 42))
               mt-env
               mt-store
               no-proceed))
       (numV 42))
 
-(test (v*s-v (interp (writeC (appC 'fact (numC 3)))
-              (list (aroundC 'fact 'y (letC 'result (proceedC (varC 'y))
-                                       (seqC (writeC (varC 'y))
-                                        (seqC (writeC (varC 'result))
+(test (v*s-v (interp (writeC "fact(3)" (appC 'fact (numC 3)))
+              (list (aroundC 'fact 'y (letVarC 'result (proceedC (varC 'y))
+                                       (seqC (writeC "y" (varC 'y))
+                                        (seqC (writeC "result" (varC 'result))
                                               (varC 'result)))))
                     (funC 'fact 'x (ifZeroOrLessC (varC 'x) (numC 1) (multC (varC 'x) (appC 'fact (plusC (varC 'x) (numC -1)))))))
               mt-store
@@ -72,7 +73,7 @@
 (test (struct->list/recursive (plusC (numC 3) (numC 4))) '(plusC (numC 3) (numC 4)))
 (test (struct->list/recursive (appC 'foo (numC 4))) '(appC 'foo (numC 4)))
 
-(define (test-roundtrip e) (test (list->struct/recursive (struct->list/recursive e)) e))
+(define (test-roundtrip e) (test (list->struct/recursive miraj-ns (struct->list/recursive e)) e))
 
 (test-roundtrip (plusC (numC 3) (numC 4)))
 (test-roundtrip (appC 'foo (numC 4)))

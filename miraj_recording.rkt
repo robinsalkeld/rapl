@@ -10,7 +10,7 @@
   [mirajRecForReplay (program list?) (input list?)])
 
 (define-type MirajTrace
-  [mirajTrace (joinpoints list?)])
+  [mirajTrace (joinpoints list?) (result Result?)])
 
 (define (interp-with-recording (exps list?) (recording-path path-string?))
   (let* ([result (interp-program exps)]
@@ -28,7 +28,7 @@
 (define (interp-with-tracing (exps list?) (trace-path path-string?))
   (let* ([result (interp-program exps)]
          [jps (get-interp-jps)]
-         [trace (mirajTrace jps)]
+         [trace (mirajTrace jps result)]
          [_ (write-struct-to-file trace trace-path)])
     result))
        
@@ -51,10 +51,11 @@
 
 (define (interp-query (trace-path path-string?) (exprs list?))
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
-    [mirajTrace (jps)
+    [mirajTrace (jps result)
                 (let* ([proceed (lambda (val env sto) (retroactive-weave (box jps) env sto))]
-                       [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))])
-                  (chain-interp exprs proceed))]))
+                       [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
+                       [_ (chain-interp exprs proceed)])
+                  result)]))
 
 (define (retroactive-weave [jps box?] [env Env?] [sto Store?]) Result?
   (cond

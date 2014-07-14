@@ -13,27 +13,30 @@
 (define replay-path (make-parameter #f))
 (define trace-path (make-parameter #f))
 (define query-path (make-parameter #f))
-(define files (make-parameter '()))
+(define file-paths (make-parameter '()))
 
 (command-line 
+ #:program "miraj"
  #:once-each
- [("-r" "--record") r "Record execution" (recording-path r)]
- [("-p" "--replay") r "Replay execution" (replay-path r)]
- [("-t" "--trace") r "Trace execution" (trace-path r)]
- [("-q" "--query") r "Query execution" (query-path r)]
- #:args fs (files fs))
+ [("-r" "--record") path "Record execution" (recording-path path)]
+ [("-p" "--replay") path "Replay execution" (replay-path path)]
+ [("-t" "--trace") path "Trace execution" (trace-path path)]
+ [("-q" "--query") path "Query execution" (query-path path)]
+ #:args sources (file-paths sources))
 
-(define exps (map (curry read-struct-from-file miraj-ns) (files)))
+(define exps (map (curry read-struct-from-file miraj-ns) (file-paths)))
 
-(cond
-  [(recording-path) 
-   (write (v*s-v (interp-with-recording exps (recording-path))))]
-  [(replay-path) 
-   (write (v*s-v (replay-interp (replay-path))))]
-  [(trace-path) 
-   (write (v*s-v (interp-with-tracing exps (trace-path))))]
-  [(query-path) 
-   (interp-query (query-path) exps)]
-  [else 
-   (write (v*s-v (chain-interp exps no-proceed)))])
+(let ([result 
+       (cond
+         [(recording-path) 
+          (interp-with-recording exps (recording-path))]
+         [(replay-path) 
+          (replay-interp (replay-path))]
+         [(trace-path) 
+          (interp-with-tracing exps (trace-path))]
+         [(query-path) 
+          (interp-query (query-path) exps)]
+         [else 
+          (chain-interp exps no-proceed)])])
+  (display-with-label "Program result: " (v*s-v result)))
 

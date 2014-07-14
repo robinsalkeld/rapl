@@ -45,6 +45,9 @@
                        [_ (record-interp-jp (return name (v*s-v result) (e*s env (v*s-s result))))])
                   result))]))
 
+(define (display-with-label [label string?] [val Value?])
+  (begin (display label) (display ": ") (numWrite val) (newline)))
+
 (define (interp [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
 ;(begin (display "Expression: ") (display expr) (newline)
 ;       (display-context (e*s env sto)) (newline)
@@ -75,11 +78,15 @@
                     (let ([where (lookup var env)])
                          (v*s v-v (override-store s-v where v-v)))])]
     
-    [letC (s val in) (type-case Result (interp val env sto proceed)
+    [letVarC (s val in) (type-case Result (interp val env sto proceed)
                             [v*s (v-val s-val)
                                  (interp-with-binding s v-val in env s-val proceed)])]
     
-    [defC (d in) (interp in (cons d env) sto proceed)]
+    [letFunC (s arg body in) (interp in (cons (funC s arg body) env) sto proceed)]
+    
+    [letAroundC (s arg body in) (interp in (cons (aroundC s arg body) env) sto proceed)]
+    
+    [letInlineC (s arg body in) (interp in (cons (inlineC s arg body) env) sto proceed)]
     
     [seqC (b1 b2) (type-case Result (interp b1 env sto proceed)
                [v*s (v-b1 s-b1)
@@ -95,7 +102,7 @@
                [v*s (v-a s-a) (proceed v-a env s-a)])]
     
     [writeC (l a) (type-case Result (interp a env sto proceed)
-               [v*s (v-a s-a) (begin (display l) (display ": ") (numWrite v-a) (newline) (v*s v-a s-a))])]
+               [v*s (v-a s-a) (begin (display-with-label l v-a) (v*s v-a s-a))])]
     
     [readC (l) (let* ([_ (display l)]
                       [_ (display "> ")]
