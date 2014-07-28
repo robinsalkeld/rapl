@@ -3,7 +3,11 @@
 (define (Any? x) true)
 
 (define-type Value
-  (numV (n number?)))
+  (numV (n number?))
+  (closV (c Closure?))
+  (boxV (l Location?))
+  (namedV (name symbol?) (value Value?))
+  )
 
 (define (num+ l r)
   (cond
@@ -41,12 +45,9 @@
 (define get-interp-input 
   (lambda () (reverse (unbox interp-input))))
 
-(define-type DefC
-  [bindC (name symbol?) (loc Location?)]
-  [funC (name symbol?) (arg symbol?) (body ExprC?)]
-  [aroundC (name symbol?) (arg symbol?) (body ExprC?)]
-  [inlineC (name symbol?) (arg symbol?) (body ExprC?)])
-(define Env? (curry andmap DefC?))
+(define-type Binding
+  [bind (name symbol?) (loc Location?)])
+(define Env? (curry andmap Binding?))
 
 ;; Variables and the store
 
@@ -54,12 +55,11 @@
   (cond
     [(empty? env) (error 'lookup (string-append "name not found: " (symbol->string for)))]
     [else 
-     (type-case DefC (first env)
-       [bindC (name loc)
+     (type-case Binding (first env)
+       [bind (name loc)
              (cond
-            [(symbol=? for name) loc]
-            [else (lookup for (rest env))])]
-       [else (lookup for (rest env))])]))
+               [(symbol=? for name) loc]
+               [else (lookup for (rest env))])])]))
        
 (define Location? number?)
 
@@ -98,50 +98,50 @@
 
 ;; Functions and advice
 
-(define-type ClosureC
+(define-type Closure
   [closureC (arg symbol?) (body ExprC?) (env Env?)])
 
-(define (get-fundef [n symbol?] [env Env?]) ClosureC?
-  (cond
-    [(empty? env) (error 'get-fundef "reference to undefined function")]
-    [(cons? env) 
-     (type-case DefC (first env)
-       [funC (name arg body)
-             (cond
-                   [(equal? n name) (closureC arg body env)]
-                   [else (get-fundef n (rest env))])]
-       [else (get-fundef n (rest env))])]))
-   
-(define (get-advice [n symbol?] [env Env?] [calling-env Env?]) (curry andmap ClosureC?)
+(define-type Advice
+  [aroundC (name symbol?) (closure Closure?)])
+(define AdvEnv? (curry andmap Advice?))  
+
+(define (extract-names [val Value?]) pair?
+  (type-case Value val
+    [namedV (name v)
+            (let ([p (extract-names v)])
+              '((cons name (car p)) (cdr p)))]
+    [else '(empty val)]))
+
+(define (get-advice [names (curry andmap symbol?)] [env AdvEnv?]) (curry andmap Closure?)
   (cond
     [(empty? env) empty]
     [(cons? env) 
-     (let ([others (get-advice n (rest env) calling-env)])
-       (type-case DefC (first env)
-         [aroundC (name arg body)
+     (let ([others (get-advice names (rest env))])
+       (type-case Advice (first env)
+         [aroundC (name closure)
                   (cond
-                    [(equal? n name) (cons (closureC arg body env) others)]
-                    [else others])]
-         [inlineC (name arg body)
-                  (cond
-                    [(equal? n name) (cons (closureC arg body calling-env) others)]
-                    [else others])]
-         [else others]))]))
+                    [(member name names) (cons closure others)]
+                    [else others])]))]))
 
 (define-type ExprC
+  ;; Numbers, arithmetic, and conditionals
   [numC (n number?)]
-  [varC (s symbol?)]
-  [appC (fun symbol?) (arg ExprC?)]
   [plusC (l ExprC?) (r ExprC?)]
   [multC (l ExprC?) (r ExprC?)]
-  [setC (s symbol?) (v ExprC?)]
-  [letVarC (s symbol?) (v ExprC?) (in ExprC?)]
-  [letFunC (s symbol?) (a symbol?) (b ExprC?) (in ExprC?)]
-  [letAroundC (s symbol?) (a symbol?) (b ExprC?) (in ExprC?)]
-  [letInlineC (s symbol?) (a symbol?) (b ExprC?) (in ExprC?)]
-  [seqC (b1 ExprC?) (b2 ExprC?)]
   [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
-  [proceedC (v ExprC?)]
+  ;; Identifiers and functions
+  [idC (s symbol?)]
+  [appC (fun ExprC?) (arg ExprC?)]
+  [lamC (arg symbol?) (body ExprC?)]
+  [letC (s symbol?) (v ExprC?) (in ExprC?)]
+  ;; Boxes and sequencing
+  [boxC (arg ExprC?)]
+  [unboxC (arg ExprC?)]
+  [setboxC (b ExprC?) (v ExprC?)]
+  [seqC (b1 ExprC?) (b2 ExprC?)]
+  ;; Advice
+  [proceedC (arg ExprC?)]
+  ;; Input/Output
   [writeC (l string?) (v ExprC?)]
   [readC (l string?)]
 )

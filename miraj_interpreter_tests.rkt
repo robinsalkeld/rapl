@@ -34,7 +34,7 @@
 (test (v*s-v (interp (appC 'change (numC 2))
               (list (aroundC 'change 'y (proceedC (multC (varC 'y) (numC 2))))
                     (aroundC 'change 'y (proceedC (plusC (varC 'y) (numC 3))))
-                    (funC 'change 'x (plusC (varC 'x) (numC 5))))
+                    (funC 'change 'x (plusC (idC 'x) (numC 5))))
               mt-store
               no-proceed))
       (numV 12))
