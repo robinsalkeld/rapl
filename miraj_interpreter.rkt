@@ -8,124 +8,126 @@
 
 (define mt-env empty)
 
-(define (interp-with-binding [name symbol?] [a Value?] [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
+(define (interp-with-binding [name symbol?] [a Value?] [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
   (let* ([where (new-loc sto)]
-         [new-env (cons (bind name a) env)]
+         [new-env (cons (bind name where) env)]
          [new-sto (override-store sto where a)])
-            (interp expr new-env new-sto proceed)))
+            (interp expr new-env adv new-sto)))
 
-(define (apply-advice [advice Closure?] [proceed procedure?]) procedure?
-  (type-case Closure advice
-      [closureC (param body adv-env)
-                (lambda (val env sto) 
-                  (interp-with-binding param val body adv-env sto proceed))]))
+(define (interp-closure-app [closure Value?] [a Value?] [adv AdvEnv?] [sto Store?]) Result? 
+  (type-case Value closure
+    [closV (arg body env)
+           (interp-with-binding arg a body env adv sto)]
+    [else (error 'interp "only abstractions can be applied")]))
 
-(define (no-proceed [val Value?] [env Env?] [sto Store?]) Result?
-  (error 'no-proceed "proceed called outside of advice"))
+(define (apply-around-app [name symbol?] [adv AdvEnv?] [advice Advice?] [r Result?]) Result?
+  (type-case Advice advice
+      [aroundAppV (advised-name f)
+                  (cond
+                    [(symbol=? name advised-name)
+                     (type-case Result r
+                       (v*s (abs sto) 
+                            (interp-closure-app f abs adv sto)))]
+                    [else r])]
+      [else r]))
 
-(define (weave [names (curry andmap symbol?)] [env Env?] [proceed procedure?]) procedure?
-  (foldr (lambda (advice p) (apply-advice advice p)) proceed (get-advice names env)))
-
-(define-type JoinPoint
-  [call (names (curry andmap symbol?)) (a Value?) (c Context?)]
-  [return (names (curry andmap symbol?)) (result Value?) (c Context?)])
-
-(define interp-jps (box '()))
-(define (record-interp-jp (jp JoinPoint?))
-  (set-box! interp-jps (cons jp (unbox interp-jps))))
-(define get-interp-jps
-  (lambda () (reverse (unbox interp-jps))))
-
-(define (call-closure [names (curry andmap symbol?)] [closure Closure?]) procedure? 
-  (type-case Closure closure
-    [closureC (arg body fun-env)
-              (lambda (val env sto)
-                (let* ([_ (record-interp-jp (call names val (e*s env sto)))]
-                       [result (interp-with-binding arg val body fun-env sto no-proceed)]
-                       [_ (record-interp-jp (return names (v*s-v result) (e*s env (v*s-s result))))])
-                  result))]))
+(define (weave-app [name symbol?] [adv AdvEnv?] [f Value?] [sto Store?]) Result?
+  (foldr (curry apply-around-app name adv) (v*s f sto) adv))
 
 (define (display-with-label [label string?] [val Value?])
   (begin (display label) (display ": ") (numWrite val) (newline)))
 
-(define (interp [expr ExprC?] [env Env?] [sto Store?] [proceed procedure?]) Result?
-;(begin (display "Expression: ") (display expr) (newline)
-;       (display-context (e*s env sto)) (newline)
+(define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?] [proceed procedure?]) Result?
+(begin (display "Expression: ") (display expr) (newline)
+       (display-context (e*s env sto)) (newline)
   (type-case ExprC expr
     
     ;; Numbers, arithmetic, and conditionals
     
     [numC (n) (v*s (numV n) sto)]
     
-    [plusC (l r) (type-case Result (interp l env sto proceed)
+    [plusC (l r) (type-case Result (interp l env adv sto proceed)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env s-l proceed)
+                    (type-case Result (interp r env adv s-l proceed)
                       [v*s (v-r s-r)
                            (v*s (num+ v-l v-r) s-r)])])]
 
-    [multC (l r) (type-case Result (interp l env sto proceed)
+    [multC (l r) (type-case Result (interp l env adv sto proceed)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env s-l proceed)
+                    (type-case Result (interp r env adv s-l proceed)
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [ifZeroOrLessC (c t f) (type-case Result (interp c env sto proceed)
+    [ifZeroOrLessC (c t f) (type-case Result (interp c env adv sto proceed)
                [v*s (v-c s-c)
                     (cond 
-                       [(<= (numV-n v-c) 0) (interp t env s-c proceed)]
-                       [else (interp f env s-c proceed)])])]
+                       [(<= (numV-n v-c) 0) (interp t env adv s-c proceed)]
+                       [else (interp f env adv s-c proceed)])])]
     
     ;; Identifiers and functions
     
     [idC (n) (v*s (fetch sto (lookup n env)) sto)]
     
-    [appC (f a) (type-case Result (interp f env sto)
+    [appC (f a) (type-case Result (interp f env adv sto)
                   [v*s (v-f s-f)
-                       (type-case Result (interp a env s-f proceed)
+                       (type-case Result (interp a env adv s-f)
                          [v*s (v-a s-a) 
-                              (let* ([names*closure (extract-names v-f)]
-                                     [cc (call-closure (cdr names*closure))]
-                                     [woven-closure (weave (car names*closure) env cc)])
-                                (woven-closure v-a env s-a))])])]
+                              (type-case Value v-f
+                                [closV (arg body f-env)
+                                       (interp-with-binding arg v-a body f-env adv s-a)]
+                                [namedV (name subf)
+                                        (type-case Result (weave-app name adv subf s-a)
+                                          [v*s (v-w s-w)
+                                               (interp-closure-app v-w v-a adv s-w)])]
+                                [else (error 'interp "only abstractions can be applied")])])])]
     
-    [letC (s val in) (type-case Result (interp val env sto proceed)
+    [letC (s val in) (type-case Result (interp val env adv sto)
                             [v*s (v-val s-val)
-                                 (interp-with-binding s v-val in env s-val proceed)])]
+                                 (interp-with-binding s v-val in env adv s-val)])]
     
-    [lamC (a b) (closV (closureC a b env))]
+    [lamC (a b) (v*s (closV a b env) sto)]
     
     ;; Boxes and sequencing
     
-    [boxC (a) (type-case Result (interp a env sto proceed)
+    [boxC (a) (type-case Result (interp a env adv sto)
                 [v*s (v-a s-a)
                      (let ([where (new-loc sto)])
                        (v*s (boxV where)
-                            (override-store (cell where v-a)
-                                            s-a)))])]
+                            (override-store (cell where v-a) s-a)))])]
     
-    [unboxC (a) (type-case Result (interp a env sto proceed)
+    [unboxC (a) (type-case Result (interp a env adv sto)
               [v*s (v-a s-a)
                    (v*s (fetch (boxV-l v-a) s-a) s-a)])]
     
-    [setboxC (b val) (type-case Result (interp b env sto proceed)
+    [setboxC (b val) (type-case Result (interp b env adv sto)
                        [v*s (v-b s-b)
-                            (type-case Result (interp val env s-b proceed)
+                            (type-case Result (interp val env adv s-b)
                               [v*s (v-v s-v)
                                    (let ([where (boxV-l v-b)])
                                      (v*s v-v (override-store s-v where v-v)))])])]
     
-    [seqC (b1 b2) (type-case Result (interp b1 env sto proceed)
+    [seqC (b1 b2) (type-case Result (interp b1 env adv sto)
                [v*s (v-b1 s-b1)
-                    (interp b2 env s-b1 proceed)])]
+                    (interp b2 env adv s-b1)])]
     
     ;; Advice
     
-    [proceedC (a) (type-case Result (interp a env sto proceed)
-               [v*s (v-a s-a) (proceed v-a env s-a)])]
+    [labelC (name v) (type-case Result (interp v env adv sto)
+               [v*s (v-v s-v)
+                    (v*s (namedV name v-v) sto)])]
+    
+    [aroundAppC (name f in) (type-case Result (interp f env adv sto)
+                  [v*s (v-f s-f)
+                       (interp in env (cons (aroundAppV name v-f) adv) s-f)])]
+                
+    
+    [aroundSetC (name f in) (type-case Result (interp f env adv sto)
+                  [v*s (v-f s-f)
+                       (interp in env (cons (aroundSetV name v-f) adv) s-f)])]
     
     ;; Input/Output
     
-    [writeC (l a) (type-case Result (interp a env sto proceed)
+    [writeC (l a) (type-case Result (interp a env adv sto)
                [v*s (v-a s-a) (begin (display-with-label l v-a) (v*s v-a s-a))])]
     
     [readC (l) (let* ([_ (display l)]
@@ -133,12 +135,11 @@
                       [val ((unbox read-source))]
                       [_ (record-interp-input val)])
                  (v*s (numV val) sto))]))
-;)
+)
 
-(define (chain-interp [exps list?] [base-proceed procedure?]) Result?
-  (let* ([fold-fn (lambda (exp proceed) (lambda (val env sto) (interp exp env sto proceed)))])
-    ((foldr fold-fn base-proceed exps) (numV 0) mt-env mt-store)))
+(define (interp-exp [exp ExprC?])
+  (interp exp mt-env mt-adv mt-store))
 
 (define (interp-program [exps list?])
-  (chain-interp exps no-proceed))
-
+  (interp-exp (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps))))
+   

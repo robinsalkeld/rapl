@@ -4,10 +4,9 @@
 
 (define-type Value
   (numV (n number?))
-  (closV (c Closure?))
+  (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
-  (namedV (name symbol?) (value Value?))
-  )
+  (namedV (name symbol?) (value Value?)))
 
 (define (num+ l r)
   (cond
@@ -98,30 +97,11 @@
 
 ;; Functions and advice
 
-(define-type Closure
-  [closureC (arg symbol?) (body ExprC?) (env Env?)])
-
 (define-type Advice
-  [aroundC (name symbol?) (closure Closure?)])
+  [aroundAppV (name symbol?) (value Value?)]
+  [aroundSetV (name symbol?) (value Value?)])
 (define AdvEnv? (curry andmap Advice?))  
-
-(define (extract-names [val Value?]) pair?
-  (type-case Value val
-    [namedV (name v)
-            (let ([p (extract-names v)])
-              '((cons name (car p)) (cdr p)))]
-    [else '(empty val)]))
-
-(define (get-advice [names (curry andmap symbol?)] [env AdvEnv?]) (curry andmap Closure?)
-  (cond
-    [(empty? env) empty]
-    [(cons? env) 
-     (let ([others (get-advice names (rest env))])
-       (type-case Advice (first env)
-         [aroundC (name closure)
-                  (cond
-                    [(member name names) (cons closure others)]
-                    [else others])]))]))
+(define mt-adv empty)
 
 (define-type ExprC
   ;; Numbers, arithmetic, and conditionals
@@ -140,7 +120,9 @@
   [setboxC (b ExprC?) (v ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
   ;; Advice
-  [proceedC (arg ExprC?)]
+  [labelC (name symbol?) (v ExprC?)]
+  [aroundAppC (name symbol?) (fun ExprC?) (in ExprC?)]
+  [aroundSetC (name symbol?) (fun ExprC?) (in ExprC?)]
   ;; Input/Output
   [writeC (l string?) (v ExprC?)]
   [readC (l string?)]
