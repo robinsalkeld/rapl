@@ -37,32 +37,32 @@
 (define (display-with-label [label string?] [val Value?])
   (begin (display label) (display ": ") (numWrite val) (newline)))
 
-(define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?] [proceed procedure?]) Result?
-(begin (display "Expression: ") (display expr) (newline)
-       (display-context (e*s env sto)) (newline)
+(define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
+;(begin (display "Expression: ") (display expr) (newline)
+;       (display-context (e*s env sto)) (newline)
   (type-case ExprC expr
     
     ;; Numbers, arithmetic, and conditionals
     
     [numC (n) (v*s (numV n) sto)]
     
-    [plusC (l r) (type-case Result (interp l env adv sto proceed)
+    [plusC (l r) (type-case Result (interp l env adv sto)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env adv s-l proceed)
+                    (type-case Result (interp r env adv s-l)
                       [v*s (v-r s-r)
                            (v*s (num+ v-l v-r) s-r)])])]
 
-    [multC (l r) (type-case Result (interp l env adv sto proceed)
+    [multC (l r) (type-case Result (interp l env adv sto)
                [v*s (v-l s-l)
-                    (type-case Result (interp r env adv s-l proceed)
+                    (type-case Result (interp r env adv s-l)
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [ifZeroOrLessC (c t f) (type-case Result (interp c env adv sto proceed)
+    [ifZeroOrLessC (c t f) (type-case Result (interp c env adv sto)
                [v*s (v-c s-c)
                     (cond 
-                       [(<= (numV-n v-c) 0) (interp t env adv s-c proceed)]
-                       [else (interp f env adv s-c proceed)])])]
+                       [(<= (numV-n v-c) 0) (interp t env adv s-c)]
+                       [else (interp f env adv s-c)])])]
     
     ;; Identifiers and functions
     
@@ -135,7 +135,7 @@
                       [val ((unbox read-source))]
                       [_ (record-interp-input val)])
                  (v*s (numV val) sto))]))
-)
+;)
 
 (define (interp-exp [exp ExprC?])
   (interp exp mt-env mt-adv mt-store))

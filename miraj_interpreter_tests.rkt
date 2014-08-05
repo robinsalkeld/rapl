@@ -20,48 +20,57 @@
 ;                    (letC 'quadruple (lamC 'x (appC (idC 'double) (appC (idC 'double) (idC 'x))))
 ;                          (plusC (numC 10) (appC (idC 'quadruple) (plusC (numC 1) (numC 2))))))))
 ;      (numV 22))
-
-(test (v*s-v (interp-exp
-              (aroundAppC 'change 
-                          (lamC 'proceed (lamC 'y 
-                                               (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
-                       (aroundAppC 'change 
-                                   (lamC 'proceed (lamC 'y 
-                                                        (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
-                                   (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
-                                         (appC (idC 'change) (numC 2)))))))
-      (numV 12))
-
-;(test (v*s-v (interp (appC 'change (numC 2))
-;              (list (aroundC 'change 'y (proceedC (plusC (idC 'y) (numC 3))))
-;                    (aroundC 'change 'y (proceedC (multC (idC 'y) (numC 2))))
-;                    (funC 'change 'x (plusC (idC 'x) (numC 5))))
-;              mt-store
-;              no-proceed))
+;
+;(test (v*s-v (interp-exp
+;              (aroundAppC 'change 
+;                          (lamC 'proceed (lamC 'y 
+;                                               (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
+;                       (aroundAppC 'change 
+;                                   (lamC 'proceed (lamC 'y 
+;                                                        (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
+;                                   (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
+;                                         (appC (idC 'change) (numC 2)))))))
 ;      (numV 15))
 ;
-;(test/exn (v*s-v (interp (appC 'foo (numC 2))
-;              (list (funC 'foo 'x (proceedC (idC 'x))))
-;              mt-store
-;              no-proceed))
-;      "proceed called outside of advice")
+;(test (v*s-v (interp-exp
+;              (aroundAppC 'change 
+;                          (lamC 'proceed (lamC 'y 
+;                                               (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
+;                          (aroundAppC 'change 
+;                                      (lamC 'proceed (lamC 'y 
+;                                                           (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
+;                       
+;                                      (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
+;                                         (appC (idC 'change) (numC 2)))))))
+;      (numV 12))
 ;
-;(test (v*s-v (interp (writeC "The answer" (numC 42))
-;              mt-env
-;              mt-store
-;              no-proceed))
+;(test (v*s-v (interp-exp (writeC "The answer" (numC 42))))
 ;      (numV 42))
-;
-;(test (v*s-v (interp (writeC "fact(3)" (appC 'fact (numC 3)))
-;              (list (aroundC 'fact 'y (letidC 'result (proceedC (idC 'y))
-;                                       (seqC (writeC "y" (idC 'y))
-;                                        (seqC (writeC "result" (idC 'result))
-;                                              (idC 'result)))))
-;                    (funC 'fact 'x (ifZeroOrLessC (idC 'x) (numC 1) (multC (idC 'x) (appC 'fact (plusC (idC 'x) (numC -1)))))))
-;              mt-store
-;              no-proceed))
-;      (numV 6))
-;
+
+(define y-comb
+  ; \f -> (\x -> f (\y -> (x x) y) (\x -> f (\y -> (x x) y)
+  (lamC 'f (appC (lamC 'x (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))) 
+                 (lamC 'x (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))))))
+
+(define fact-rec 
+  (lamC 'fact (labelC 'fact 
+        (lamC 'x 
+              (ifZeroOrLessC (idC 'x) 
+                             (numC 1) 
+                             (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))))
+
+;(test (v*s-v (interp-exp (appC (appC y-comb fact-rec) (numC 4))))
+;      (numV 24))
+
+(test (v*s-v (interp-exp 
+                         (aroundAppC 'fact (lamC 'proceed 
+                                                 (lamC 'y (letC 'result (appC (idC 'proceed) (idC 'y))
+                                                                (seqC (writeC "y" (idC 'y))
+                                                                      (seqC (writeC "result" (idC 'result))
+                                                                            (idC 'result))))))
+                                     (writeC "fact(3)" (appC (appC y-comb fact-rec) (numC 3))))))
+      (numV 6))
+
 ;(test (struct->list/recursive (numC 4)) '(numC 4))
 ;(test (struct->list/recursive (plusC (numC 3) (numC 4))) '(plusC (numC 3) (numC 4)))
 ;(test (struct->list/recursive (appC 'foo (numC 4))) '(appC 'foo (numC 4)))
