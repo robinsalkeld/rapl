@@ -1,6 +1,32 @@
 #lang plai
 
-(define (Any? x) true)
+(define-type ExprC
+  ;; Numbers, arithmetic, and conditionals
+  [numC (n number?)]
+  [plusC (l ExprC?) (r ExprC?)]
+  [multC (l ExprC?) (r ExprC?)]
+  [ifZeroC (c ExprC?) (t ExprC?) (f ExprC?)]
+  ;; Identifiers and functions
+  [idC (s symbol?)]
+  [appC (fun ExprC?) (arg ExprC?)]
+  [lamC (arg symbol?) (body ExprC?)]
+  [letC (s symbol?) (v ExprC?) (in ExprC?)]
+  ;; Boxes and sequencing
+  [boxC (b ExprC?)]
+  [unboxC (b ExprC?)]
+  [setboxC (b ExprC?) (v ExprC?)]
+  [seqC (b1 ExprC?) (b2 ExprC?)]
+  ;; Advice
+  [labelC (name symbol?) (v ExprC?)]
+  [aroundAppC (name symbol?) (fun ExprC?) (in ExprC?)]
+  [aroundSetC (name symbol?) (fun ExprC?) (in ExprC?)]
+  ;; Input/Output
+  [fileC (path string?)]
+  [writeC (l string?) (v ExprC?)]
+  [readC (l string?)]
+)
+
+;; Numbers, arithmetic, and conditionals
 
 (define-type Value
   (numV (n number?))
@@ -48,7 +74,7 @@
   [bind (name symbol?) (loc Location?)])
 (define Env? (curry andmap Binding?))
 
-;; Variables and the store
+;; Identifiers and functions
 
 (define (lookup [for symbol?] [env Env?]) Location?
   (cond
@@ -95,7 +121,7 @@
 (define-type Result
   [v*s (v Value?) (s Store?)])
 
-;; Functions and advice
+;; Advice
 
 (define-type Advice
   [aroundAppV (name symbol?) (value Value?)]
@@ -103,27 +129,3 @@
 (define AdvEnv? (curry andmap Advice?))  
 (define mt-adv empty)
 
-(define-type ExprC
-  ;; Numbers, arithmetic, and conditionals
-  [numC (n number?)]
-  [plusC (l ExprC?) (r ExprC?)]
-  [multC (l ExprC?) (r ExprC?)]
-  [ifZeroOrLessC (c ExprC?) (t ExprC?) (f ExprC?)]
-  ;; Identifiers and functions
-  [idC (s symbol?)]
-  [appC (fun ExprC?) (arg ExprC?)]
-  [lamC (arg symbol?) (body ExprC?)]
-  [letC (s symbol?) (v ExprC?) (in ExprC?)]
-  ;; Boxes and sequencing
-  [boxC (arg ExprC?)]
-  [unboxC (arg ExprC?)]
-  [setboxC (b ExprC?) (v ExprC?)]
-  [seqC (b1 ExprC?) (b2 ExprC?)]
-  ;; Advice
-  [labelC (name symbol?) (v ExprC?)]
-  [aroundAppC (name symbol?) (fun ExprC?) (in ExprC?)]
-  [aroundSetC (name symbol?) (fun ExprC?) (in ExprC?)]
-  ;; Input/Output
-  [writeC (l string?) (v ExprC?)]
-  [readC (l string?)]
-)

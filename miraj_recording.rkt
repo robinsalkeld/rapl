@@ -4,8 +4,6 @@
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
 
-(define miraj-ns (module->namespace "miraj_recording.rkt"))
-
 (define-type MirajRecording
   [mirajRecForReplay (program list?) (input list?)])
 

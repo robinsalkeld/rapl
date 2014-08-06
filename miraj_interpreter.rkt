@@ -1,6 +1,9 @@
 #lang plai
 
 (require "miraj.rkt")
+(require "miraj_serialization.rkt")
+
+(define miraj-ns (module->namespace "miraj_interpreter.rkt"))
 
 ;;
 ;; Miraj interpreter
@@ -58,7 +61,7 @@
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [ifZeroOrLessC (c t f) (type-case Result (interp c env adv sto)
+    [ifZeroC (c t f) (type-case Result (interp c env adv sto)
                [v*s (v-c s-c)
                     (cond 
                        [(<= (numV-n v-c) 0) (interp t env adv s-c)]
@@ -73,13 +76,11 @@
                        (type-case Result (interp a env adv s-f)
                          [v*s (v-a s-a) 
                               (type-case Value v-f
-                                [closV (arg body f-env)
-                                       (interp-with-binding arg v-a body f-env adv s-a)]
-                                [namedV (name subf)
-                                        (type-case Result (weave-app name adv subf s-a)
+                                [namedV (name labelled-f)
+                                        (type-case Result (weave-app name adv labelled-f s-a)
                                           [v*s (v-w s-w)
                                                (interp-closure-app v-w v-a adv s-w)])]
-                                [else (error 'interp "only abstractions can be applied")])])])]
+                                [else (interp-closure-app v-f v-a adv s-a)])])])]
     
     [letC (s val in) (type-case Result (interp val env adv sto)
                             [v*s (v-val s-val)
@@ -93,11 +94,11 @@
                 [v*s (v-a s-a)
                      (let ([where (new-loc sto)])
                        (v*s (boxV where)
-                            (override-store (cell where v-a) s-a)))])]
+                            (override-store s-a where v-a)))])]
     
     [unboxC (a) (type-case Result (interp a env adv sto)
               [v*s (v-a s-a)
-                   (v*s (fetch (boxV-l v-a) s-a) s-a)])]
+                   (v*s (fetch s-a (boxV-l v-a)) s-a)])]
     
     [setboxC (b val) (type-case Result (interp b env adv sto)
                        [v*s (v-b s-b)
@@ -126,6 +127,8 @@
                        (interp in env (cons (aroundSetV name v-f) adv) s-f)])]
     
     ;; Input/Output
+    
+    [fileC (path) (interp (read-struct-from-file miraj-ns path) env adv sto)]
     
     [writeC (l a) (type-case Result (interp a env adv sto)
                [v*s (v-a s-a) (begin (display-with-label l v-a) (v*s v-a s-a))])]
