@@ -66,8 +66,7 @@
 ;; Advice
 
 (define-type Advice
-  [aroundAppV (name symbol?) (value Value?)]
-  [aroundSetV (name symbol?) (value Value?)])
+  [aroundAppV (name symbol?) (value Value?)])
 (define AdvEnv? (curry andmap Advice?))  
 (define mt-adv empty)
 
@@ -77,10 +76,9 @@
                   (cond
                     [(symbol=? name advised-name)
                      (interp-closure-app w f adv)]
-                    [else f])]
-      [else f]))
+                    [else f])]))
 
-(define (weave-app [name symbol?] [adv AdvEnv?] [f Value?]) Value?
+(define (weave-app [name symbol?] [f Value?] [adv AdvEnv?]) Value?
   (foldr (curry apply-around-app name adv) f adv))
 
 (define (display-with-label [label string?] [val Value?])
@@ -118,7 +116,7 @@
                   (let ([v-a (interp a env adv)])
                          (type-case Value v-f
                            [namedV (name labelled-f)
-                                   (let ([v-w (weave-app name adv labelled-f)])
+                                   (let ([v-w (weave-app name labelled-f adv)])
                                      (interp-closure-app v-w v-a adv))]
                            [else (interp-closure-app v-f v-a adv)])))]
     
