@@ -1,7 +1,7 @@
 #lang plai
 
 (require "miraj.rkt")
-(require "miraj_interpreter.rkt")
+(require "miraj_interpreter_no_store.rkt")
 (require "miraj_serialization.rkt")
 ;(require "miraj_recording.rkt")
 
@@ -26,6 +26,9 @@
 
 (define exps (map (curry read-struct-from-file miraj-ns) (file-paths)))
 
+(define (interp-program [exps list?]) Value?
+  (interp-exp (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps))))
+
 (let ([result 
        (cond
 ;         [(recording-path) 
@@ -38,5 +41,5 @@
 ;          (interp-query (query-path) exps)]
          [else 
           (interp-program exps)])])
-  (display-with-label "Program result: " (v*s-v result)))
+  (display-with-label "Program result: " result))
 

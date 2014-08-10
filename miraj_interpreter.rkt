@@ -9,7 +9,52 @@
 ;; Miraj interpreter
 ;;
 
+(define-type Value
+  (numV (n number?))
+  (closV (arg symbol?) (body ExprC?) (env Env?))
+  (boxV (l Location?))
+  (namedV (name symbol?) (value Value?)))
+
+;; Numbers, arithmetic, and conditionals
+
+(define (num+ l r)
+  (cond
+    [(and (numV? l) (numV? r))
+     (numV (+ (numV-n l) (numV-n r)))]
+    [else
+     (error 'num+ "one argument was not a number")]))
+
+(define (num* l r) Value?
+  (cond
+    [(and (numV? l) (numV? r))
+     (numV (* (numV-n l) (numV-n r)))]
+    [else
+     (error 'num* "one argument was not a number")]))
+
+(define (numWrite (v Value?))
+   (cond
+    [(numV? v)
+     (write (numV-n v))]
+    [else
+     (error 'numWrite "argument was not a number")]))
+
+;; Identifiers and functions
+
+(define-type Binding
+  [bind (name symbol?) (loc Location?)])
+(define Location? number?)
+(define Env? (curry andmap Binding?))
 (define mt-env empty)
+
+(define (lookup [for symbol?] [env Env?])
+  (cond
+    [(empty? env) (error 'lookup (string-append "name not found: " (symbol->string for)))]
+    [else 
+     (type-case Binding (first env)
+       [bind (name loc)
+             (cond
+               [(symbol=? for name) loc]
+               [else (lookup for (rest env))])])]))
 
 (define (interp-with-binding [name symbol?] [a Value?] [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
   (let* ([where (new-loc sto)]
@@ -23,19 +68,62 @@
            (interp-with-binding arg a body env adv sto)]
     [else (error 'interp "only abstractions can be applied")]))
 
-(define (apply-around-app [name symbol?] [adv AdvEnv?] [advice Advice?] [r Result?]) Result?
+;; Mutations and side-effects
+
+(define-type Storage
+  [cell (location Location?) (val Value?)])
+ 
+(define (fetch [sto Store?] [loc Location?]) Value?
+  (cond
+    [(empty? sto) (error 'fetch "location not found")]
+    [else (cond
+            [(= loc (cell-location (first sto)))
+             (cell-val (first sto))]
+            [else (fetch (rest sto) loc)])]))
+
+(define Store? (curry andmap Storage?))
+  
+(define (new-loc [sto Store?]) Location?
+  (length sto))
+
+(define (override-store [sto Store?] [loc Location?] [value Value?])
+  (cons (cell loc value) sto))
+
+(define mt-store empty)
+
+(define-type Context
+  [e*s (e Env?) (s Store?)])
+
+;; Advice
+
+(define-type Advice
+  [aroundAppV (name symbol?) (value Value?)]
+  [aroundSetV (name symbol?) (value Value?)])
+(define AdvEnv? (curry andmap Advice?))  
+(define mt-adv empty)
+
+(define (apply-around-app [name symbol?] [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
   (type-case Advice advice
       [aroundAppV (advised-name f)
                   (cond
                     [(symbol=? name advised-name)
-                     (type-case Result r
+                     (type-case Result abs-sto
                        (v*s (abs sto) 
                             (interp-closure-app f abs adv sto)))]
-                    [else r])]
-      [else r]))
+                    [else abs-sto])]
+      [else abs-sto]))
 
 (define (weave-app [name symbol?] [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (foldr (curry apply-around-app name adv) (v*s f sto) adv))
+
+(define (display-context [c Context?])
+  (begin (display "Environment: \n")
+         (map (lambda (def) (begin (display "\t") (display def) (display "\n"))) (e*s-e c))
+         (display "Store: \n")
+         (map (lambda (c) (begin (display "\t") (display c) (display "\n"))) (e*s-s c))))
+         
+(define-type Result
+  [v*s (v Value?) (s Store?)])
 
 (define (display-with-label [label string?] [val Value?])
   (begin (display label) (display ": ") (numWrite val) (newline)))
@@ -67,9 +155,11 @@
                        [(<= (numV-n v-c) 0) (interp t env adv s-c)]
                        [else (interp f env adv s-c)])])]
     
-    ;; Identifiers and functions
+    ;; Identifiers and abstractions
     
     [idC (n) (v*s (fetch sto (lookup n env)) sto)]
+    
+    [lamC (a b) (v*s (closV a b env) sto)]
     
     [appC (f a) (type-case Result (interp f env adv sto)
                   [v*s (v-f s-f)
@@ -85,8 +175,6 @@
     [letC (s val in) (type-case Result (interp val env adv sto)
                             [v*s (v-val s-val)
                                  (interp-with-binding s v-val in env adv s-val)])]
-    
-    [lamC (a b) (v*s (closV a b env) sto)]
     
     ;; Boxes and sequencing
     
@@ -113,16 +201,19 @@
     
     ;; Advice
     
-    [labelC (name v) (type-case Result (interp v env adv sto)
-               [v*s (v-v s-v)
-                    (v*s (namedV name v-v) sto)])]
+    [labelC (name v) 
+            (type-case Result (interp v env adv sto)
+              [v*s (v-v s-v)
+                   (v*s (namedV name v-v) sto)])]
     
-    [aroundAppC (name f in) (type-case Result (interp f env adv sto)
+    [aroundAppC (name f in) 
+                (type-case Result (interp f env adv sto)
                   [v*s (v-f s-f)
                        (interp in env (cons (aroundAppV name v-f) adv) s-f)])]
                 
     
-    [aroundSetC (name f in) (type-case Result (interp f env adv sto)
+    [aroundSetC (name f in) 
+                (type-case Result (interp f env adv sto)
                   [v*s (v-f s-f)
                        (interp in env (cons (aroundSetV name v-f) adv) s-f)])]
     
@@ -140,9 +231,6 @@
                  (v*s (numV val) sto))]))
 ;)
 
-(define (interp-exp [exp ExprC?])
-  (interp exp mt-env mt-adv mt-store))
-
-(define (interp-program [exps list?])
-  (interp-exp (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps))))
+(define (interp-exp [exp ExprC?]) Value?
+  (v*s-v (interp exp mt-env mt-adv mt-store)))
    

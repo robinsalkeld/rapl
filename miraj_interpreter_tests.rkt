@@ -5,23 +5,23 @@
 (require "miraj_serialization.rkt")
 ;(require "miraj_recording.rkt")
 
-(test (v*s-v (interp-exp 
+(test (interp-exp 
               (letC 'const5 (lamC '_ (numC 5)) 
-                    (plusC (numC 10) (appC (idC 'const5) (numC 10))))))
+                    (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
       (numV 15))
  
-(test (v*s-v (interp-exp 
+(test (interp-exp 
               (letC 'double (lamC 'x (plusC (idC 'x) (idC 'x)))
-                    (plusC (numC 10) (appC (idC 'double) (plusC (numC 1) (numC 2)))))))
+                    (plusC (numC 10) (appC (idC 'double) (plusC (numC 1) (numC 2))))))
       (numV 16))
  
-(test (v*s-v (interp-exp 
+(test (interp-exp 
               (letC 'double (lamC 'x (plusC (idC 'x) (idC 'x)))
                     (letC 'quadruple (lamC 'x (appC (idC 'double) (appC (idC 'double) (idC 'x))))
-                          (plusC (numC 10) (appC (idC 'quadruple) (plusC (numC 1) (numC 2))))))))
+                          (plusC (numC 10) (appC (idC 'quadruple) (plusC (numC 1) (numC 2)))))))
       (numV 22))
 
-(test (v*s-v (interp-exp
+(test (interp-exp
               (aroundAppC 'change 
                           (lamC 'proceed (lamC 'y 
                                                (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
@@ -29,10 +29,10 @@
                                    (lamC 'proceed (lamC 'y 
                                                         (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
                                    (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
-                                         (appC (idC 'change) (numC 2)))))))
+                                         (appC (idC 'change) (numC 2))))))
       (numV 15))
 
-(test (v*s-v (interp-exp
+(test (interp-exp
               (aroundAppC 'change 
                           (lamC 'proceed (lamC 'y 
                                                (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
@@ -41,17 +41,17 @@
                                                            (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
                        
                                       (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
-                                         (appC (idC 'change) (numC 2)))))))
+                                         (appC (idC 'change) (numC 2))))))
       (numV 12))
 
-(test (v*s-v (interp-exp (writeC "The answer" (numC 42))))
+(test (interp-exp (writeC "The answer" (numC 42)))
       (numV 42))
 
 
-(test (v*s-v (interp-exp (appC (fileC "fact.rkt") (numC 4))))
+(test (interp-exp (appC (fileC "fact.rkt") (numC 4)))
       (numV 24))
 
-(test (v*s-v (interp-exp (appC (appC (fileC "fact_advice.rkt") (fileC "fact.rkt")) (numC 3))))
+(test (interp-exp (appC (appC (fileC "fact_advice.rkt") (fileC "fact.rkt")) (numC 3)))
       (numV 6))
 
 (test (struct->list/recursive (numC 4)) '(numC 4))
