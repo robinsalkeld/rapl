@@ -1,13 +1,21 @@
 #lang plai
 
 (require "miraj.rkt")
+(require "miraj_parser.rkt")
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
 ;(require "miraj_recording.rkt")
 
+(test (parse '(let const5 (lambda _ 5)
+                 (+ 10 (const5 10))))
+      (letC 'const5 (lamC '_ (numC 5)) 
+            (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
+
 (test (interp-exp 
-              (letC 'const5 (lamC '_ (numC 5)) 
-                    (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
+       (parse '(let const5 (lambda _ 5)
+                 (+ 10 (const5 10)))))
+              ;(letC 'const5 (lamC '_ (numC 5)) 
+               ;     (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
       (numV 15))
  
 (test (interp-exp 
