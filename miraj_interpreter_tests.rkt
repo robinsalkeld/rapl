@@ -6,50 +6,39 @@
 (require "miraj_serialization.rkt")
 ;(require "miraj_recording.rkt")
 
-(test (parse '(let const5 (lambda _ 5)
+(test (parse '(let ([const5 (lambda (_) 5)])
                  (+ 10 (const5 10))))
       (letC 'const5 (lamC '_ (numC 5)) 
             (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
 
-(test (interp-exp 
-       (parse '(let const5 (lambda _ 5)
-                 (+ 10 (const5 10)))))
-              ;(letC 'const5 (lamC '_ (numC 5)) 
-               ;     (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
+(test (interp-exp (parse 
+                   '(let ([const5 (lambda (_) 5)])
+                      (+ 10 (const5 10)))))
       (numV 15))
  
-(test (interp-exp 
-              (letC 'double (lamC 'x (plusC (idC 'x) (idC 'x)))
-                    (plusC (numC 10) (appC (idC 'double) (plusC (numC 1) (numC 2))))))
+(test (interp-exp (parse 
+                   '(let ([double (lambda (x) (+ x x))])
+                      (+ 10 (double (+ 1 2))))))
       (numV 16))
  
-(test (interp-exp 
-              (letC 'double (lamC 'x (plusC (idC 'x) (idC 'x)))
-                    (letC 'quadruple (lamC 'x (appC (idC 'double) (appC (idC 'double) (idC 'x))))
-                          (plusC (numC 10) (appC (idC 'quadruple) (plusC (numC 1) (numC 2)))))))
+(test (interp-exp (parse
+                   '(let ([double (lambda (x) (+ x x))])
+                      (let ([quadruple (lambda (x) (double (double x)))])
+                        (+ 10 (quadruple (+ 1 2)))))))
       (numV 22))
 
-(test (interp-exp
-              (aroundAppC 'change 
-                          (lamC 'proceed (lamC 'y 
-                                               (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
-                       (aroundAppC 'change 
-                                   (lamC 'proceed (lamC 'y 
-                                                        (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
-                                   (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
-                                         (appC (idC 'change) (numC 2))))))
+(test (interp-exp (parse
+                   '(aroundapp ([change (lambda (proceed) (lambda (y) (proceed (* y 2))))])
+                               (aroundapp ([change (lambda (proceed) (lambda (y) (proceed (+ y 3))))])
+                                          (let ([change (label change (lambda (x) (+ x 5)))])
+                                            (change 2))))))
       (numV 15))
 
-(test (interp-exp
-              (aroundAppC 'change 
-                          (lamC 'proceed (lamC 'y 
-                                               (appC (idC 'proceed) (plusC (idC 'y) (numC 3)))))
-                          (aroundAppC 'change 
-                                      (lamC 'proceed (lamC 'y 
-                                                           (appC (idC 'proceed) (multC (idC 'y) (numC 2)))))
-                       
-                                      (letC 'change (labelC 'change (lamC 'x (plusC (idC 'x) (numC 5))))
-                                         (appC (idC 'change) (numC 2))))))
+(test (interp-exp (parse
+                   '(aroundapp ([change (lambda (proceed) (lambda (y) (proceed (+ y 3))))])
+                               (aroundapp ([change (lambda (proceed) (lambda (y) (proceed (* y 2))))])
+                                          (let ([change (label change (lambda (x) (+ x 5)))])
+                                            (change 2))))))
       (numV 12))
 
 (test (interp-exp (writeC "The answer" (numC 42)))

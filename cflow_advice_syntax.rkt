@@ -1,7 +1,7 @@
 #lang racket
-(around (bar) 
+(aroundapp bar 
   (lambda (proceed) (lambda (x) 
-    (around (foo) 
+    (aroundapp foo
             (<advice functor>)
             (proceed x))))
   (...))
