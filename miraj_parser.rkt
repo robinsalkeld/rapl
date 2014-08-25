@@ -34,8 +34,7 @@
              ['label
               (labelC (list-ref tail 0) (parse (list-ref tail 1)))]
              ['aroundapp
-              (let ([defpair (car (list-ref tail 0))])
-                (aroundAppC (list-ref defpair 0) (parse (list-ref defpair 1)) (parse (list-ref tail 1))))]
+              (aroundAppC (list-ref tail 0) (parse (list-ref tail 1)) (parse (list-ref tail 2)))]
              ;; Input/Output
              ['read
               (readC (list-ref tail 0))]

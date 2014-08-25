@@ -28,15 +28,15 @@
       (numV 22))
 
 (test (interp-exp (parse
-                   '(aroundapp ([change (lambda (proceed) (lambda (y) (proceed (* y 2))))])
-                               (aroundapp ([change (lambda (proceed) (lambda (y) (proceed (+ y 3))))])
+                   '(aroundapp change (lambda (proceed) (lambda (y) (proceed (* y 2))))
+                               (aroundapp change (lambda (proceed) (lambda (y) (proceed (+ y 3))))
                                           (let ([change (label change (lambda (x) (+ x 5)))])
                                             (change 2))))))
       (numV 15))
 
 (test (interp-exp (parse
-                   '(aroundapp ([change (lambda (proceed) (lambda (y) (proceed (+ y 3))))])
-                               (aroundapp ([change (lambda (proceed) (lambda (y) (proceed (* y 2))))])
+                   '(aroundapp change (lambda (proceed) (lambda (y) (proceed (+ y 3))))
+                               (aroundapp change (lambda (proceed) (lambda (y) (proceed (* y 2))))
                                           (let ([change (label change (lambda (x) (+ x 5)))])
                                             (change 2))))))
       (numV 12))
