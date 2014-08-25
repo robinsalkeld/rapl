@@ -1,8 +1,8 @@
-(lamC 'f (lamC 'a
-                  (aroundAppC 'fact 
-                              (lamC 'proceed 
-                                    (lamC 'y (letC 'result (appC (idC 'proceed) (idC 'y))
-                                                   (seqC (writeC "y" (idC 'y))
-                                                         (seqC (writeC "result" (idC 'result))
-                                                               (idC 'result))))))
-                              (appC (idC 'f) (idC 'a)))))
+(lambda (f) (lambda (a)
+                  (aroundapp ([fact 
+                               (lambda (proceed) (lambda (y) 
+                                                   (let ([result (proceed y)])
+                                                     (seq (write "y" y)
+                                                          (seq (write "result" result)
+                                                               result)))))])
+                             (f a))))

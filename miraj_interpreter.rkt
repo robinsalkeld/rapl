@@ -1,6 +1,7 @@
 #lang plai
 
 (require "miraj.rkt")
+(require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
 
 (define miraj-ns (module->namespace "miraj_interpreter.rkt"))
@@ -219,7 +220,7 @@
     
     ;; Input/Output
     
-    [fileC (path) (interp (read-struct-from-file miraj-ns path) env adv sto)]
+    [fileC (path) (interp (parse-file path) mt-env adv sto)]
     
     [writeC (l a) (type-case Result (interp a env adv sto)
                [v*s (v-a s-a) (begin (display-with-label l v-a) (v*s v-a s-a))])]

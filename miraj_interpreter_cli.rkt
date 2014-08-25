@@ -2,6 +2,7 @@
 
 (require "miraj.rkt")
 (require "miraj_interpreter_no_store.rkt")
+(require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
 ;(require "miraj_recording.rkt")
 
@@ -24,7 +25,7 @@
  ;[("-q" "--query") path "Query execution" (query-path path)]
  #:args sources (file-paths sources))
 
-(define exps (map (curry read-struct-from-file miraj-ns) (file-paths)))
+(define exps (map parse-file (file-paths)))
 
 (define (interp-program [exps list?]) Value?
   (interp-exp (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps))))

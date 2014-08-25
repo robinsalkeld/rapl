@@ -45,7 +45,7 @@
       (numV 42))
 
 
-(test (interp-exp (appC (fileC "fact.rkt") (numC 4)))
+(test (interp-exp (parse '((file "fact.rkt") 4)))
       (numV 24))
 
 (test (interp-exp (appC (appC (fileC "fact_advice.rkt") (fileC "fact.rkt")) (numC 3)))
