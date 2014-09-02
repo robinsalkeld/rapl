@@ -73,12 +73,10 @@
     [mirajTrace (jps arity result)
                 (let* ([proceed (lambda (val adv sto) (retroactive-weave (box jps) adv sto))]
                        [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
-                       [_ (display "interp query\n")]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
                        [weave-closure (builtinV (lambda (val adv sto) (retroactive-weave (box jps) adv sto)))]
-                       [_ (display "apply query 1\n")]
+                       ;; TODO-RS: Fix hard-coded CLI arity and argument
                        [x (interp-closure-app (v*s-v query-result) weave-closure mt-adv (v*s-s query-result))]
-                       [_ (display "apply query 2\n")]
                        [_ (interp-closure-app (v*s-v x) (numV 0) mt-adv (v*s-s x))])
                   result)]))
 

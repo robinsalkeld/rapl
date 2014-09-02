@@ -169,8 +169,8 @@
   (begin (display label) (display ": ") (numWrite val) (newline)))
 
 (define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
-(begin (display "Expression: ") (display (exp-syntax expr)) (newline)
-       (display-context (e*s env sto)) (newline)
+;(begin (display "Expression: ") (display (exp-syntax expr)) (newline)
+;       (display-context (e*s env sto)) (newline)
   (type-case ExprC expr
     
     ;; Numbers, arithmetic, and conditionals
@@ -211,7 +211,7 @@
                                           [v*s (v-w s-w)
                                                (let* ([_ (record-interp-jp (app-call name v-w v-a adv s-w))]
                                                       [result (interp-closure-app v-w v-a adv s-w)]
-                                                      [_ (record-interp-jp (app-return name v-w v-a adv s-w))])
+                                                      [_ (record-interp-jp (app-return name v-w (v*s-v result) adv (v*s-s result)))])
                                                  result)])]
                                 [else (interp-closure-app v-f v-a adv s-a)])])])]
     
@@ -272,7 +272,7 @@
                       [val ((unbox read-source))]
                       [_ (record-interp-input val)])
                  (v*s (numV val) sto))]))
-)
+;)
 
 (define (interp-exp [exp ExprC?]) Value?
   (v*s-v (interp exp mt-env mt-adv mt-store)))
