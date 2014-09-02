@@ -36,8 +36,10 @@
 (define read-source (box (lambda () (string->number (read-line)))))
 
 (define interp-input (box '()))
+
+;; TODO-RS: Move to miraj_recording?
 (define (record-interp-input (x number?))
-  (set-box! interp-input (cons x (unbox interp-input))))
+  (list-box-push! interp-input x))
 (define get-interp-input 
   (lambda () (reverse (unbox interp-input))))
 

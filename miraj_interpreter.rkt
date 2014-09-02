@@ -4,8 +4,6 @@
 (require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
 
-(define miraj-ns (module->namespace "miraj_interpreter.rkt"))
-
 ;;
 ;; Miraj interpreter
 ;;
@@ -14,7 +12,8 @@
   (numV (n number?))
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
-  (namedV (name symbol?) (value Value?)))
+  (namedV (name symbol?) (value Value?))
+  (builtinV (f procedure?)))
 
 ;; Numbers, arithmetic, and conditionals
 
@@ -67,7 +66,20 @@
   (type-case Value closure
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
+    [builtinV (f)
+             (f a adv sto)]
     [else (error 'interp "only abstractions can be applied")]))
+
+(define-type JoinPoint
+  [app-call (label symbol?) (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
+  [app-return (label symbol?) (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
+
+(define interp-jps (box '()))
+(define (record-interp-jp (jp JoinPoint?))
+  (list-box-push! interp-jps jp))
+(define get-interp-jps
+  (lambda () (reverse (unbox interp-jps))))
+
 
 ;; Mutations and side-effects
 
@@ -91,6 +103,9 @@
   (cons (cell loc value) sto))
 
 (define mt-store empty)
+
+(define-type Result
+  [v*s (v Value?) (s Store?)])
 
 (define-type Context
   [e*s (e Env?) (s Store?)])
@@ -117,21 +132,45 @@
 (define (weave-app [name symbol?] [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (foldr (curry apply-around-app name adv) (v*s f sto) adv))
 
+;; Debugging
+
+(define (display-value [v Value?])
+  (type-case Value v
+    [numV (n) (display n)]
+    [closV (arg body env)
+           (begin (display arg) (display " -> ") (display (exp-syntax body)) (display-env env))]
+    [boxV (l)
+          (begin (display "box(") (display l) (display ")"))]
+    [namedV (l a)
+            (begin (display "(label ") (display l) (display " ") (display-value a) (display ")"))]
+    [builtinV (f) (display f)]))
+
 (define (display-context [c Context?])
   (begin (display "Environment: \n")
-         (map (lambda (def) (begin (display "\t") (display def) (display "\n"))) (e*s-e c))
+         (display-env (e*s-e c))
          (display "Store: \n")
-         (map (lambda (c) (begin (display "\t") (display c) (display "\n"))) (e*s-s c))))
+         (display-store (e*s-s c))))
          
-(define-type Result
-  [v*s (v Value?) (s Store?)])
+(define (display-env [env Env?])
+  (map (lambda (def) 
+         (type-case Binding def
+           [bind (n l)
+                 (begin (display "\t") (display n) (display " -> ") (display l) (display "\n"))])) 
+       env))
+
+(define (display-store [sto Store?])
+  (map (lambda (c) 
+         (type-case Storage c
+           [cell (l v)
+                 (begin (display "\t") (display l) (display " -> ") (display-value v) (display "\n"))])) 
+       sto))
 
 (define (display-with-label [label string?] [val Value?])
   (begin (display label) (display ": ") (numWrite val) (newline)))
 
 (define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
-;(begin (display "Expression: ") (display expr) (newline)
-;       (display-context (e*s env sto)) (newline)
+(begin (display "Expression: ") (display (exp-syntax expr)) (newline)
+       (display-context (e*s env sto)) (newline)
   (type-case ExprC expr
     
     ;; Numbers, arithmetic, and conditionals
@@ -170,7 +209,10 @@
                                 [namedV (name labelled-f)
                                         (type-case Result (weave-app name adv labelled-f s-a)
                                           [v*s (v-w s-w)
-                                               (interp-closure-app v-w v-a adv s-w)])]
+                                               (let* ([_ (record-interp-jp (app-call name v-w v-a adv s-w))]
+                                                      [result (interp-closure-app v-w v-a adv s-w)]
+                                                      [_ (record-interp-jp (app-return name v-w v-a adv s-w))])
+                                                 result)])]
                                 [else (interp-closure-app v-f v-a adv s-a)])])])]
     
     [letC (s val in) (type-case Result (interp val env adv sto)
@@ -230,8 +272,10 @@
                       [val ((unbox read-source))]
                       [_ (record-interp-input val)])
                  (v*s (numV val) sto))]))
-;)
+)
 
 (define (interp-exp [exp ExprC?]) Value?
   (v*s-v (interp exp mt-env mt-adv mt-store)))
    
+(define (app-chain [exps list?]) ExprC?
+  (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps)))

@@ -1,10 +1,10 @@
 #lang plai
 
 (require "miraj.rkt")
-(require "miraj_interpreter_no_store.rkt")
+(require "miraj_interpreter.rkt")
 (require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
-;(require "miraj_recording.rkt")
+(require "miraj_recording.rkt")
 
 ;;
 ;; Miraj interpreter CLI
@@ -21,25 +21,25 @@
  #:once-each
  ;[("-r" "--record") path "Record execution" (recording-path path)]
  ;[("-p" "--replay") path "Replay execution" (replay-path path)]
- ;[("-t" "--trace") path "Trace execution" (trace-path path)]
- ;[("-q" "--query") path "Query execution" (query-path path)]
+ [("-t" "--trace") path "Trace execution" (trace-path path)]
+ [("-q" "--query") path "Query execution" (query-path path)]
  #:args sources (file-paths sources))
 
 (define exps (map parse-file (file-paths)))
 
 (define (interp-program [exps list?]) Value?
-  (interp-exp (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps))))
+  (interp-exp (app-chain exps)))
 
-(let ([result 
+(let ([result
        (cond
 ;         [(recording-path) 
 ;          (interp-with-recording exps (recording-path))]
 ;         [(replay-path) 
 ;          (replay-interp (replay-path))]
-;         [(trace-path) 
-;          (interp-with-tracing exps (trace-path))]
-;         [(query-path) 
-;          (interp-query (query-path) exps)]
+         [(trace-path) 
+          (interp-with-tracing exps (trace-path))]
+         [(query-path) 
+          (interp-query (query-path) exps)]
          [else 
           (interp-program exps)])])
   (display-with-label "Program result: " result))

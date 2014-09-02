@@ -4,8 +4,6 @@
 (require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
 
-(define miraj-ns (module->namespace "miraj_interpreter_no_store.rkt"))
-
 ;;
 ;; Miraj interpreter
 ;;
@@ -153,4 +151,5 @@
 (define (interp-exp [exp ExprC?]) Value?
   (interp exp mt-env mt-adv))
 
-   
+(define (app-chain [exps list?]) ExprC?
+  (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps)))

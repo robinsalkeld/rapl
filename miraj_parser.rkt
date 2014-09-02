@@ -50,5 +50,26 @@
         [else (error 'parse "Unhandled case")]))
 ;)
 
+(define (exp-syntax [e ExprC?])
+  (type-case ExprC e
+    [numC (n) n]
+    [plusC (l r) (list '+ (exp-syntax l) (exp-syntax r))]
+    [multC (l r) (list '* (exp-syntax l) (exp-syntax r))]
+    [ifZeroC (c t f) (list 'if0 (exp-syntax t) (exp-syntax f))]
+    [idC (s) s]
+    [lamC (a b) (list 'lambda (list a) (exp-syntax b))]
+    [appC (f a) (list (exp-syntax f) (exp-syntax a))]
+    [letC (s val in) (list 'let (list (list s (exp-syntax val))) (exp-syntax in))]
+    [boxC (a) (list 'box (exp-syntax a))]
+    [unboxC (a) (list 'unbox (exp-syntax a))]
+    [setboxC (b val) (list 'set-box! (exp-syntax b) (exp-syntax val))]
+    [seqC (b1 b2) (list 'seq (exp-syntax b1) (exp-syntax b2))]
+    [labelC (name v) (list 'label name (exp-syntax v))]
+    [aroundAppC (name f in) (list 'aroundapp name (exp-syntax f) (exp-syntax in))]
+    [aroundSetC (name f in) (list 'aroundset name (exp-syntax f) (exp-syntax in))]
+    [fileC (path) (list 'file path)]
+    [writeC (l a) (list 'write l (exp-syntax a))]
+    [readC (l) (list 'read l)]))
+    
 (define (parse-file (path path-string?)) ExprC?
   (call-with-input-file path (lambda (port) (parse (read port)))))
