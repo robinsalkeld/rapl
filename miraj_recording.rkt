@@ -27,12 +27,12 @@
 ;; Tracing
 
 (define-type MirajTrace
-  [mirajTrace (joinpoints (curry andmap JoinPoint?)) (arity number?)])
+  [mirajTrace (joinpoints (curry andmap JoinPoint?)) (arity number?) (result Value?)])
 
 (define (interp-with-tracing (exps list?) (trace-path path-string?))
-  (let* ([result ((interp-exp (app-chain exps)))]
+  (let* ([result (interp-exp (app-chain exps))]
          [jps (get-interp-jps)]
-         [trace (mirajTrace jps (length exps))]
+         [trace (mirajTrace jps (length exps) result)]
          [_ (write-struct-to-file trace trace-path)])
     result))
        
@@ -70,14 +70,17 @@
 
 (define (interp-query (trace-path path-string?) (exprs list?))
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
-    [mirajTrace (jps arity)
+    [mirajTrace (jps arity result)
                 (let* ([proceed (lambda (val adv sto) (retroactive-weave (box jps) adv sto))]
                        [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
+                       [_ (display "interp query\n")]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
                        [weave-closure (builtinV (lambda (val adv sto) (retroactive-weave (box jps) adv sto)))]
+                       [_ (display "apply query 1\n")]
                        [x (interp-closure-app (v*s-v query-result) weave-closure mt-adv (v*s-s query-result))]
+                       [_ (display "apply query 2\n")]
                        [_ (interp-closure-app (v*s-v x) (numV 0) mt-adv (v*s-s x))])
-                  '())]))
+                  result)]))
 
 (define (retroactive-weave [jps box?] [adv AdvEnv?] [sto Store?]) Result?
   (cond
@@ -90,8 +93,8 @@
                         [proceed (rw-closure jps)]
                         [abs-copy-result (copy-value jp-sto abs sto)]
                         [arg-copy-result (copy-value jp-sto arg (v*s-s abs-copy-result))]
-                        [woven-result (weave-app name adv proceed sto)]
-                        [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s arg-copy-result))])
+                        [woven-result (weave-app name adv proceed (v*s-s arg-copy-result))]
+                        [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
                    (retroactive-weave jps adv (v*s-s result)))]
        [app-return (name abs result jp-adv jp-sto) 
                    (v*s result sto)])]))

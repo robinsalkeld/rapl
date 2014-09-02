@@ -55,7 +55,7 @@
     [numC (n) n]
     [plusC (l r) (list '+ (exp-syntax l) (exp-syntax r))]
     [multC (l r) (list '* (exp-syntax l) (exp-syntax r))]
-    [ifZeroC (c t f) (list 'if0 (exp-syntax t) (exp-syntax f))]
+    [ifZeroC (c t f) (list 'if0 (exp-syntax c) (exp-syntax t) (exp-syntax f))]
     [idC (s) s]
     [lamC (a b) (list 'lambda (list a) (exp-syntax b))]
     [appC (f a) (list (exp-syntax f) (exp-syntax a))]
