@@ -61,7 +61,7 @@
   (type-case ExprC e
     [numC (n) n]
     [boolC (b) b]
-    [strC (s) s]
+    [strC (s) (string-append "\"" s "\"")]
     [plusC (l r) (list '+ (exp-syntax l) (exp-syntax r))]
     [multC (l r) (list '* (exp-syntax l) (exp-syntax r))]
     [equalC (l r) (list 'equal? (exp-syntax l) (exp-syntax r))]

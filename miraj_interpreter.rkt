@@ -88,7 +88,7 @@
             (interp expr new-env adv new-sto)))
 
 (define (interp-closure-app [closure Value?] [a Value?] [adv AdvEnv?] [sto Store?]) Result? 
-  (type-case Value closure
+  (type-case Value (deep-untag closure)
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
     [builtinV (f)
@@ -167,7 +167,7 @@
   (type-case Value v
     [numV (n) (display n)]
     [boolV (b) (display b)]
-    [strV (s) (display s)]
+    [strV (s) (write s)]
     [closV (arg body env)
            (begin (display arg) (display " -> ") (display (exp-syntax body)) (display-env env))]
     [boxV (l)
@@ -197,7 +197,7 @@
        sto))
 
 (define (display-with-label [label string?] [val Value?])
-  (begin (display label) (display ": ") (numWrite val) (newline)))
+  (begin (display label) (display ": ") (display-value val) (newline)))
 
 (define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
 (begin (display "Expression: ") (display (exp-syntax expr)) (newline)
@@ -207,8 +207,6 @@
     ;; Numbers and arithmetic
     
     [numC (n) (v*s (numV n) sto)]
-    
-    [strC (s) (v*s (strV s) sto)]
     
     [plusC (l r) (type-case Result (interp l env adv sto)
                [v*s (v-l s-l)
@@ -278,6 +276,8 @@
                     (interp b2 env adv s-b1)])]
     
     ;; Advice
+    
+    [strC (s) (v*s (strV s) sto)]
     
     [tagC (tag v) 
           (type-case Result (interp tag env adv sto)
