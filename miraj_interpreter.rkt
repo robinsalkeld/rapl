@@ -10,12 +10,14 @@
 
 (define-type Value
   (numV (n number?))
+  (boolV (b boolean?))
+  (strV (s string?))
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
-  (namedV (name symbol?) (value Value?))
+  (taggedV (tag Value?) (value Value?))
   (builtinV (f procedure?)))
 
-;; Numbers, arithmetic, and conditionals
+;; Numbers and arithmetic
 
 (define (num+ l r)
   (cond
@@ -37,6 +39,29 @@
      (write (numV-n v))]
     [else
      (error 'numWrite "argument was not a number")]))
+
+;; Booleans and conditionals
+
+(define (deep-untag [v Value?])
+  (type-case Value v
+    [taggedV (tag tagged)
+             (deep-untag tagged)]
+    [else v]))
+
+(define (equal-values [l Value?] [r Value?]) Value?
+  (let ([r-untagged (deep-untag r)])
+    (boolV
+     (type-case Value (deep-untag l)
+       [boolV (lb)
+              (type-case Value r-untagged [boolV (rb) (equal? lb rb)] [else false])]
+       [numV (ln)
+             (type-case Value r-untagged [numV (rn) (equal? ln rn)] [else false])]
+       [strV (ls)
+             (type-case Value r-untagged [strV (rs) (equal? ls rs)] [else false])]
+       [boxV (ll)
+             (type-case Value r-untagged [boxV (rl) (equal? ll rl)] [else false])]
+       [else false]))))
+     
 
 ;; Identifiers and functions
 
@@ -71,8 +96,8 @@
     [else (error 'interp "only abstractions can be applied")]))
 
 (define-type JoinPoint
-  [app-call (label symbol?) (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
-  [app-return (label symbol?) (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
+  [app-call (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
+  [app-return (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
 
 (define interp-jps (box '()))
 (define (record-interp-jp (jp JoinPoint?))
@@ -113,36 +138,42 @@
 ;; Advice
 
 (define-type Advice
-  [aroundAppV (name symbol?) (value Value?)]
-  [aroundSetV (name symbol?) (value Value?)])
+  [aroundAppV (value Value?)]
+  [aroundSetV (value Value?)])
 (define AdvEnv? (curry andmap Advice?))  
 (define mt-adv empty)
 
-(define (apply-around-app [name symbol?] [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
+(define (apply-around-app [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
   (type-case Advice advice
-      [aroundAppV (advised-name f)
-                  (cond
-                    [(symbol=? name advised-name)
-                     (type-case Result abs-sto
-                       (v*s (abs sto) 
-                            (interp-closure-app f abs adv sto)))]
-                    [else abs-sto])]
-      [else abs-sto]))
+    [aroundAppV (f)
+                (type-case Result abs-sto
+                  (v*s (abs sto) 
+                       (interp-closure-app f abs adv sto)))]
+    [else abs-sto]))
 
-(define (weave-app [name symbol?] [adv AdvEnv?] [f Value?] [sto Store?]) Result?
-  (foldr (curry apply-around-app name adv) (v*s f sto) adv))
+(define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
+  (foldr (curry apply-around-app adv) (v*s f sto) adv))
+
+(define (interp-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
+  (let* ([_ (record-interp-jp (app-call abs arg adv sto))]
+         [woven-abs-result (weave adv abs sto)]
+         [result (interp-closure-app (v*s-v woven-abs-result) arg adv (v*s-s woven-abs-result))]
+         [_ (record-interp-jp (app-return abs (v*s-v result) adv (v*s-s result)))])
+    result))
 
 ;; Debugging
 
 (define (display-value [v Value?])
   (type-case Value v
     [numV (n) (display n)]
+    [boolV (b) (display b)]
+    [strV (s) (display s)]
     [closV (arg body env)
            (begin (display arg) (display " -> ") (display (exp-syntax body)) (display-env env))]
     [boxV (l)
           (begin (display "box(") (display l) (display ")"))]
-    [namedV (l a)
-            (begin (display "(label ") (display l) (display " ") (display-value a) (display ")"))]
+    [taggedV (t v)
+            (begin (display "(tag ") (display-value t) (display " ") (display-value v) (display ")"))]
     [builtinV (f) (display f)]))
 
 (define (display-context [c Context?])
@@ -169,13 +200,15 @@
   (begin (display label) (display ": ") (numWrite val) (newline)))
 
 (define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
-;(begin (display "Expression: ") (display (exp-syntax expr)) (newline)
-;       (display-context (e*s env sto)) (newline)
+(begin (display "Expression: ") (display (exp-syntax expr)) (newline)
+       (display-context (e*s env sto)) (newline)
   (type-case ExprC expr
     
-    ;; Numbers, arithmetic, and conditionals
+    ;; Numbers and arithmetic
     
     [numC (n) (v*s (numV n) sto)]
+    
+    [strC (s) (v*s (strV s) sto)]
     
     [plusC (l r) (type-case Result (interp l env adv sto)
                [v*s (v-l s-l)
@@ -189,11 +222,21 @@
                       [v*s (v-r s-r)
                            (v*s (num* v-l v-r) s-r)])])]
     
-    [ifZeroC (c t f) (type-case Result (interp c env adv sto)
-               [v*s (v-c s-c)
-                    (cond 
-                       [(<= (numV-n v-c) 0) (interp t env adv s-c)]
-                       [else (interp f env adv s-c)])])]
+    ;; Booleans and conditionals
+    
+    [boolC (b) (v*s (boolV b) sto)]
+    
+    [equalC (l r) (type-case Result (interp l env adv sto)
+               [v*s (v-l s-l)
+                    (type-case Result (interp r env adv s-l)
+                      [v*s (v-r s-r)
+                           (v*s (equal-values v-l v-r) s-r)])])]
+    
+    [ifC (c t f) (type-case Result (interp c env adv sto)
+                   [v*s (v-c s-c)
+                        (if (boolV-b v-c)
+                            (interp t env adv s-c)
+                            (interp f env adv s-c))])]
     
     ;; Identifiers and abstractions
     
@@ -205,15 +248,7 @@
                   [v*s (v-f s-f)
                        (type-case Result (interp a env adv s-f)
                          [v*s (v-a s-a) 
-                              (type-case Value v-f
-                                [namedV (name labelled-f)
-                                        (type-case Result (weave-app name adv labelled-f s-a)
-                                          [v*s (v-w s-w)
-                                               (let* ([_ (record-interp-jp (app-call name v-w v-a adv s-w))]
-                                                      [result (interp-closure-app v-w v-a adv s-w)]
-                                                      [_ (record-interp-jp (app-return name v-w (v*s-v result) adv (v*s-s result)))])
-                                                 result)])]
-                                [else (interp-closure-app v-f v-a adv s-a)])])])]
+                              (interp-app v-f v-a adv s-a)])])]
     
     [letC (s val in) (type-case Result (interp val env adv sto)
                             [v*s (v-val s-val)
@@ -244,21 +279,36 @@
     
     ;; Advice
     
-    [labelC (name v) 
-            (type-case Result (interp v env adv sto)
-              [v*s (v-v s-v)
-                   (v*s (namedV name v-v) sto)])]
+    [tagC (tag v) 
+          (type-case Result (interp tag env adv sto)
+            [v*s (v-tag s-tag)
+                 (type-case Result (interp v env adv s-tag)
+                   [v*s (v-v s-v)
+                        (v*s (taggedV v-tag v-v) s-tag)])])]
     
-    [aroundAppC (name f in) 
+    [tagtestC (v f g)
+              (type-case Result (interp v env adv sto)
+                  [v*s (v-v s-v)
+                       (type-case Value v-v
+                         [taggedV (tag tagged)
+                                  (type-case Result (interp f env adv s-v)
+                                    [v*s (v-f s-f)
+                                         (type-case Result (interp-app v-f tag adv s-f)
+                                           [v*s (v-f2 s-f2)
+                                                (interp-app v-f2 tagged adv s-f2)])])]
+                         [else (interp g env adv s-v)])])]
+                                         
+                         
+    [aroundAppC (f in) 
                 (type-case Result (interp f env adv sto)
                   [v*s (v-f s-f)
-                       (interp in env (cons (aroundAppV name v-f) adv) s-f)])]
+                       (interp in env (cons (aroundAppV v-f) adv) s-f)])]
                 
     
-    [aroundSetC (name f in) 
+    [aroundSetC (f in) 
                 (type-case Result (interp f env adv sto)
                   [v*s (v-f s-f)
-                       (interp in env (cons (aroundSetV name v-f) adv) s-f)])]
+                       (interp in env (cons (aroundSetV v-f) adv) s-f)])]
     
     ;; Input/Output
     
@@ -272,7 +322,7 @@
                       [val ((unbox read-source))]
                       [_ (record-interp-input val)])
                  (v*s (numV val) sto))]))
-;)
+)
 
 (define (interp-exp [exp ExprC?]) Value?
   (v*s-v (interp exp mt-env mt-adv mt-store)))

@@ -1,6 +1,8 @@
-(letAroundC 'fact 'y (letVarC 'result (proceedC (varC 'y))
-                                    (seqC (writeC "y" (readC "more input"))
-                                     (seqC (writeC "result" (varC 'result))
-                                      (varC 'result))))
-  
-  (proceedC (numC 0)))
+(lambda (f) (lambda (a)
+              (aroundapp fact 
+                         (lambda (proceed) (lambda (y) 
+                                             (let ([result (proceed y)])
+                                               (seq (write "y" (read "more input"))
+                                                    (seq (write "result" result)
+                                                         result)))))
+                         (f a))))

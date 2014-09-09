@@ -4,7 +4,7 @@
 (require "miraj_parser.rkt")
 (require "miraj_interpreter.rkt")
 (require "miraj_serialization.rkt")
-;(require "miraj_recording.rkt")
+(require "miraj_recording.rkt")
 
 (test (parse '(let ([const5 (lambda (_) 5)])
                  (+ 10 (const5 10))))
@@ -28,16 +28,20 @@
       (numV 22))
 
 (test (interp-exp (parse
+                   '((file "untag.rkt") (tag "foo" 42))))
+      (numV 42))
+
+(test (interp-exp (parse
                    '(aroundapp change (lambda (proceed) (lambda (y) (proceed (* y 2))))
                                (aroundapp change (lambda (proceed) (lambda (y) (proceed (+ y 3))))
-                                          (let ([change (label change (lambda (x) (+ x 5)))])
+                                          (let ([change (tag "change" (lambda (x) (+ x 5)))])
                                             (change 2))))))
       (numV 15))
 
 (test (interp-exp (parse
                    '(aroundapp change (lambda (proceed) (lambda (y) (proceed (+ y 3))))
                                (aroundapp change (lambda (proceed) (lambda (y) (proceed (* y 2))))
-                                          (let ([change (label change (lambda (x) (+ x 5)))])
+                                          (let ([change (tag "change" (lambda (x) (+ x 5)))])
                                             (change 2))))))
       (numV 12))
 

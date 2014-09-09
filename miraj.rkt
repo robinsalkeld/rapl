@@ -1,11 +1,14 @@
 #lang plai
 
 (define-type ExprC
-  ;; Numbers, arithmetic, and conditionals
+  ;; Numbers and arithmetic
   [numC (n number?)]
   [plusC (l ExprC?) (r ExprC?)]
   [multC (l ExprC?) (r ExprC?)]
-  [ifZeroC (c ExprC?) (t ExprC?) (f ExprC?)]
+  ;; Booleans and conditionals
+  [boolC (b boolean?)]
+  [equalC (l ExprC?) (r ExprC?)]
+  [ifC (c ExprC?) (t ExprC?) (f ExprC?)]
   ;; Identifiers and functions
   [idC (s symbol?)]
   [appC (fun ExprC?) (arg ExprC?)]
@@ -17,9 +20,11 @@
   [setboxC (b ExprC?) (v ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
   ;; Advice
-  [labelC (name symbol?) (v ExprC?)]
-  [aroundAppC (name symbol?) (fun ExprC?) (in ExprC?)]
-  [aroundSetC (name symbol?) (fun ExprC?) (in ExprC?)]
+  [strC (s string?)]
+  [tagC (tag ExprC?) (v ExprC?)]
+  [tagtestC (v ExprC?) (f ExprC?) (g ExprC?)]
+  [aroundAppC (fun ExprC?) (in ExprC?)]
+  [aroundSetC (fun ExprC?) (in ExprC?)]
   ;; Input/Output
   [fileC (path string?)]
   [writeC (l string?) (v ExprC?)]

@@ -41,6 +41,10 @@
   (type-case Value v
     [numV (_) 
           (v*s v new-sto)]
+    [boolV (_) 
+          (v*s v new-sto)]
+    [strV (_) 
+          (v*s v new-sto)]
     [closV (arg body env)
            (let ([copied-context (append-context (e*s mt-env new-sto) (e*s env sto))])
              (v*s (closV arg body (e*s-e copied-context)) (e*s-s copied-context)))]
@@ -48,9 +52,10 @@
           (let ([where (new-loc new-sto)]
                 [result (copy-value (fetch sto loc) new-sto)])
             (v*s (boxV where) (override-store (v*s-s result) where (v*s-v result))))]
-    [namedV (name sub-v) 
-            (let ([result (copy-value sto sub-v new-sto)])
-              (v*s (namedV name (v*s-v result)) (v*s-s result)))]
+    [taggedV (tag tagged) 
+             (let* ([tag-result (copy-value sto tag new-sto)]
+                    [tagged-result (copy-value sto tagged (v*s-s tag-result))])
+               (v*s (taggedV (v*s-v tag-result) (v*s-v tagged-result)) (v*s-s tagged-result)))]
     [builtinV (f) (v*s f new-sto)]))
 
 (define (append-binding (context Context?) (b Binding?) (b-sto Store?)) Context?
@@ -74,7 +79,7 @@
                 (let* ([proceed (lambda (val adv sto) (retroactive-weave (box jps) adv sto))]
                        [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
-                       [weave-closure (builtinV (lambda (val adv sto) (retroactive-weave (box jps) adv sto)))]
+                       [weave-closure (rw-closure (box jps))]
                        ;; TODO-RS: Fix hard-coded CLI arity and argument
                        [x (interp-closure-app (v*s-v query-result) weave-closure mt-adv (v*s-s query-result))]
                        [_ (interp-closure-app (v*s-v x) (numV 0) mt-adv (v*s-s x))])
@@ -85,16 +90,16 @@
     [(empty? (unbox jps)) '()]
     [else 
      (type-case JoinPoint (list-box-pop! jps)
-       [app-call (name abs arg jp-adv jp-sto) 
+       [app-call (abs arg jp-adv jp-sto) 
                  (let* (;; TODO-RS: Verify that val == arg!
                         ;; Not to mention verifying the same thing on return somehow.
                         [proceed (rw-closure jps)]
                         [abs-copy-result (copy-value jp-sto abs sto)]
                         [arg-copy-result (copy-value jp-sto arg (v*s-s abs-copy-result))]
-                        [woven-result (weave-app name adv proceed (v*s-s arg-copy-result))]
+                        [woven-result (weave adv proceed (v*s-s arg-copy-result))]
                         [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
                    (retroactive-weave jps adv (v*s-s result)))]
-       [app-return (name abs result jp-adv jp-sto) 
+       [app-return (abs result jp-adv jp-sto) 
                    (v*s result sto)])]))
 
 (define (rw-closure [jps box?]) Value?
