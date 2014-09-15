@@ -49,6 +49,7 @@
               (fileC (list-ref tail 0))]
              ;; Application
              [else
+              ;; TODO-RS: Allow variadic arguments - map them to an application chain
               (appC (parse head) (parse (list-ref tail 0)))]))]
         [(number? s) (numC s)]
         [(string? s) (strC s)]

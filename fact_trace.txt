@@ -1,1 +1,1943 @@
-(mirajTrace (list (app-call (closV (quote f) (appC (lamC (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y)))))) (lamC (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))))) (list)) (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (list) (list)) (app-call (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (list) (list (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0))) (list) (list (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 2)))) (list) (list (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 2)))) (list) (list (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote f) (appC (lamC (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y)))))) (lamC (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))))) (list)) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 2)))) (list) (list (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 2)))) (numV 3) (list) (list (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0))) (numV 2) (list) (list (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (list) (list (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0))) (list) (list (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 6)))) (list) (list (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 6)))) (list) (list (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 6)))) (numV 2) (list) (list (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0))) (numV 1) (list) (list (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (list) (list (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0))) (list) (list (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 10)))) (list) (list (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 10)))) (list) (list (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 10)))) (numV 1) (list) (list (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0))) (numV 0) (list) (list (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (list) (list (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0))) (list) (list (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 14)))) (list) (list (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0))) (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 14)))) (list) (list (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-call (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 14)))) (numV 0) (list) (list (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 14)))) (numV 1) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0))) (numV 1) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 10)))) (numV 1) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0))) (numV 1) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 6)))) (numV 2) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0))) (numV 2) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list))))) (app-return (taggedV (strV "fact") (closV (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))) (list (bind (quote fact) 2)))) (numV 6) (list) (list (cell 15 (numV 0)) (cell 14 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 13) (bind (quote f) 0)))) (cell 13 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 12 (numV 0)) (cell 11 (numV 1)) (cell 10 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 9) (bind (quote f) 0)))) (cell 9 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 8 (numV 1)) (cell 7 (numV 2)) (cell 6 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 5) (bind (quote f) 0)))) (cell 5 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 4 (numV 2)) (cell 3 (numV 3)) (cell 2 (closV (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))) (list (bind (quote x) 1) (bind (quote f) 0)))) (cell 1 (closV (quote x) (appC (idC (quote f)) (lamC (quote y) (appC (appC (idC (quote x)) (idC (quote x))) (idC (quote y))))) (list (bind (quote f) 0)))) (cell 0 (closV (quote fact) (tagC (strC "fact") (lamC (quote x) (ifC (equalC (idC (quote x)) (numC 0)) (numC 1) (multC (idC (quote x)) (appC (idC (quote fact)) (plusC (idC (quote x)) (numC -1))))))) (list)))))) 2 (numV 6))
+(mirajTrace
+ (list
+  (app-call
+   (closV
+    'f
+    (appC
+     (lamC
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y)))))
+     (lamC
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))))
+    (list))
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (list)
+   (list))
+  (app-call
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (list)
+   (list
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 1) (bind 'f 0)))
+   (list)
+   (list
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 2))))
+   (list)
+   (list
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 2))))
+   (list)
+   (list
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'f
+    (appC
+     (lamC
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y)))))
+     (lamC
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))))
+    (list))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 2))))
+   (list)
+   (list
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 2))))
+   (numV 3)
+   (list)
+   (list
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 1) (bind 'f 0)))
+   (numV 2)
+   (list)
+   (list
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (list)
+   (list
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 5) (bind 'f 0)))
+   (list)
+   (list
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 6))))
+   (list)
+   (list
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 6))))
+   (list)
+   (list
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 6))))
+   (numV 2)
+   (list)
+   (list
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 5) (bind 'f 0)))
+   (numV 1)
+   (list)
+   (list
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (list)
+   (list
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 9) (bind 'f 0)))
+   (list)
+   (list
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 10))))
+   (list)
+   (list
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 10))))
+   (list)
+   (list
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 10))))
+   (numV 1)
+   (list)
+   (list
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 9) (bind 'f 0)))
+   (numV 0)
+   (list)
+   (list
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (list)
+   (list
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 13) (bind 'f 0)))
+   (list)
+   (list
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'fact
+    (tagC
+     (strC "fact")
+     (lamC
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+    (list))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 14))))
+   (list)
+   (list
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'x
+    (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+    (list (bind 'f 0)))
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 14))))
+   (list)
+   (list
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-call
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 14))))
+   (numV 0)
+   (list)
+   (list
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 14))))
+   (numV 1)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 9) (bind 'f 0)))
+   (numV 1)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 10))))
+   (numV 1)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 5) (bind 'f 0)))
+   (numV 1)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 6))))
+   (numV 2)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (closV
+    'y
+    (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+    (list (bind 'x 1) (bind 'f 0)))
+   (numV 2)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list)))))
+  (app-return
+   (taggedV
+    (strV "fact")
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list (bind 'fact 2))))
+   (numV 6)
+   (list)
+   (list
+    (cell 15 (numV 0))
+    (cell
+     14
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 13) (bind 'f 0))))
+    (cell
+     13
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 12 (numV 0))
+    (cell 11 (numV 1))
+    (cell
+     10
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 9) (bind 'f 0))))
+    (cell
+     9
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 8 (numV 1))
+    (cell 7 (numV 2))
+    (cell
+     6
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 5) (bind 'f 0))))
+    (cell
+     5
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell 4 (numV 2))
+    (cell 3 (numV 3))
+    (cell
+     2
+     (closV
+      'y
+      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+      (list (bind 'x 1) (bind 'f 0))))
+    (cell
+     1
+     (closV
+      'x
+      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+      (list (bind 'f 0))))
+    (cell
+     0
+     (closV
+      'fact
+      (tagC
+       (strC "fact")
+       (lamC
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+      (list))))))
+ 2
+ (numV 6))

@@ -196,6 +196,14 @@
                  (begin (display "\t") (display l) (display " -> ") (display-value v) (display "\n"))])) 
        sto))
 
+(define (display-joinpoint [jp JoinPoint?])
+  (type-case JoinPoint jp
+    [app-call (abs arg adv sto)
+              (begin (display "(app-call ") (display-value abs) (display ")"))]
+    [app-return (abs result adv sto)
+                (begin (display "(app-return ") (display-value result) (display ")"))]))
+    
+
 (define (display-with-label [label string?] [val Value?])
   (begin (display label) (display ": ") (display-value val) (newline)))
 
@@ -291,7 +299,7 @@
             [v*s (v-tag s-tag)
                  (type-case Result (interp v env adv s-tag)
                    [v*s (v-v s-v)
-                        (v*s (taggedV v-tag v-v) s-tag)])])]
+                        (v*s (taggedV v-tag v-v) s-v)])])]
     
     [tagtestC (v f g)
               (type-case Result (interp v env adv sto)

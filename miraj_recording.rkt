@@ -88,18 +88,24 @@
   (cond
     [(empty? (unbox jps)) '()]
     [else 
-     (type-case JoinPoint (list-box-pop! jps)
-       [app-call (abs arg jp-adv jp-sto) 
-                 (let* (;; TODO-RS: Verify that val == arg!
-                        ;; Not to mention verifying the same thing on return somehow.
-                        [proceed (rw-closure jps)]
-                        [abs-copy-result (copy-value jp-sto abs sto)]
-                        [arg-copy-result (copy-value jp-sto arg (v*s-s abs-copy-result))]
-                        [woven-result (weave adv proceed (v*s-s arg-copy-result))]
-                        [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
-                   (retroactive-weave jps adv (v*s-s result)))]
-       [app-return (abs result jp-adv jp-sto) 
-                   (v*s result sto)])]))
+      
+      (let* ([jp (list-box-pop! jps)]
+             [_ (if (unbox verbose-interp)
+                    (begin
+                      (display "Weaving joinpoint: ") (display-joinpoint jp) (newline))
+                    '())])
+        (type-case JoinPoint jp
+          [app-call (abs arg jp-adv jp-sto) 
+                    (let* (;; TODO-RS: Verify that val == arg!
+                           ;; Not to mention verifying the same thing on return somehow.
+                           [proceed (rw-closure jps)]
+                           [abs-copy-result (copy-value jp-sto abs sto)]
+                           [arg-copy-result (copy-value jp-sto arg (v*s-s abs-copy-result))]
+                           [woven-result (weave adv proceed (v*s-s arg-copy-result))]
+                           [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
+                      (retroactive-weave jps adv (v*s-s result)))]
+          [app-return (abs result jp-adv jp-sto) 
+                      (v*s result sto)]))]))
 
 (define (rw-closure [jps box?]) Value?
   (builtinV (lambda (val adv sto) (retroactive-weave jps adv sto))))

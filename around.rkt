@@ -6,7 +6,7 @@
                          (tagtest g
                                   (lambda (gtag) (lambda (gtagged)
                                                    (if (pc gtag)
-                                                       (advice gtagged)
-                                                       gtagged)))
+                                                       (tag gtag (advice gtagged))
+                                                       g)))
                                   g))
                        (f a))))))
