@@ -3,7 +3,10 @@
     (lambda (f) 
       (lambda (a)
             (aroundapp (lambda (g)
-                         (if (pc g)
-                             (advice ((file "untag.rkt") g))
-                             g))
+                         (tagtest g
+                                  (lambda (gtag) (lambda (gtagged)
+                                                   (if (pc gtag)
+                                                       (advice gtagged)
+                                                       gtagged)))
+                                  g))
                        (f a))))))

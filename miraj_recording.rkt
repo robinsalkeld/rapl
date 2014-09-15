@@ -76,8 +76,7 @@
 (define (interp-query (trace-path path-string?) (exprs list?))
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
     [mirajTrace (jps arity result)
-                (let* ([proceed (lambda (val adv sto) (retroactive-weave (box jps) adv sto))]
-                       [_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
+                (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
                        [weave-closure (rw-closure (box jps))]
                        ;; TODO-RS: Fix hard-coded CLI arity and argument

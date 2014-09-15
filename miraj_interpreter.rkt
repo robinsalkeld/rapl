@@ -199,9 +199,16 @@
 (define (display-with-label [label string?] [val Value?])
   (begin (display label) (display ": ") (display-value val) (newline)))
 
+(define verbose-interp (box false))
+
 (define (interp [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
-(begin (display "Expression: ") (display (exp-syntax expr)) (newline)
-       (display-context (e*s env sto)) (newline)
+(begin 
+  (if (unbox verbose-interp)
+      (begin
+        (display "Expression: ") (display (exp-syntax expr)) (newline)
+        (display-context (e*s env sto)) (newline))
+      '())
+
   (type-case ExprC expr
     
     ;; Numbers and arithmetic
