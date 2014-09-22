@@ -220,7 +220,9 @@
          (equalC (idC 'x) (numC 0))
          (numC 1)
          (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
-      (list)))))
+      (list))))))
+ (list)
+ (list
   (app-call
    (taggedV
     (strV "fact")
@@ -1938,6 +1940,4 @@
          (equalC (idC 'x) (numC 0))
          (numC 1)
          (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
-      (list))))))
- 2
- (numV 6))
+      (list)))))))

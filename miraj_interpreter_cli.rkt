@@ -46,5 +46,5 @@
           (interp-query (query-path) exps)]
          [else 
           (interp-program exps)])])
-  (display-with-label "Program result: " result))
+  (display-with-label "Program result" result (current-output-port)))
 

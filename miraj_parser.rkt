@@ -2,6 +2,10 @@
 
 (require "miraj.rkt")
 
+(define (apply-parsed-args [p procedure?] [l list?])
+  (cond [(equal? (procedure-arity p) (length l)) (apply p (map parse l))]
+        [else (error 'parse "Wrong number of arguments")]))
+
 (define (parse s) ExprC?
 ;  (begin (print s) (newline)
   (cond [(list? s) 
@@ -10,14 +14,14 @@
            (case head
              ;; Numbers and arithmetic
              ['+
-              (plusC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
+              (apply-parsed-args plusC tail)]
              ['*
-              (multC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
+              (apply-parsed-args multC tail)]
              ;; Booleans and conditionals
              ['equal?
-              (equalC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
+              (apply-parsed-args equalC tail)]
              ['if
-              (ifC (parse (list-ref tail 0)) (parse (list-ref tail 1)) (parse (list-ref tail 2)))]
+              (apply-parsed-args ifC tail)]
              ;; Identifiers and functions
              ['lambda
               (lamC (car (list-ref tail 0)) (parse (list-ref tail 1)))]
@@ -50,7 +54,7 @@
              ;; Application
              [else
               ;; TODO-RS: Allow variadic arguments - map them to an application chain
-              (appC (parse head) (parse (list-ref tail 0)))]))]
+              (apply-parsed-args appC s)]))]
         [(number? s) (numC s)]
         [(string? s) (strC s)]
         [(boolean? s) (boolC s)]

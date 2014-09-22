@@ -15,7 +15,7 @@
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
   (taggedV (tag Value?) (value Value?))
-  (builtinV (f procedure?)))
+  (builtinV (label string?) (f procedure?)))
 
 ;; Numbers and arithmetic
 
@@ -91,20 +91,9 @@
   (type-case Value (deep-untag closure)
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
-    [builtinV (f)
+    [builtinV (label f)
              (f a adv sto)]
     [else (error 'interp "only abstractions can be applied")]))
-
-(define-type JoinPoint
-  [app-call (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
-  [app-return (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
-
-(define interp-jps (box '()))
-(define (record-interp-jp (jp JoinPoint?))
-  (list-box-push! interp-jps jp))
-(define get-interp-jps
-  (lambda () (reverse (unbox interp-jps))))
-
 
 ;; Mutations and side-effects
 
@@ -154,6 +143,20 @@
 (define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (foldr (curry apply-around-app adv) (v*s f sto) adv))
 
+(define-type JoinPoint
+  [app-call (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
+  [app-return (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
+
+(define interp-jps (box '()))
+(define (reset-interp-jps) 
+  (set-box! interp-jps '()))
+(define (record-interp-jp (jp JoinPoint?))
+  (list-box-push! interp-jps jp))
+(define (get-interp-jps)
+  (let* ([result (reverse (unbox interp-jps))]
+         [_ (reset-interp-jps)])
+    result))
+
 (define (interp-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (let* ([_ (record-interp-jp (app-call abs arg adv sto))]
          [woven-abs-result (weave adv abs sto)]
@@ -163,49 +166,49 @@
 
 ;; Debugging
 
-(define (display-value [v Value?])
+(define (display-value [v Value?] [out output-port?])
   (type-case Value v
-    [numV (n) (display n)]
-    [boolV (b) (display b)]
-    [strV (s) (write s)]
+    [numV (n) (display n out)]
+    [boolV (b) (display b out)]
+    [strV (s) (write s out)]
     [closV (arg body env)
-           (begin (display arg) (display " -> ") (display (exp-syntax body)) (display-env env))]
+           (begin (display arg out) (display " -> " out) (display (exp-syntax body) out) (display-env env out))]
     [boxV (l)
-          (begin (display "box(") (display l) (display ")"))]
+          (begin (display "box(" out) (display l out) (display ")" out))]
     [taggedV (t v)
-            (begin (display "(tag ") (display-value t) (display " ") (display-value v) (display ")"))]
-    [builtinV (f) (display f)]))
+            (begin (display "(tag " out) (display-value t out) (display " " out) (display-value v out) (display ")" out))]
+    [builtinV (label f) (display label out)]))
 
-(define (display-context [c Context?])
-  (begin (display "Environment: \n")
-         (display-env (e*s-e c))
-         (display "Store: \n")
-         (display-store (e*s-s c))))
+(define (display-context [c Context?] [out output-port?])
+  (begin (display "Environment: \n" out)
+         (display-env (e*s-e c) out)
+         (display "Store: \n" out)
+         (display-store (e*s-s c) out)))
          
-(define (display-env [env Env?])
+(define (display-env [env Env?] [out output-port?])
   (map (lambda (def) 
          (type-case Binding def
            [bind (n l)
-                 (begin (display "\t") (display n) (display " -> ") (display l) (display "\n"))])) 
+                 (begin (display "\t" out) (display n out) (display " -> " out) (display l out) (display "\n" out))])) 
        env))
 
-(define (display-store [sto Store?])
+(define (display-store [sto Store?] [out output-port?])
   (map (lambda (c) 
          (type-case Storage c
            [cell (l v)
-                 (begin (display "\t") (display l) (display " -> ") (display-value v) (display "\n"))])) 
+                 (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
        sto))
 
-(define (display-joinpoint [jp JoinPoint?])
+(define (display-joinpoint [jp JoinPoint?] [out output-port?])
   (type-case JoinPoint jp
     [app-call (abs arg adv sto)
-              (begin (display "(app-call ") (display-value abs) (display ")"))]
+              (begin (display "(app-call " out) (display-value abs out) (display ")" out))]
     [app-return (abs result adv sto)
-                (begin (display "(app-return ") (display-value result) (display ")"))]))
+                (begin (display "(app-return " out) (display-value result out) (display ")" out))]))
     
 
-(define (display-with-label [label string?] [val Value?])
-  (begin (display label) (display ": ") (display-value val) (newline)))
+(define (display-with-label [label string?] [val Value?] [out output-port?])
+  (begin (display label out) (display ": " out) (display-value val out) (newline out)))
 
 (define verbose-interp (box false))
 
@@ -214,7 +217,8 @@
   (if (unbox verbose-interp)
       (begin
         (display "Expression: ") (display (exp-syntax expr)) (newline)
-        (display-context (e*s env sto)) (newline))
+        ;;(display-context (e*s env sto)) 
+        (newline))
       '())
 
   (type-case ExprC expr
@@ -330,7 +334,7 @@
     [fileC (path) (interp (parse-file path) mt-env adv sto)]
     
     [writeC (l a) (type-case Result (interp a env adv sto)
-               [v*s (v-a s-a) (begin (display-with-label l v-a) (v*s v-a s-a))])]
+               [v*s (v-a s-a) (begin (display-with-label l v-a (current-output-port)) (v*s v-a s-a))])]
     
     [readC (l) (let* ([_ (display l)]
                       [_ (display "> ")]

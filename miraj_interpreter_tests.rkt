@@ -11,6 +11,9 @@
       (letC 'const5 (lamC '_ (numC 5)) 
             (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
 
+(test/exn (parse '(+ 1 2 3))
+      "parse: Wrong number of arguments")
+
 (test (interp-exp (parse 
                    '(let ([const5 (lambda (_) 5)])
                       (+ 10 (const5 10)))))
@@ -76,3 +79,7 @@
 (test-roundtrip (plusC (numC 3) (numC 4)))
 (test-roundtrip (appC (idC 'foo) (numC 4)))
 (test-roundtrip (lamC 'bar (multC (numC 4) (idC 'bar))))
+
+;;(define fact-trace (read-struct-from-file miraj-ns "fact_trace.txt"))
+
+;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))

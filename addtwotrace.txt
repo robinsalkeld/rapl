@@ -1,0 +1,10 @@
+(mirajTrace
+ (list)
+ (list)
+ (list
+  (app-call (closV 'x (plusC (idC 'x) (numC 2)) (list)) (numV 3) (list) (list))
+  (app-return
+   (closV 'x (plusC (idC 'x) (numC 2)) (list))
+   (numV 5)
+   (list)
+   (list (cell 0 (numV 3))))))
