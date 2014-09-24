@@ -108,14 +108,27 @@
               (let* ([out (open-output-string)]
                      [_ (display-value abs out)]
                      [label (get-output-string out)]
-                     ;; TODO-RS: Verify that val == arg!
-                     ;; Not to mention verifying the same thing on return somehow.
-                     [proceed (builtinV label (lambda (val adv sto) (retroactive-weave-return jps adv sto)))]
-                     [tagged (deep-tag (all-tags abs) proceed)]
                      [abs-copy-result (copy-value jp-sto abs sto)]
                      [arg-copy-result (copy-value jp-sto arg (v*s-s abs-copy-result))]
-                     [woven-result (weave adv tagged (v*s-s arg-copy-result))])
-                (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result)))]
+                     [proceed-called (box #f)]
+                     ;; TODO-RS: Verify that the same value is returned.
+                     ;; TODO-RS: How to verify equality of closures?
+                     [proceed (lambda (val adv sto)
+                                (if (unbox proceed-called)
+                                    (error 'retroactive-side-effect "retroactive advice proceeded more than once")
+                                    (if (boolV-b (equal-values val (v*s-v arg-copy-result)))
+                                        (begin 
+                                          (set-box! proceed-called #t)
+                                          (retroactive-weave-return jps adv sto))
+                                        (error 'retroactive-side-effect 
+                                               (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" (v*s-v arg-copy-result) val)))))]
+                     [proceed-value (builtinV label proceed)]
+                     [tagged (deep-tag (all-tags abs) proceed-value)]
+                     [woven-result (weave adv tagged (v*s-s arg-copy-result))]
+                     [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
+                (if (not (unbox proceed-called))
+                    (error 'retroactive-side-effect "retroactive advice failed to proceed")
+                    result))]
     [app-return (abs result jp-adv jp-sto) 
                 (error 'retroactive-weave-call "Unexpected app-return")]))
 

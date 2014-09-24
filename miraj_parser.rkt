@@ -24,7 +24,8 @@
               (apply-parsed-args ifC tail)]
              ;; Identifiers and functions
              ['lambda
-              (lamC (car (list-ref tail 0)) (parse (list-ref tail 1)))]
+              (let ([args (list-ref tail 0)])
+                (foldr lamC (parse (list-ref tail 1)) args))]
              ['let
               (let ([defpair (car (list-ref tail 0))])
                 (letC (list-ref defpair 0) (parse (list-ref defpair 1)) (parse (list-ref tail 1))))]
@@ -53,8 +54,8 @@
               (fileC (list-ref tail 0))]
              ;; Application
              [else
-              ;; TODO-RS: Allow variadic arguments - map them to an application chain
-              (apply-parsed-args appC s)]))]
+              (let ([parsed (map parse s)])
+                (foldl (lambda (x y) (appC y x)) (car parsed) (cdr parsed)))]))]
         [(number? s) (numC s)]
         [(string? s) (strC s)]
         [(boolean? s) (boolC s)]

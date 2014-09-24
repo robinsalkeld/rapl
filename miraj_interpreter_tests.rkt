@@ -6,10 +6,15 @@
 (require "miraj_serialization.rkt")
 (require "miraj_recording.rkt")
 
+(print-only-errors)
+
 (test (parse '(let ([const5 (lambda (_) 5)])
                  (+ 10 (const5 10))))
       (letC 'const5 (lamC '_ (numC 5)) 
             (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
+
+(test (parse '(lambda (x y z) (x y z)))
+      (lamC 'x (lamC 'y (lamC 'z (appC (appC (idC 'x) (idC 'y)) (idC 'z))))))
 
 (test/exn (parse '(+ 1 2 3))
       "parse: Wrong number of arguments")
@@ -31,43 +36,47 @@
       (numV 22))
 
 (test (interp-exp (parse
-                   '((file "untag.rkt") (tag "foo" 42))))
+                   '((file "examples/untag.rkt") (tag "foo" 42))))
       (numV 42))
 
 (test (interp-exp (parse
-                   '(((((file "around.rkt") ((file "call.rkt") "change"))
-                                         (lambda (proceed) (lambda (y) (proceed (* y 2)))))
-                                         (lambda (dummy)
-                                           (((((file "around.rkt") ((file "call.rkt") "change"))
-                                                                (lambda (proceed) (lambda (y) (proceed (+ y 3))))) 
-                                                                (lambda (dummy)
-                                                                  (let ([change (tag "change" (lambda (x) (+ x 5)))])
-                                                                    (change 2))))
-                                                                0)))
-                                         0)))
+                   '((file "examples/around.rkt") 
+                     ((file "examples/call.rkt") "change")
+                     (lambda (proceed y) (proceed (* y 2)))
+                     (lambda (dummy)
+                       ((file "examples/around.rkt") 
+                        ((file "examples/call.rkt") "change")
+                        (lambda (proceed y) (proceed (+ y 3))) 
+                        (lambda (dummy)
+                          (let ([change (tag "change" (lambda (x) (+ x 5)))])
+                            (change 2)))
+                        0))
+                     0)))
       (numV 15))
 
 (test (interp-exp (parse
-                   '(((((file "around.rkt") ((file "call.rkt") "change"))
-                                         (lambda (proceed) (lambda (y) (proceed (+ y 3)))))
-                                         (lambda (dummy)
-                                           (((((file "around.rkt") ((file "call.rkt") "change"))
-                                                                (lambda (proceed) (lambda (y) (proceed (* y 2))))) 
-                                                                (lambda (dummy)
-                                                                  (let ([change (tag "change" (lambda (x) (+ x 5)))])
-                                                                    (change 2))))
-                                                                0)))
-                                         0)))
+                   '((file "examples/around.rkt") 
+                     ((file "examples/call.rkt") "change")
+                     (lambda (proceed y) (proceed (+ y 3)))
+                     (lambda (dummy)
+                       ((file "examples/around.rkt") 
+                        ((file "examples/call.rkt") "change")
+                        (lambda (proceed) (lambda (y) (proceed (* y 2))))
+                        (lambda (dummy)
+                          (let ([change (tag "change" (lambda (x) (+ x 5)))])
+                              (change 2)))
+                        0))
+                     0)))
       (numV 12))
 
 (test (interp-exp (writeC "The answer" (numC 42)))
       (numV 42))
 
 
-(test (interp-exp (parse '((file "fact.rkt") 4)))
+(test (interp-exp (parse '((file "examples/fact.rkt") 4)))
       (numV 24))
 
-(test (interp-exp (appC (appC (fileC "fact_advice.rkt") (fileC "fact.rkt")) (numC 3)))
+(test (interp-exp (appC (appC (fileC "examples/fact_advice.rkt") (fileC "examples/fact.rkt")) (numC 3)))
       (numV 6))
 
 (test (struct->list/recursive (numC 4)) '(numC 4))

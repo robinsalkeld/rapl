@@ -49,20 +49,8 @@
     [else v]))
 
 (define (equal-values [l Value?] [r Value?]) Value?
-  (let ([r-untagged (deep-untag r)])
-    (boolV
-     (type-case Value (deep-untag l)
-       [boolV (lb)
-              (type-case Value r-untagged [boolV (rb) (equal? lb rb)] [else false])]
-       [numV (ln)
-             (type-case Value r-untagged [numV (rn) (equal? ln rn)] [else false])]
-       [strV (ls)
-             (type-case Value r-untagged [strV (rs) (equal? ls rs)] [else false])]
-       [boxV (ll)
-             (type-case Value r-untagged [boxV (rl) (equal? ll rl)] [else false])]
-       [else false]))))
+  (boolV (equal? l r)))
      
-
 ;; Identifiers and functions
 
 (define-type Binding

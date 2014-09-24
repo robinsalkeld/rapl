@@ -1,4 +1,4 @@
-((file "y-comb.rkt")
+((file "examples/y-comb.rkt")
       (lambda (fact) 
             (tag "fact"
                  (lambda (x) 
