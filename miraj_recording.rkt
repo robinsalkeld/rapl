@@ -110,25 +110,27 @@
                      [label (get-output-string out)]
                      [abs-copy-result (copy-value jp-sto abs sto)]
                      [arg-copy-result (copy-value jp-sto arg (v*s-s abs-copy-result))]
-                     [proceed-called (box #f)]
-                     ;; TODO-RS: Verify that the same value is returned.
-                     ;; TODO-RS: How to verify equality of closures?
+                     [proceed-result (box #f)]
                      [proceed (lambda (val adv sto)
-                                (if (unbox proceed-called)
+                                (if (unbox proceed-result)
                                     (error 'retroactive-side-effect "retroactive advice proceeded more than once")
                                     (if (boolV-b (equal-values val (v*s-v arg-copy-result)))
                                         (begin 
-                                          (set-box! proceed-called #t)
-                                          (retroactive-weave-return jps adv sto))
+                                          (set-box! proceed-result (retroactive-weave-return jps adv sto))
+                                          (unbox proceed-result))
                                         (error 'retroactive-side-effect 
                                                (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" (v*s-v arg-copy-result) val)))))]
                      [proceed-value (builtinV label proceed)]
                      [tagged (deep-tag (all-tags abs) proceed-value)]
                      [woven-result (weave adv tagged (v*s-s arg-copy-result))]
                      [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
-                (if (not (unbox proceed-called))
+                (if (not (unbox proceed-result))
                     (error 'retroactive-side-effect "retroactive advice failed to proceed")
-                    result))]
+                    (if (not (boolV-b (equal-values (v*s-v (unbox proceed-result)) (v*s-v result))))
+                        (error 'retroactive-side-effect 
+                               (format "incorrect retroactive result: expected\n ~a but got\n ~a" (v*s-v (unbox proceed-result)) (v*s-v result)))
+                        ;; TODO-RS: Verify the store 
+                        result)))]
     [app-return (abs result jp-adv jp-sto) 
                 (error 'retroactive-weave-call "Unexpected app-return")]))
 

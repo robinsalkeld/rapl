@@ -89,6 +89,13 @@
 (test-roundtrip (appC (idC 'foo) (numC 4)))
 (test-roundtrip (lamC 'bar (multC (numC 4) (idC 'bar))))
 
-;;(define fact-trace (read-struct-from-file miraj-ns "fact_trace.txt"))
+(test (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice.rkt")))
+      (numV 6))
+
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_arg.rkt")))
+      "retroactive-side-effect: incorrect argument passed retroactively: expected\n #(struct:numV 3) but got\n #(struct:numV 2)")
+
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
+      "retroactive-side-effect: retroactive advice proceeded more than once")
 
 ;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))
