@@ -60,7 +60,7 @@
              (v*s (closV arg body (e*s-e copied-context)) (e*s-s copied-context)))]
     [boxV (loc)
           (let ([where (new-loc new-sto)]
-                [result (copy-value (fetch sto loc) new-sto)])
+                [result (copy-value sto (fetch sto loc) new-sto)])
             (v*s (boxV where) (override-store (v*s-s result) where (v*s-v result))))]
     [taggedV (tag tagged) 
              (let* ([tag-result (copy-value sto tag new-sto)]

@@ -1,0 +1,11 @@
+(lambda (f a)
+  ((file "examples/around.rkt") 
+   ((file "examples/call.rkt") "fact_boxes")
+   (lambda (proceed ybox) 
+     (let ([y (unbox ybox)])
+       (let ([result (proceed ybox)])
+         (seq (write "y" y)
+            (seq (write "result" result)
+                 result)))))
+   f
+   a))

@@ -269,13 +269,13 @@
     
     [unboxC (a) (type-case Result (interp a env adv sto)
               [v*s (v-a s-a)
-                   (v*s (fetch s-a (boxV-l v-a)) s-a)])]
+                   (v*s (fetch s-a (boxV-l (deep-untag v-a))) s-a)])]
     
     [setboxC (b val) (type-case Result (interp b env adv sto)
                        [v*s (v-b s-b)
                             (type-case Result (interp val env adv s-b)
                               [v*s (v-v s-v)
-                                   (let ([where (boxV-l v-b)])
+                                   (let ([where (boxV-l (deep-untag v-b))])
                                      (v*s v-v (override-store s-v where v-v)))])])]
     
     [seqC (b1 b2) (type-case Result (interp b1 env adv sto)
