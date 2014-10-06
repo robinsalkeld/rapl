@@ -15,7 +15,7 @@
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
   (taggedV (tag Value?) (value Value?))
-  (builtinV (label string?) (f procedure?)))
+  (proceedV (label string?)))
 
 ;; Numbers and arithmetic
 
@@ -79,8 +79,10 @@
   (type-case Value (deep-untag closure)
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
-    [builtinV (label f)
-             (f a adv sto)]
+    [proceedV (label)
+              (type-case Store sto
+                [store (cells trace)
+                       (retroactive-weave-call (first trace) adv (store cells (rest trace)))])]
     [else (error 'interp "only abstractions can be applied")]))
 
 ;; Mutations and side-effects
@@ -96,7 +98,8 @@
              (cell-val (first sto))]
             [else (fetch (rest sto) loc)])]))
 
-(define Store? (listof Storage?))
+(define-type Store 
+  [store (cells (listof Storage?)) (t Trace?)])
   
 (define (new-loc [sto Store?]) Location?
   (length sto))
@@ -107,7 +110,12 @@
 (define mt-store empty)
 
 (define-type Result
-  [v*s (v Value?) (s Store?)])
+  [v*s*t (v Value?) (s Store?) (t Trace?)])
+
+(define (prepend-trace [t Trace?] [r Result?]) Result?
+  (type-case Result r
+    [v*s*t (v-r s-r t-r)
+           (v*s*t v-r s-r (append t t-r))]))
 
 (define-type Context
   [e*s (e Env?) (s Store?)])
@@ -124,33 +132,27 @@
   (type-case Advice advice
     [aroundAppV (f)
                 (type-case Result abs-sto
-                  (v*s (abs sto) 
-                       (interp-closure-app f abs adv sto)))]
+                  (v*s*t (abs sto t) 
+                         ;; TODO-RS: need to append result traces
+                         (interp-closure-app f abs adv sto)))]
     [else abs-sto]))
 
 (define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
-  (foldr (curry apply-around-app adv) (v*s f sto) adv))
+  (foldr (curry apply-around-app adv) (v*s*t f sto) adv))
 
 (define-type JoinPoint
   [app-call (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
   [app-return (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
-
-(define interp-jps (box '()))
-(define (reset-interp-jps) 
-  (set-box! interp-jps '()))
-(define (record-interp-jp (jp JoinPoint?))
-  (list-box-push! interp-jps jp))
-(define (get-interp-jps)
-  (let* ([result (reverse (unbox interp-jps))]
-         [_ (reset-interp-jps)])
-    result))
+(define Joinpoints? (listof JoinPoint?))
 
 (define (interp-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
-  (let* ([_ (record-interp-jp (app-call abs arg adv sto))]
-         [woven-abs-result (weave adv abs sto)]
-         [result (interp-closure-app (v*s-v woven-abs-result) arg adv (v*s-s woven-abs-result))]
-         [_ (record-interp-jp (app-return abs (v*s-v result) adv (v*s-s result)))])
-    result))
+  (type-case Result (weave adv abs sto)
+      (v*s*t (woven-abs s-w t-w)
+             (type-case Result (interp-closure-app woven-abs arg adv s-w)
+                 (v*s*t (v s-v t-v)
+                        (let ([call-jp (app-call abs arg adv sto)]
+                              [return-jp (app-return abs v adv s-v)])
+                            (v*s*t v s-v (append (list call-jp) t-w t-v (list return-jp)))))))))
 
 ;; Debugging
 
@@ -165,7 +167,7 @@
           (begin (display "box(" out) (display l out) (display ")" out))]
     [taggedV (t v)
             (begin (display "(tag " out) (display-value t out) (display " " out) (display-value v out) (display ")" out))]
-    [builtinV (label f) (display label out)]))
+    [proceedV (label) (display label out)]))
 
 (define (display-context [c Context?] [out output-port?])
   (begin (display "Environment: \n" out)
@@ -215,126 +217,134 @@
     
     ;; Numbers and arithmetic
     
-    [numC (n) (v*s (numV n) sto)]
+    [numC (n) (v*s*t (numV n) sto mt-trace)]
     
     [plusC (l r) (type-case Result (interp l env adv sto)
-               [v*s (v-l s-l)
-                    (type-case Result (interp r env adv s-l)
-                      [v*s (v-r s-r)
-                           (v*s (num+ v-l v-r) s-r)])])]
+               [v*s*t (v-l s-l t-l)
+                      (type-case Result (interp r env adv s-l)
+                        [v*s*t (v-r s-r t-r)
+                               (v*s*t (num+ v-l v-r) s-r (append t-l t-r))])])]
 
     [multC (l r) (type-case Result (interp l env adv sto)
-               [v*s (v-l s-l)
-                    (type-case Result (interp r env adv s-l)
-                      [v*s (v-r s-r)
-                           (v*s (num* v-l v-r) s-r)])])]
+               [v*s*t (v-l s-l t-l)
+                      (type-case Result (interp r env adv s-l)
+                        [v*s*t (v-r s-r t-r)
+                               (v*s*t (num* v-l v-r) s-r (append t-l t-r))])])]
     
     ;; Booleans and conditionals
     
-    [boolC (b) (v*s (boolV b) sto)]
+    [boolC (b) (v*s*t (boolV b) sto mt-trace)]
     
     [equalC (l r) (type-case Result (interp l env adv sto)
-               [v*s (v-l s-l)
-                    (type-case Result (interp r env adv s-l)
-                      [v*s (v-r s-r)
-                           (v*s (equal-values v-l v-r) s-r)])])]
+               [v*s*t (v-l s-l t-l)
+                      (type-case Result (interp r env adv s-l)
+                        [v*s*t (v-r s-r t-r)
+                               (v*s*t (equal-values v-l v-r) s-r (append t-l t-r))])])]
     
     [ifC (c t f) (type-case Result (interp c env adv sto)
-                   [v*s (v-c s-c)
-                        (if (boolV-b v-c)
-                            (interp t env adv s-c)
-                            (interp f env adv s-c))])]
+                   [v*s*t (v-c s-c t-c)
+                          (type-case Result (if (boolV-b v-c)
+                                                (interp t env adv s-c)
+                                                (interp f env adv s-c))
+                            [v*s*t (v-b s-b t-b) 
+                                   (v*s*t (v-b s-b (append t-c t-b)))])])]
     
     ;; Identifiers and abstractions
     
-    [idC (n) (v*s (fetch sto (lookup n env)) sto)]
+    [idC (n) (v*s*t (fetch sto (lookup n env)) sto mt-trace)]
     
-    [lamC (a b) (v*s (closV a b env) sto)]
+    [lamC (a b) (v*s*t (closV a b env) sto)]
     
     [appC (f a) (type-case Result (interp f env adv sto)
-                  [v*s (v-f s-f)
-                       (type-case Result (interp a env adv s-f)
-                         [v*s (v-a s-a) 
-                              (interp-app v-f v-a adv s-a)])])]
+                  [v*s*t (v-f s-f t-f)
+                         (type-case Result (interp a env adv s-f)
+                           [v*s*t (v-a s-a t-a) 
+                                  (type-case Result (interp-app v-f v-a adv s-a)
+                                    [v*s*t (v-r s-r t-r)
+                                           (v*s*t v-r s-r (append t-f t-a t-r))])])])]
     
-    [letC (s val in) (type-case Result (interp val env adv sto)
-                            [v*s (v-val s-val)
-                                 (interp-with-binding s v-val in env adv s-val)])]
+    [letC (s v in) (type-case Result (interp v env adv sto)
+                            [v*s*t (v-v s-v t-v)
+                                 (prepend-trace t-v (interp-with-binding s v-v in env adv s-v))])]
     
     ;; Boxes and sequencing
     
     [boxC (a) (type-case Result (interp a env adv sto)
-                [v*s (v-a s-a)
-                     (let ([where (new-loc sto)])
-                       (v*s (boxV where)
-                            (override-store s-a where v-a)))])]
+                [v*s*t (v-a s-a t-a)
+                       (let ([where (new-loc sto)])
+                         (v*s*t (boxV where)
+                                (override-store s-a where v-a)
+                                t-a))])]
     
     [unboxC (a) (type-case Result (interp a env adv sto)
-              [v*s (v-a s-a)
-                   (v*s (fetch s-a (boxV-l (deep-untag v-a))) s-a)])]
+                  [v*s*t (v-a s-a t-a)
+                         (v*s*t (fetch s-a (boxV-l (deep-untag v-a))) s-a t-a)])]
     
     [setboxC (b val) (type-case Result (interp b env adv sto)
-                       [v*s (v-b s-b)
-                            (type-case Result (interp val env adv s-b)
-                              [v*s (v-v s-v)
-                                   (let ([where (boxV-l (deep-untag v-b))])
-                                     (v*s v-v (override-store s-v where v-v)))])])]
+                       [v*s*t (v-b s-b t-b)
+                              (type-case Result (interp val env adv s-b)
+                                [v*s*t (v-v s-v t-v)
+                                       (let ([where (boxV-l (deep-untag v-b))])
+                                         (v*s*t v-v (override-store s-v where v-v) (append t-b t-v)))])])]
     
     [seqC (b1 b2) (type-case Result (interp b1 env adv sto)
-               [v*s (v-b1 s-b1)
-                    (interp b2 env adv s-b1)])]
+               [v*s*t (v-b1 s-b1 t-b1)
+                      (prepend-trace t-b1 (interp b2 env adv s-b1))])]
     
     ;; Advice
     
-    [strC (s) (v*s (strV s) sto)]
+    [strC (s) (v*s*t (strV s) sto mt-trace)]
     
     [tagC (tag v) 
           (type-case Result (interp tag env adv sto)
-            [v*s (v-tag s-tag)
-                 (type-case Result (interp v env adv s-tag)
-                   [v*s (v-v s-v)
-                        (v*s (taggedV v-tag v-v) s-v)])])]
+            [v*s*t (v-tag s-tag t-tag)
+                   (type-case Result (interp v env adv s-tag)
+                     [v*s*t (v-v s-v t-v)
+                            (v*s*t (taggedV v-tag v-v) s-v (append t-tag t-v))])])]
     
     [tagtestC (v f g)
               (type-case Result (interp v env adv sto)
-                  [v*s (v-v s-v)
-                       (type-case Value v-v
-                         [taggedV (tag tagged)
-                                  (type-case Result (interp f env adv s-v)
-                                    [v*s (v-f s-f)
-                                         (type-case Result (interp-app v-f tag adv s-f)
-                                           [v*s (v-f2 s-f2)
-                                                (interp-app v-f2 tagged adv s-f2)])])]
-                         [else (interp g env adv s-v)])])]
+                  [v*s*t (v-v s-v t-v)
+                         (type-case Value v-v
+                           [taggedV (tag tagged)
+                                    (type-case Result (interp f env adv s-v)
+                                      [v*s*t (v-f s-f t-f)
+                                             (type-case Result (interp-app v-f tag adv s-f)
+                                               [v*s*t (v-f2 s-f2 t-f2)
+                                                      (prepend-trace (append t-v t-f t-f2)
+                                                                     (interp-app v-f2 tagged adv s-f2))])])]
+                           [else (prepend-trace t-v (interp g env adv s-v))])])]
                                          
                          
     [aroundAppC (f in) 
                 (type-case Result (interp f env adv sto)
-                  [v*s (v-f s-f)
-                       (interp in env (cons (aroundAppV v-f) adv) s-f)])]
+                  [v*s*t (v-f s-f t-f)
+                         (prepend-trace t-f (interp in env (cons (aroundAppV v-f) adv) s-f))])]
                 
     
     [aroundSetC (f in) 
                 (type-case Result (interp f env adv sto)
-                  [v*s (v-f s-f)
-                       (interp in env (cons (aroundSetV v-f) adv) s-f)])]
+                  [v*s*t (v-f s-f t-f)
+                         (prepend-trace t-f (interp in env (cons (aroundSetV v-f) adv) s-f))])]
     
     ;; Input/Output
     
     [fileC (path) (interp (parse-file path) mt-env adv sto)]
     
     [writeC (l a) (type-case Result (interp a env adv sto)
-               [v*s (v-a s-a) (begin (display-with-label l v-a (current-output-port)) (v*s v-a s-a))])]
+               [v*s*t (v-a s-a t-a) 
+                      (begin (display-with-label l v-a (current-output-port)) 
+                             (v*s*t v-a s-a t-a))])]
     
     [readC (l) (let* ([_ (display l)]
                       [_ (display "> ")]
                       [val ((unbox read-source))]
                       [_ (record-interp-input val)])
-                 (v*s (numV val) sto))]))
+                 (v*s*t (numV val) sto mt-trace))]))
 )
 
 (define (interp-exp [exp ExprC?]) Value?
-  (v*s-v (interp exp mt-env mt-adv mt-store)))
+  (v*s*t-v (interp exp mt-env mt-adv mt-store)))
    
 (define (app-chain [exps list?]) ExprC?
   (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps)))
@@ -359,25 +369,26 @@
          
 ;; Tracing
 
-(define JoinPoints? (listof JoinPoint?))
+(define Trace? (listof JoinPoint?))
+(define mt-trace empty)
 
 ;; TODO-RS: Obviously needs generalizing beyond exactly two CLI inputs
   
 (define-type MirajTrace
-  [mirajTrace (f-jps JoinPoints?)
-              (a-jps JoinPoints?)
-              (app-jps JoinPoints?)])
+  [mirajTrace (f-jps Trace?)
+              (a-jps Trace?)
+              (app-jps Trace?)])
 
-(define (interp-with-tracing (exps list?) (trace-path path-string?))
-  (let* ([f (interp (car exps) mt-env mt-adv mt-store)]
-         [f-jps (get-interp-jps)]
-         [a (interp (car (cdr exps)) mt-env mt-adv (v*s-s f))]
-         [a-jps (get-interp-jps)]
-         [result (interp-app (v*s-v f) (v*s-v a) mt-adv (v*s-s a))]
-         [app-jps (get-interp-jps)]
-         [trace (mirajTrace f-jps a-jps app-jps)]
-         [_ (write-struct-to-file trace trace-path)])
-    (v*s-v result)))
+(define (interp-with-tracing (exps list?) (trace-path path-string?)) Value?
+  (type-case Result (interp (first exps) mt-env mt-adv mt-store)
+    [v*s*t (v-f s-f t-f)
+           (type-case Result (interp (first (rest exps)) mt-env mt-adv s-f)
+             [v*s*t (v-a s-a t-a)
+                    (type-case Result (interp-app v-f v-a mt-env mt-adv s-a)
+                      [v*s*t (v-r s-r t-r)
+                             (let* ([trace (mirajTrace t-f t-a t-r)]
+                                    [_ (write-struct-to-file trace trace-path)])
+                               v-r)])])]))
        
 (define-type LocationMap
   [locmap (from-loc Location?) (to-loc Location?)])
@@ -441,7 +452,7 @@
                       (type-case CopyResult (copy-value tagged from-sto s-tag m-tag)
                         [v*s*m (copied-tagged s-tagged m-tagged)
                                (v*s*m (taggedV copied-tag copied-tagged) s-tagged m-tagged)])])]
-    [builtinV (label f) (v*s*m v to-sto m)]))
+    [proceedV (_) (v*s*m v to-sto m)]))
 
 
 (define (deep-equal-values (left Value?) (left-sto Store?) (right Value?) (right-sto Store?)) boolean?
@@ -467,7 +478,7 @@
     [taggedV (left-tag left-tagged)
              (and (deep-equal-values left-tag left-sto (taggedV-tag right) right-sto)
                   (deep-equal-values left-tagged left-sto (taggedV-value right) right-sto))]
-    [builtinV (label f) (equal? left right)]))
+    [proceedV (_) (equal? left right)]))
 
 (define (append-binding (context Context?) (b Binding?) (b-sto Store?)) Context?
   (type-case Context context
@@ -491,10 +502,10 @@
     [mirajTrace (f-jps a-jps app-jps)
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
-                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (car app-jps) (box (cdr app-jps)) adv sto)))]
-                       [x (interp-closure-app (v*s-v query-result) weave-closure mt-adv (v*s-s query-result))]
-                       [result (interp-closure-app (v*s-v x) (numV 0) mt-adv (v*s-s x))])
-                  (v*s-v result))]))
+                       [weave-closure (proceedV "interp-query")]
+                       [x (interp-closure-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
+                       [result (interp-closure-app (v*s*t-v x) (numV 0) mt-adv (v*s*t-s x))])
+                  (v*s*t-v result))]))
 
 (define (all-tags [v Value?]) (listof Value?)
   (type-case Value v
@@ -505,7 +516,7 @@
 (define (deep-tag [tags (listof Value?)] [v Value?]) Value?
   (foldr taggedV v tags))
 
-(define (retroactive-weave-call [jp JoinPoint?] [jps box?] [adv AdvEnv?] [sto Store?]) Result?
+(define (retroactive-weave-call [jp JoinPoint?] [adv AdvEnv?] [sto Store?]) Result?
   (type-case JoinPoint jp
     [app-call (abs arg jp-adv jp-sto)
               (let* ([out (open-output-string)]
@@ -519,7 +530,7 @@
                                     (error 'retroactive-side-effect "retroactive advice proceeded more than once")
                                     (if (boolV-b (equal-values val (v*s*m-v arg-copy-result)))
                                         (begin 
-                                          (set-box! proceed-result (retroactive-weave-return jps adv sto))
+                                          (set-box! proceed-result (retroactive-weave-return adv sto))
                                           (unbox proceed-result))
                                         (error 'retroactive-side-effect 
                                                (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" (v*s*m-v arg-copy-result) val)))))]
@@ -537,15 +548,17 @@
     [app-return (abs result jp-adv jp-sto) 
                 (error 'retroactive-weave-call "Unexpected app-return")]))
 
-(define (retroactive-weave-return [jps box?] [adv AdvEnv?] [sto Store?]) Result?
-  (let* ([jp (list-box-pop! jps)]
-         [_ (if (unbox verbose-interp)
-                (begin
-                  (display "Weaving joinpoint: ") (display-joinpoint jp (current-output-port)) (newline))
-                '())])
-    (type-case JoinPoint jp
-      [app-call (abs arg jp-adv jp-sto) 
-                (let ([result (retroactive-weave-call jp jps adv sto)])
-                  (retroactive-weave-return jps adv (v*s-s result)))]
-      [app-return (abs result jp-adv jp-sto) 
-                  (v*s result sto)])))
+(define (retroactive-weave-return [adv AdvEnv?] [sto Store?]) Result?
+  (type-case Store sto
+    [store (cells trace)
+           (let* ([jp (first trace)]
+                  [_ (if (unbox verbose-interp)
+                         (begin
+                           (display "Weaving joinpoint: ") (display-joinpoint jp (current-output-port)) (newline))
+                         '())])
+             (type-case JoinPoint jp
+               [app-call (abs arg jp-adv jp-sto) 
+                         (let ([result (retroactive-weave-call adv (store cells (tail trace)))])
+                           (retroactive-weave-return jps adv (v*s-s result)))]
+               [app-return (abs result jp-adv jp-sto) 
+                           (v*s*t result sto mt-trace)]))]))
