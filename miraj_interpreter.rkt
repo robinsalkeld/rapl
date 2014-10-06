@@ -56,7 +56,7 @@
 (define-type Binding
   [bind (name symbol?) (loc Location?)])
 (define Location? number?)
-(define Env? (curry andmap Binding?))
+(define Env? (listof Binding?))
 (define mt-env empty)
 
 (define (lookup [for symbol?] [env Env?])
@@ -96,7 +96,7 @@
              (cell-val (first sto))]
             [else (fetch (rest sto) loc)])]))
 
-(define Store? (curry andmap Storage?))
+(define Store? (listof Storage?))
   
 (define (new-loc [sto Store?]) Location?
   (length sto))
@@ -114,7 +114,7 @@
 (define-type Advice
   [aroundAppV (value Value?)]
   [aroundSetV (value Value?)])
-(define AdvEnv? (curry andmap Advice?))  
+(define AdvEnv? (listof Advice?))  
 (define mt-adv empty)
 
 (define (apply-around-app [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?

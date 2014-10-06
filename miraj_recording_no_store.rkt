@@ -27,7 +27,7 @@
 ;; Tracing
 
 (define-type MirajTrace
-  [mirajTrace (joinpoints (curry andmap JoinPoint?)) (result Result?)])
+  [mirajTrace (joinpoints (listof JoinPoint?)) (result Result?)])
 
 (define (interp-with-tracing (exps list?) (trace-path path-string?))
   (let* ([result (interp-program exps)]

@@ -56,7 +56,7 @@
 (define-type Binding
   [bind (name symbol?) (loc Location?)])
 (define Location? number?)
-(define Env? (curry andmap Binding?))
+(define Env? (listof Binding?))
 (define mt-env empty)
 
 (define (lookup [for symbol?] [env Env?])
@@ -96,7 +96,7 @@
              (cell-val (first sto))]
             [else (fetch (rest sto) loc)])]))
 
-(define Store? (curry andmap Storage?))
+(define Store? (listof Storage?))
   
 (define (new-loc [sto Store?]) Location?
   (length sto))
@@ -117,7 +117,7 @@
 (define-type Advice
   [aroundAppV (value Value?)]
   [aroundSetV (value Value?)])
-(define AdvEnv? (curry andmap Advice?))  
+(define AdvEnv? (listof Advice?))  
 (define mt-adv empty)
 
 (define (apply-around-app [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
@@ -359,7 +359,7 @@
          
 ;; Tracing
 
-(define JoinPoints? (curry andmap JoinPoint?))
+(define JoinPoints? (listof JoinPoint?))
 
 ;; TODO-RS: Obviously needs generalizing beyond exactly two CLI inputs
   
@@ -382,7 +382,7 @@
 (define-type LocationMap
   [locmap (from-loc Location?) (to-loc Location?)])
 
-(define Mapping? (curry andmap LocationMap?))
+(define Mapping? (listof LocationMap?))
 (define mt-mapping empty)
 
 (define (mapped-location [m Mapping?] [loc Location?]) Location?
@@ -400,7 +400,7 @@
   [v*s*m (v Value?) (s Store?) (m Mapping?)])
 
 (define (copy-location [from-loc Location?] [from-sto Store?] [to-sto Store?] [m Mapping?]) CopyResult?
-  (type-case CopyResult (copy-value (fetch from-sto from-loc))
+  (type-case CopyResult (copy-value (fetch from-sto from-loc) from-sto to-sto m)
     [v*s*m (v s-v m-v)
            (let* ([mapped-loc (mapped-location m from-loc)]
                   [to-loc (if mapped-loc mapped-loc (new-loc to-sto))]
@@ -420,7 +420,7 @@
                      [else (error 'copy-binding "result parametmer must wrap a closure")])])]))
 
 (define (copy-closure [arg symbol?] [body ExprC?] [env Env?] [from-sto Store?] [to-sto Store?] [m Mapping?]) CopyResult?
-  (foldr (curry copy-binding from-sto) (v*s*m (closV arg body mt-env) to-sto m)) env)
+  (foldr (curry copy-binding from-sto) (v*s*m (closV arg body mt-env) to-sto m) env))
                   
 (define (copy-value (v Value?) (from-sto Store?) (to-sto Store?) (m Mapping?)) CopyResult?
   ;; TODO-RS: Need cycle detection because of boxes
@@ -496,13 +496,13 @@
                        [result (interp-closure-app (v*s-v x) (numV 0) mt-adv (v*s-s x))])
                   (v*s-v result))]))
 
-(define (all-tags [v Value?]) (curry andmap Value?)
+(define (all-tags [v Value?]) (listof Value?)
   (type-case Value v
     [taggedV (tag tagged)
              (cons tag (all-tags tagged))]
     [else '()]))
 
-(define (deep-tag [tags (curry andmap Value?)] [v Value?]) Value?
+(define (deep-tag [tags (listof Value?)] [v Value?]) Value?
   (foldr taggedV v tags))
 
 (define (retroactive-weave-call [jp JoinPoint?] [jps box?] [adv AdvEnv?] [sto Store?]) Result?
@@ -511,13 +511,13 @@
               (let* ([out (open-output-string)]
                      [_ (display-value abs out)]
                      [label (get-output-string out)]
-                     [abs-copy-result (copy-value jp-sto abs sto mt-mapping)]
-                     [arg-copy-result (copy-value jp-sto arg (v*s*m-s abs-copy-result) mt-mapping)]
+                     [abs-copy-result (copy-value abs jp-sto sto mt-mapping)]
+                     [arg-copy-result (copy-value arg jp-sto (v*s*m-s abs-copy-result) mt-mapping)]
                      [proceed-result (box #f)]
                      [proceed (lambda (val adv sto)
                                 (if (unbox proceed-result)
                                     (error 'retroactive-side-effect "retroactive advice proceeded more than once")
-                                    (if (boolV-b (equal-values val (v*s-v arg-copy-result)))
+                                    (if (boolV-b (equal-values val (v*s*m-v arg-copy-result)))
                                         (begin 
                                           (set-box! proceed-result (retroactive-weave-return jps adv sto))
                                           (unbox proceed-result))

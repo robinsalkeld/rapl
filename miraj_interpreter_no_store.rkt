@@ -40,7 +40,7 @@
 
 (define-type Binding
   [bind (name symbol?) (value Value?)])
-(define Env? (curry andmap Binding?))
+(define Env? (listof Binding?))
 (define mt-env empty)
 
 (define (lookup [for symbol?] [env Env?]) Value?
@@ -66,7 +66,7 @@
 
 (define-type Advice
   [aroundAppV (name symbol?) (value Value?)])
-(define AdvEnv? (curry andmap Advice?))  
+(define AdvEnv? (listof Advice?))  
 (define mt-adv empty)
 
 (define (apply-around-app [name symbol?] [adv AdvEnv?] [advice Advice?] [f Value?]) Value?
