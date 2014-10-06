@@ -109,9 +109,6 @@
 (define-type Result
   [v*s (v Value?) (s Store?)])
 
-(define-type Context
-  [e*s (e Env?) (s Store?)])
-
 ;; Advice
 
 (define-type Advice
@@ -131,25 +128,9 @@
 (define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (foldr (curry apply-around-app adv) (v*s f sto) adv))
 
-(define-type JoinPoint
-  [app-call (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
-  [app-return (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
-
-(define interp-jps (box '()))
-(define (reset-interp-jps) 
-  (set-box! interp-jps '()))
-(define (record-interp-jp (jp JoinPoint?))
-  (list-box-push! interp-jps jp))
-(define (get-interp-jps)
-  (let* ([result (reverse (unbox interp-jps))]
-         [_ (reset-interp-jps)])
-    result))
-
 (define (interp-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
-  (let* ([_ (record-interp-jp (app-call abs arg adv sto))]
-         [woven-abs-result (weave adv abs sto)]
-         [result (interp-closure-app (v*s-v woven-abs-result) arg adv (v*s-s woven-abs-result))]
-         [_ (record-interp-jp (app-return abs (v*s-v result) adv (v*s-s result)))])
+  (let* ([woven-abs-result (weave adv abs sto)]
+         [result (interp-closure-app (v*s-v woven-abs-result) arg adv (v*s-s woven-abs-result))])
     result))
 
 ;; Debugging
@@ -167,11 +148,11 @@
             (begin (display "(tag " out) (display-value t out) (display " " out) (display-value v out) (display ")" out))]
     [builtinV (label f) (display label out)]))
 
-(define (display-context [c Context?] [out output-port?])
+(define (display-context [env Env?] [sto Store?] [out output-port?])
   (begin (display "Environment: \n" out)
-         (display-env (e*s-e c) out)
+         (display-env env out)
          (display "Store: \n" out)
-         (display-store (e*s-s c) out)))
+         (display-store sto out)))
          
 (define (display-env [env Env?] [out output-port?])
   (map (lambda (def) 
@@ -187,16 +168,10 @@
                  (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
        sto))
 
-(define (display-joinpoint [jp JoinPoint?] [out output-port?])
-  (type-case JoinPoint jp
-    [app-call (abs arg adv sto)
-              (begin (display "(app-call " out) (display-value abs out) (display ")" out))]
-    [app-return (abs result adv sto)
-                (begin (display "(app-return " out) (display-value result out) (display ")" out))]))
-    
-
 (define (display-with-label [label string?] [val Value?] [out output-port?])
   (begin (display label out) (display ": " out) (display-value val out) (newline out)))
+
+;; Main interpretation function
 
 (define verbose-interp (box false))
 
@@ -205,7 +180,7 @@
   (if (unbox verbose-interp)
       (begin
         (display "Expression: ") (display (exp-syntax expr)) (newline)
-        ;;(display-context (e*s env sto)) 
+        (display-context env sto) 
         (newline))
       '())
 

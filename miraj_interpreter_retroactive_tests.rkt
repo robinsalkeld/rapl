@@ -2,7 +2,7 @@
 
 (require "miraj.rkt")
 (require "miraj_parser.rkt")
-(require "miraj_interpreter.rkt")
+(require "miraj_interpreter_retroactive.rkt")
 (require "miraj_serialization.rkt")
 
 (print-only-errors)
@@ -82,9 +82,19 @@
 (test (struct->list/recursive (plusC (numC 3) (numC 4))) '(plusC (numC 3) (numC 4)))
 (test (struct->list/recursive (appC (idC 'foo) (numC 4))) '(appC (idC 'foo) (numC 4)))
 
-(define miraj-ns (module->namespace "miraj_interpreter_tests.rkt"))
 (define (test-roundtrip e) (test (list->struct/recursive miraj-ns (struct->list/recursive e)) e))
 
 (test-roundtrip (plusC (numC 3) (numC 4)))
 (test-roundtrip (appC (idC 'foo) (numC 4)))
 (test-roundtrip (lamC 'bar (multC (numC 4) (idC 'bar))))
+
+(test (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice.rkt")))
+      (numV 6))
+
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_arg.rkt")))
+      "retroactive-side-effect: incorrect argument passed retroactively: expected\n #(struct:numV 3) but got\n #(struct:numV 2)")
+
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
+      "retroactive-side-effect: retroactive advice proceeded more than once")
+
+;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))
