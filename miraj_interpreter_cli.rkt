@@ -1,10 +1,9 @@
 #lang plai
 
 (require "miraj.rkt")
-(require "miraj_interpreter.rkt")
+(require "miraj_interpreter_retroactive.rkt")
 (require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
-(require "miraj_recording.rkt")
 
 ;;
 ;; Miraj interpreter CLI

@@ -491,7 +491,7 @@
     [mirajTrace (f-jps a-jps app-jps)
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
-                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (car app-jps) (box (cdr app-jps)) adv sto mt-mapping)))]
+                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (car app-jps) (box (cdr app-jps)) adv sto)))]
                        [x (interp-closure-app (v*s-v query-result) weave-closure mt-adv (v*s-s query-result))]
                        [result (interp-closure-app (v*s-v x) (numV 0) mt-adv (v*s-s x))])
                   (v*s-v result))]))
@@ -505,14 +505,14 @@
 (define (deep-tag [tags (curry andmap Value?)] [v Value?]) Value?
   (foldr taggedV v tags))
 
-(define (retroactive-weave-call [jp JoinPoint?] [jps box?] [adv AdvEnv?] [sto Store?] [m Mapping?]) CopyResult?
+(define (retroactive-weave-call [jp JoinPoint?] [jps box?] [adv AdvEnv?] [sto Store?]) Result?
   (type-case JoinPoint jp
     [app-call (abs arg jp-adv jp-sto)
               (let* ([out (open-output-string)]
                      [_ (display-value abs out)]
                      [label (get-output-string out)]
-                     [abs-copy-result (copy-value jp-sto abs sto m)]
-                     [arg-copy-result (copy-value jp-sto arg (v*s*m-s abs-copy-result) (v*s*m-m abs-copy-result))]
+                     [abs-copy-result (copy-value jp-sto abs sto mt-mapping)]
+                     [arg-copy-result (copy-value jp-sto arg (v*s*m-s abs-copy-result) mt-mapping)]
                      [proceed-result (box #f)]
                      [proceed (lambda (val adv sto)
                                 (if (unbox proceed-result)
@@ -522,22 +522,22 @@
                                           (set-box! proceed-result (retroactive-weave-return jps adv sto))
                                           (unbox proceed-result))
                                         (error 'retroactive-side-effect 
-                                               (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" (v*s-v arg-copy-result) val)))))]
+                                               (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" (v*s*m-v arg-copy-result) val)))))]
                      [proceed-value (builtinV label proceed)]
                      [tagged (deep-tag (all-tags abs) proceed-value)]
-                     [woven-result (weave adv tagged (v*s-s arg-copy-result))]
-                     [result (interp-closure-app (v*s-v woven-result) (v*s-v arg-copy-result) adv (v*s-s woven-result))])
+                     [woven-result (weave adv tagged (v*s*m-s arg-copy-result))]
+                     [result (interp-closure-app (v*s-v woven-result) (v*s*m-v arg-copy-result) adv (v*s-s woven-result))])
                 (if (not (unbox proceed-result))
                     (error 'retroactive-side-effect "retroactive advice failed to proceed")
                     (if (not (boolV-b (equal-values (v*s-v (unbox proceed-result)) (v*s-v result))))
                         (error 'retroactive-side-effect 
                                (format "incorrect retroactive result: expected\n ~a but got\n ~a" (v*s-v (unbox proceed-result)) (v*s-v result)))
                         ;; TODO-RS: Verify the store - check that f and a are still equal
-                        (v*s*m (v*s-v result) (v*s-s result) (v*s*m-m abs-copy-result)))))]
+                        result)))]
     [app-return (abs result jp-adv jp-sto) 
                 (error 'retroactive-weave-call "Unexpected app-return")]))
 
-(define (retroactive-weave-return [jps box?] [adv AdvEnv?] [sto Store?] [m Mapping?]) CopyResult?
+(define (retroactive-weave-return [jps box?] [adv AdvEnv?] [sto Store?]) Result?
   (let* ([jp (list-box-pop! jps)]
          [_ (if (unbox verbose-interp)
                 (begin
