@@ -23,7 +23,7 @@
        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
     (list))
    (list)
-   (store (list) (list)))
+   (store (list) (list) (list)))
   (app-call
    (closV
     'x
@@ -49,6 +49,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -88,6 +89,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -138,6 +140,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -181,6 +184,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -230,6 +234,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list))))
  (list)
  (list
@@ -272,6 +277,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -308,6 +314,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -348,6 +355,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -401,6 +409,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -465,6 +474,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -522,6 +532,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (taggedV
@@ -576,6 +587,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -626,6 +638,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -680,6 +693,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -747,6 +761,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -825,6 +840,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -896,6 +912,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (taggedV
@@ -964,6 +981,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -1028,6 +1046,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -1096,6 +1115,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (closV
@@ -1177,6 +1197,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -1269,6 +1290,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -1354,6 +1376,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-call
    (taggedV
@@ -1436,6 +1459,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (taggedV
@@ -1519,6 +1543,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -1597,6 +1622,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (taggedV
@@ -1680,6 +1706,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -1758,6 +1785,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (taggedV
@@ -1841,6 +1869,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (closV
@@ -1919,6 +1948,7 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))
   (app-return
    (taggedV
@@ -2002,4 +2032,5 @@
           (numC 1)
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
+    (list)
     (list)))))
