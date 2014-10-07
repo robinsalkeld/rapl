@@ -197,7 +197,7 @@
          (type-case Storage c
            [cell (l v)
                  (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
-       sto))
+       (store-cells sto)))
 
 (define (display-joinpoint [jp JoinPoint?] [out output-port?])
   (type-case JoinPoint jp
@@ -219,7 +219,7 @@
   (if (unbox verbose-interp)
       (begin
         (display "Expression: ") (display (exp-syntax expr)) (newline)
-        ;;(display-context (e*s env sto)) 
+        (display-context (e*s env sto) (current-output-port)) 
         (newline))
       '())
 
@@ -509,7 +509,7 @@
     [mirajTrace (f-jps a-jps app-jps)
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
-                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (first app-jps) adv (store empty (rest app-jps)))))]
+                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (first app-jps) adv (store (store-cells sto) (rest app-jps)))))]
                        [x (interp-closure-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
                        [result (interp-closure-app (v*s*t-v x) (numV 0) mt-adv (v*s*t-s x))])
                   (v*s*t-v result))]))
