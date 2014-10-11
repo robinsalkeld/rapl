@@ -5,7 +5,8 @@
                (lambda (bx)
                  (let ([x (unbox bx)])
                    (if (equal? x 0) 
-                       1 
+                       (seq (set-box! bx 42)
+                            1)
                        (seq (set-box! bx (+ x -1))
                             (* x (fact bx)))))))))])
   (lambda (x) (fact_recursive (box x))))
