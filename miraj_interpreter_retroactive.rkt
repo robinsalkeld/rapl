@@ -92,37 +92,46 @@
 ;; Mutations and side-effects
 
 (define-type Storage
-  [cell (location Location?) (val Value?)])
+  [cell (location Location?) (val Value?)]
+  [mapping (location Location?) (trace-loc Location?)])
  
-(define (fetch-from-cells [cells (listof Storage?)] [loc Location?]) Value?
+(define (fetch-from-cells [cells (listof Storage?)] [t-sto Store?] [loc Location?]) Value?
   (cond
     [(empty? cells) (error 'fetch "location not found")]
-    [else (cond
-            [(= loc (cell-location (first cells)))
-             (cell-val (first cells))]
-            [else (fetch-from-cells (rest cells) loc)])]))
+    [else 
+     (type-case Storage (first cells)
+       [cell (l val)
+             (cond
+               [(= loc l) val]
+               [else (fetch-from-cells (rest cells) t-sto loc)])]
+       [mapping (l t-loc)
+             (cond
+               [(= loc l) (fetch t-sto t-loc)]
+               [else (fetch-from-cells (rest cells) t-sto loc)])])]))
 
 (define (fetch [sto Store?] [loc Location?]) Value?
-  (fetch-from-cells (store-cells sto) loc))
-
-(define-type LocationMap
-  [locmap (from-loc Location?) (to-loc Location?)])
-
-(define Mapping? (listof LocationMap?))
-(define mt-mapping empty)
+  (type-case Store sto
+    [store (cells t t-sto)
+           (fetch-from-cells cells t-sto loc)]
+    [nil () (error 'fetch "nil")]))
 
 (define-type Store 
-  [store (cells (listof Storage?)) (t Trace?) (m Mapping?)])
+  [store (cells (listof Storage?)) (t Trace?) (t-sto Store?)]
+  [nil])
   
 (define (new-loc [sto Store?]) Location?
-  (length (store-cells sto)))
+  (type-case Store sto
+    [store (cells t t-sto)
+           (length cells)]
+    [nil () (error 'new-loc "nil")]))
 
 (define (override-store [sto Store?] [loc Location?] [value Value?]) Store?
   (type-case Store sto
-    [store (cells trace mapping)
-           (store (cons (cell loc value) cells) trace mapping)]))
+    [store (cells trace trace-sto)
+           (store (cons (cell loc value) cells) trace trace-sto)]
+    [nil () (error 'new-loc "nil")]))
 
-(define mt-store (store empty mt-trace mt-mapping))
+(define mt-store (store empty empty nil))
 
 (define-type Result
   [v*s*t (v Value?) (s Store?) (t Trace?)])
@@ -202,7 +211,9 @@
   (map (lambda (c) 
          (type-case Storage c
            [cell (l v)
-                 (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
+                 (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))]
+           [mapping (l t-l)
+                    (begin (display "\t" out) (display l out) (display " -> " out) (display t-l out) (display "\n" out))])) 
        (store-cells sto)))
 
 (define (display-joinpoint [jp JoinPoint?] [out output-port?])
@@ -403,64 +414,65 @@
                                     [_ (write-struct-to-file trace trace-path)])
                                v-r)])])]))
        
-(define (mapped-location [mapping Mapping?] [loc Location?]) Location?
+(define (mapped-location [cells (listof Storage?)] [loc Location?]) Value?
   (cond
-    [(empty? mapping) #f]
-    [else (cond
-            [(= loc (locmap-from-loc (first mapping)))
-             (locmap-to-loc (first mapping))]
-            [else (mapped-location (rest mapping) loc)])]))
-
-(define (override-mapping [m Mapping?] [from-loc Location?] [to-loc Location?]) Mapping?
-  (cons (locmap from-loc to-loc) m))
+    [(empty? cells) #f]
+    [else 
+     (type-case Storage (first cells)
+       [cell (l val)
+             (mapped-location (rest cells) loc)]
+       [mapping (l t-loc)
+             (cond
+               [(= loc t-loc) l]
+               [else (mapped-location (rest cells) loc)])])]))
 
 ;; The result value will always be a box
-(define (copy-location [from-loc Location?] [from-sto Store?] [to-sto Store?]) Result?
-  (type-case Result (copy-value (fetch from-sto from-loc) from-sto to-sto)
-    [v*s*t (v s-v t-v)
-           (type-case Store to-sto
-             [store (cells t m)
-                    (let ([mapped-loc (mapped-location m from-loc)])
+(define (map-location [t-loc Location?] [sto Store?]) Result?
+  (type-case Store sto
+    [nil () (error 'map-location "nil")]
+    [store (cells t t-sto)
+           (type-case Result (map-value (fetch t-sto t-loc) sto)
+             [v*s*t (v s-v t-v)
+                    (let ([mapped-loc (mapped-location cells t-loc)])
                           (if mapped-loc
-                              (v*s*t (boxV mapped-loc) (override-store s-v mapped-loc v) mt-trace)
-                              (let ([to-loc (new-loc to-sto)])
-                                (v*s*t (boxV to-loc) (store (cons (cell to-loc v) cells) t (cons (locmap from-loc to-loc) m)) mt-trace))))])]))
+                              (v*s*t (boxV mapped-loc) sto mt-trace)
+                              (let ([to-loc (new-loc sto)])
+                                (v*s*t (boxV to-loc) (store (cons (mapping to-loc t-loc) cells) t t-sto) mt-trace))))])]))
 
-(define (copy-binding [from-sto Store?] [b Binding?] [result Result?]) Result?
+(define (map-binding [b Binding?] [result Result?]) Result?
   (type-case Binding b
     [bind (name loc)
           (type-case Result result
             [v*s*t (c sto t)
                    (type-case Value c
                      [closV (arg body env)
-                            (type-case Result (copy-location loc from-sto sto)
+                            (type-case Result (map-location loc sto)
                               [v*s*t (box s-box t-box)
                                      (v*s*t (closV arg body (cons (bind name (boxV-l box)) env)) s-box mt-trace)])]
-                     [else (error 'copy-binding "result parametmer must wrap a closure")])])]))
+                     [else (error 'map-binding "result parametmer must wrap a closure")])])]))
 
-(define (copy-closure [arg symbol?] [body ExprC?] [env Env?] [from-sto Store?] [to-sto Store?]) Result?
-  (foldr (curry copy-binding from-sto) (v*s*t (closV arg body mt-env) to-sto mt-trace) env))
+(define (map-closure [arg symbol?] [body ExprC?] [env Env?] [sto Store?]) Result?
+  (foldr map-binding (v*s*t (closV arg body mt-env) sto mt-trace) env))
                   
-(define (copy-value (v Value?) (from-sto Store?) (to-sto Store?)) Result?
-  ;; TODO-RS: Need cycle detection because of boxes
+(define (map-value (v Value?) (sto Store?)) Result?
   (type-case Value v
     [numV (_) 
-          (v*s*t v to-sto mt-trace)]
+          (v*s*t v sto mt-trace)]
     [boolV (_) 
-          (v*s*t v to-sto mt-trace)]
+          (v*s*t v sto mt-trace)]
     [strV (_) 
-          (v*s*t v to-sto mt-trace)]
+          (v*s*t v sto mt-trace)]
     [closV (arg body env)
-           (copy-closure arg body env from-sto to-sto)]
+           (map-closure arg body env sto)]
     [boxV (loc)
-          (copy-location loc from-sto to-sto)]
+          (map-location loc sto)]
     [taggedV (tag tagged) 
-             (type-case Result (copy-value tag from-sto to-sto)
-               [v*s*t (copied-tag s-tag t-tag)
-                      (type-case Result (copy-value tagged from-sto s-tag)
-                        [v*s*t (copied-tagged s-tagged t-tagged)
-                               (v*s*t (taggedV copied-tag copied-tagged) s-tagged mt-trace)])])]
-    [builtinV (label f) (v*s*t v to-sto mt-trace)]))
+             (type-case Result (map-value tag sto)
+               [v*s*t (mapped-tag s-tag t-tag)
+                      (type-case Result (map-value tagged s-tag)
+                        [v*s*t (mapped-tagged s-tagged t-tagged)
+                               (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
+    [builtinV (label f) (v*s*t v sto mt-trace)]))
 
 
 (define (deep-equal-values (left Value?) (left-sto Store?) (right Value?) (right-sto Store?)) boolean?
@@ -495,7 +507,7 @@
     [mirajTrace (f-jps a-jps app-jps)
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
-                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (first app-jps) adv (store (store-cells sto) (rest app-jps) mt-mapping))))]
+                       [weave-closure (builtinV "interp-query" (lambda (val adv sto) (retroactive-weave-call (first app-jps) adv (store (store-cells sto) (rest app-jps) (app-call-sto (first app-jps))))))]
                        [x (interp-closure-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
                        [result (interp-closure-app (v*s*t-v x) (numV 0) mt-adv (v*s*t-s x))])
                   (v*s*t-v result))]))
@@ -513,8 +525,8 @@
   (type-case JoinPoint jp
     [app-call (abs arg jp-adv jp-sto)
               (let* ([label (value->string abs)]
-                     [abs-copy-result (copy-value abs jp-sto sto)]
-                     [arg-copy-result (copy-value arg jp-sto (v*s*t-s abs-copy-result))]
+                     [abs-copy-result (map-value abs sto)]
+                     [arg-copy-result (map-value arg (v*s*t-s abs-copy-result))]
                      [proceed-result (box #f)]
                      [proceed (lambda (val adv sto)
                                 (if (unbox proceed-result)
@@ -541,7 +553,8 @@
 
 (define (retroactive-weave-return [adv AdvEnv?] [sto Store?]) Result?
   (type-case Store sto
-    [store (cells trace mapping)
+    [nil () (error 'retroactive-weave-return "nil")]
+    [store (cells trace trace-sto)
            (let* ([jp (first trace)]
                   [s-proceed (store cells (rest trace) mapping)]
                   [_ (if (unbox verbose-interp)
