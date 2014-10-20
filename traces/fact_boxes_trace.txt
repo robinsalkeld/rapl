@@ -28,7 +28,7 @@
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
     (list))
    (list)
-   (store (list) (list) (list)))
+   (store (list) (list) (no-store)))
   (app-call
    (closV
     'x
@@ -60,7 +60,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'fact
@@ -110,7 +110,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'fact
@@ -176,7 +176,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'x
@@ -230,7 +230,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'f
@@ -290,7 +290,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list))))
+    (no-store))))
  (list)
  (list
   (app-call
@@ -349,7 +349,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (taggedV
     (strV "fact_boxes")
@@ -418,7 +418,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'y
@@ -480,7 +480,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'x
@@ -546,7 +546,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'fact
@@ -630,7 +630,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'fact
@@ -730,7 +730,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'x
@@ -818,7 +818,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (taggedV
     (strV "fact_boxes")
@@ -903,7 +903,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'y
@@ -981,7 +981,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'x
@@ -1063,7 +1063,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'fact
@@ -1163,7 +1163,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'fact
@@ -1279,7 +1279,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'x
@@ -1383,7 +1383,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (taggedV
     (strV "fact_boxes")
@@ -1484,7 +1484,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'y
@@ -1578,7 +1578,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'x
@@ -1676,7 +1676,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (closV
     'fact
@@ -1792,7 +1792,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'fact
@@ -1924,7 +1924,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'x
@@ -2044,7 +2044,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-call
    (taggedV
     (strV "fact_boxes")
@@ -2161,7 +2161,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (taggedV
     (strV "fact_boxes")
@@ -2281,7 +2281,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'y
@@ -2391,7 +2391,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (taggedV
     (strV "fact_boxes")
@@ -2511,7 +2511,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'y
@@ -2621,7 +2621,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (taggedV
     (strV "fact_boxes")
@@ -2741,7 +2741,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'y
@@ -2851,7 +2851,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (taggedV
     (strV "fact_boxes")
@@ -2971,7 +2971,7 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))
+    (no-store)))
   (app-return
    (closV
     'x
@@ -3081,4 +3081,4 @@
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
        (list))))
     (list)
-    (list)))))
+    (no-store)))))

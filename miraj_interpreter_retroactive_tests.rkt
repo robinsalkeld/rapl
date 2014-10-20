@@ -71,7 +71,6 @@
 (test (interp-exp (writeC "The answer" (numC 42)))
       (numV 42))
 
-
 (test (interp-exp (parse '((file "examples/fact.rkt") 4)))
       (numV 24))
 
@@ -96,5 +95,12 @@
 
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
       "retroactive-side-effect: retroactive advice proceeded more than once")
+
+(define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6))) mt-trace (no-store)))
+(define sto (store (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)) mt-trace t-sto))
+
+(test (fetch sto 0) (numV 7))
+(test (fetch sto 1) (numV 5))
+(test (fetch sto 2) (boxV 3))
 
 ;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))
