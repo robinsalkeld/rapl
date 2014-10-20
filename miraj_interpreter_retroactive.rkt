@@ -95,7 +95,7 @@
   [cell (location Location?) (val Value?)]
   [mapping (location Location?) (trace-loc Location?)])
  
-(define (fetch-from-cells [cells (listof Storage?)] [t-sto Store?] [loc Location?]) Value?
+(define (fetch-from-cells [cells (listof Storage?)] [sto Store?] [loc Location?]) Value?
   (cond
     [(empty? cells) (error 'fetch "location not found")]
     [else 
@@ -103,35 +103,123 @@
        [cell (l val)
              (cond
                [(= loc l) val]
-               [else (fetch-from-cells (rest cells) t-sto loc)])]
+               [else (fetch-from-cells (rest cells) sto loc)])]
        [mapping (l t-loc)
              (cond
-               [(= loc l) (fetch t-sto t-loc)]
-               [else (fetch-from-cells (rest cells) t-sto loc)])])]))
+               [(= loc l) 
+                (let ([trace-value (fetch (store-t-sto sto) t-loc)])
+                  (map-value trace-value sto))]
+               [else (fetch-from-cells (rest cells) sto loc)])])]))
 
 (define (fetch [sto Store?] [loc Location?]) Value?
   (type-case Store sto
     [store (cells t t-sto)
            (fetch-from-cells cells t-sto loc)]
-    [nil () (error 'fetch "nil")]))
+    [no-store () (error 'fetch "no-store")]))
 
 (define-type Store 
   [store (cells (listof Storage?)) (t Trace?) (t-sto Store?)]
-  [nil])
-  
+  [no-store])
+
 (define (new-loc [sto Store?]) Location?
   (type-case Store sto
     [store (cells t t-sto)
            (length cells)]
-    [nil () (error 'new-loc "nil")]))
+    [no-store () (error 'new-loc "no-store")]))
 
 (define (override-store [sto Store?] [loc Location?] [value Value?]) Store?
   (type-case Store sto
     [store (cells trace trace-sto)
            (store (cons (cell loc value) cells) trace trace-sto)]
-    [nil () (error 'new-loc "nil")]))
+    [no-store () (error 'new-loc "no-store")]))
 
-(define mt-store (store empty empty nil))
+(define mt-store (store empty empty (no-store)))
+
+;; Mapping trace values
+
+(define (mapped-location [cells (listof Storage?)] [loc Location?]) Value?
+  (cond
+    [(empty? cells) #f]
+    [else 
+     (type-case Storage (first cells)
+       [cell (l val)
+             (mapped-location (rest cells) loc)]
+       [mapping (l t-loc)
+             (cond
+               [(= loc t-loc) l]
+               [else (mapped-location (rest cells) loc)])])]))
+
+;; The result value will always be a box
+(define (map-location [t-loc Location?] [sto Store?]) Result?
+  (type-case Store sto
+    [no-store () (error 'map-location "no-store")]
+    [store (cells t t-sto)
+           (let ([mapped-loc (mapped-location cells t-loc)])
+             (if mapped-loc
+                 (v*s*t (boxV mapped-loc) sto mt-trace)
+                 (let ([to-loc (new-loc sto)])
+                   (v*s*t (boxV to-loc) (store (cons (mapping to-loc t-loc) cells) t t-sto) mt-trace))))]))
+
+(define (map-binding [b Binding?] [result Result?]) Result?
+  (type-case Binding b
+    [bind (name loc)
+          (type-case Result result
+            [v*s*t (c sto t)
+                   (type-case Value c
+                     [closV (arg body env)
+                            (type-case Result (map-location loc sto)
+                              [v*s*t (box s-box t-box)
+                                     (v*s*t (closV arg body (cons (bind name (boxV-l box)) env)) s-box mt-trace)])]
+                     [else (error 'map-binding "result parametmer must wrap a closure")])])]))
+
+(define (map-closure [arg symbol?] [body ExprC?] [env Env?] [sto Store?]) Result?
+  (foldr map-binding (v*s*t (closV arg body mt-env) sto mt-trace) env))
+                  
+(define (map-value (v Value?) (sto Store?)) Result?
+  (type-case Value v
+    [numV (_) 
+          (v*s*t v sto mt-trace)]
+    [boolV (_) 
+          (v*s*t v sto mt-trace)]
+    [strV (_) 
+          (v*s*t v sto mt-trace)]
+    [closV (arg body env)
+           (map-closure arg body env sto)]
+    [boxV (loc)
+          (map-location loc sto)]
+    [taggedV (tag tagged) 
+             (type-case Result (map-value tag sto)
+               [v*s*t (mapped-tag s-tag t-tag)
+                      (type-case Result (map-value tagged s-tag)
+                        [v*s*t (mapped-tagged s-tagged t-tagged)
+                               (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
+    [builtinV (label f) (v*s*t v sto mt-trace)]))
+
+
+(define (deep-equal-values (left Value?) (left-sto Store?) (right Value?) (right-sto Store?)) boolean?
+  (type-case Value left
+    [numV (_)
+          (equal? left right)]
+    [boolV (_) 
+          (equal? left right)]
+    [strV (_) 
+          (equal? left right)]
+    [closV (arg body env)
+           (and (equal? left right)
+                ;; This is probably broken given the override implementation
+                (andmap (lambda (left-bind right-bind) 
+                          (let* ([left-loc (bind-loc left-bind)]
+                                 [left-value (fetch left-sto left-loc)]
+                                 [right-loc (bind-loc right-bind)]
+                                 [right-value (fetch right-sto right-loc)])
+                            (deep-equal-values left-value left-sto right-value right-sto)))
+                        env (closV-env right)))]
+    [boxV (left-loc)
+          (deep-equal-values (fetch left-sto left-loc) left-sto (fetch right-sto (boxV-l right)) right-sto)]
+    [taggedV (left-tag left-tagged)
+             (and (deep-equal-values left-tag left-sto (taggedV-tag right) right-sto)
+                  (deep-equal-values left-tagged left-sto (taggedV-value right) right-sto))]
+    [builtinV (label f) (equal? left right)]))
 
 (define-type Result
   [v*s*t (v Value?) (s Store?) (t Trace?)])
@@ -414,92 +502,6 @@
                                     [_ (write-struct-to-file trace trace-path)])
                                v-r)])])]))
        
-(define (mapped-location [cells (listof Storage?)] [loc Location?]) Value?
-  (cond
-    [(empty? cells) #f]
-    [else 
-     (type-case Storage (first cells)
-       [cell (l val)
-             (mapped-location (rest cells) loc)]
-       [mapping (l t-loc)
-             (cond
-               [(= loc t-loc) l]
-               [else (mapped-location (rest cells) loc)])])]))
-
-;; The result value will always be a box
-(define (map-location [t-loc Location?] [sto Store?]) Result?
-  (type-case Store sto
-    [nil () (error 'map-location "nil")]
-    [store (cells t t-sto)
-           (type-case Result (map-value (fetch t-sto t-loc) sto)
-             [v*s*t (v s-v t-v)
-                    (let ([mapped-loc (mapped-location cells t-loc)])
-                          (if mapped-loc
-                              (v*s*t (boxV mapped-loc) sto mt-trace)
-                              (let ([to-loc (new-loc sto)])
-                                (v*s*t (boxV to-loc) (store (cons (mapping to-loc t-loc) cells) t t-sto) mt-trace))))])]))
-
-(define (map-binding [b Binding?] [result Result?]) Result?
-  (type-case Binding b
-    [bind (name loc)
-          (type-case Result result
-            [v*s*t (c sto t)
-                   (type-case Value c
-                     [closV (arg body env)
-                            (type-case Result (map-location loc sto)
-                              [v*s*t (box s-box t-box)
-                                     (v*s*t (closV arg body (cons (bind name (boxV-l box)) env)) s-box mt-trace)])]
-                     [else (error 'map-binding "result parametmer must wrap a closure")])])]))
-
-(define (map-closure [arg symbol?] [body ExprC?] [env Env?] [sto Store?]) Result?
-  (foldr map-binding (v*s*t (closV arg body mt-env) sto mt-trace) env))
-                  
-(define (map-value (v Value?) (sto Store?)) Result?
-  (type-case Value v
-    [numV (_) 
-          (v*s*t v sto mt-trace)]
-    [boolV (_) 
-          (v*s*t v sto mt-trace)]
-    [strV (_) 
-          (v*s*t v sto mt-trace)]
-    [closV (arg body env)
-           (map-closure arg body env sto)]
-    [boxV (loc)
-          (map-location loc sto)]
-    [taggedV (tag tagged) 
-             (type-case Result (map-value tag sto)
-               [v*s*t (mapped-tag s-tag t-tag)
-                      (type-case Result (map-value tagged s-tag)
-                        [v*s*t (mapped-tagged s-tagged t-tagged)
-                               (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
-    [builtinV (label f) (v*s*t v sto mt-trace)]))
-
-
-(define (deep-equal-values (left Value?) (left-sto Store?) (right Value?) (right-sto Store?)) boolean?
-  (type-case Value left
-    [numV (_)
-          (equal? left right)]
-    [boolV (_) 
-          (equal? left right)]
-    [strV (_) 
-          (equal? left right)]
-    [closV (arg body env)
-           (and (equal? left right)
-                ;; This is probably broken given the override implementation
-                (andmap (lambda (left-bind right-bind) 
-                          (let* ([left-loc (bind-loc left-bind)]
-                                 [left-value (fetch left-sto left-loc)]
-                                 [right-loc (bind-loc right-bind)]
-                                 [right-value (fetch right-sto right-loc)])
-                            (deep-equal-values left-value left-sto right-value right-sto)))
-                        env (closV-env right)))]
-    [boxV (left-loc)
-          (deep-equal-values (fetch left-sto left-loc) left-sto (fetch right-sto (boxV-l right)) right-sto)]
-    [taggedV (left-tag left-tagged)
-             (and (deep-equal-values left-tag left-sto (taggedV-tag right) right-sto)
-                  (deep-equal-values left-tagged left-sto (taggedV-value right) right-sto))]
-    [builtinV (label f) (equal? left right)]))
-
 (define miraj-ns (module->namespace "miraj_interpreter_retroactive.rkt"))
 
 (define (interp-query (trace-path path-string?) (exprs list?)) Value?
@@ -553,10 +555,10 @@
 
 (define (retroactive-weave-return [adv AdvEnv?] [sto Store?]) Result?
   (type-case Store sto
-    [nil () (error 'retroactive-weave-return "nil")]
+    [no-store () (error 'retroactive-weave-return "no-store")]
     [store (cells trace trace-sto)
            (let* ([jp (first trace)]
-                  [s-proceed (store cells (rest trace) mapping)]
+                  [s-proceed (store cells (rest trace) trace-sto)]
                   [_ (if (unbox verbose-interp)
                          (begin
                            (display "Weaving joinpoint: ") (display-joinpoint jp (current-output-port)) (newline))
