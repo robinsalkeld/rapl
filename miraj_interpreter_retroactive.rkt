@@ -158,8 +158,10 @@
            (let ([mapped-loc (mapped-location cells t-loc)])
              (if mapped-loc
                  (v*s*t (boxV mapped-loc) sto mt-trace)
-                 (let ([to-loc (new-loc sto)])
-                   (v*s*t (boxV to-loc) (store (cons (mapping to-loc t-loc) cells) t t-sto) mt-trace))))]))
+                 (let* ([to-loc (new-loc sto)]
+                        [sto2 (store (cons (mapping to-loc t-loc) cells) t t-sto)]
+                        [value-result (map-value (fetch t-sto t-loc) sto2)])
+                   (v*s*t (boxV to-loc) (v*s*t-s value-result) mt-trace))))]))
 
 (define (map-binding [b Binding?] [result Result?]) Result?
   (type-case Binding b
@@ -302,7 +304,7 @@
            [cell (l v)
                  (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))]
            [mapping (l t-l)
-                    (begin (display "\t" out) (display l out) (display " -> " out) (display t-l out) (display "\n" out))])) 
+                    (begin (display "\t" out) (display l out) (display " -> [" out) (display t-l out) (display "]\n" out))])) 
        (store-cells sto)))
 
 (define (display-joinpoint [jp JoinPoint?] [out output-port?])

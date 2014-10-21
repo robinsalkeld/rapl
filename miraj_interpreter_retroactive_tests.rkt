@@ -96,11 +96,23 @@
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
       "retroactive-side-effect: retroactive advice proceeded more than once")
 
-(define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6))) mt-trace (no-store)))
-(define sto (store (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)) mt-trace t-sto))
+(define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6)) (cell 3 (boxV 4)) (cell 4 (numV 42)) (cell 5 (boxV 6)) (cell 6 (boxV 5))) mt-trace (no-store)))
+(define sto-cells (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)))
+(define sto (store sto-cells mt-trace t-sto))
 
 (test (fetch sto 0) (numV 7))
 (test (fetch sto 1) (numV 5))
 (test (fetch sto 2) (boxV 3))
+
+(type-case Result (map-location 3 sto)
+  (v*s*t (v s t)
+         (let ([b (fetch s (boxV-l v))])
+           (test (fetch s (boxV-l b)) (numV 42)))))
+
+;; Watch out for infinite recursion on recursive data
+(type-case Result (map-location 5 sto)
+  (v*s*t (v s t)
+         (test v (boxV 4))))
+ 
 
 ;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))
