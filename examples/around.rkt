@@ -1,12 +1,10 @@
-(lambda (pc) 
-  (lambda (advice) 
-    (lambda (f) 
-      (lambda (a)
-            (aroundapp (lambda (g)
-                         (tagtest g
-                                  (lambda (gtag) (lambda (gtagged)
-                                                   (if (pc gtag)
-                                                       (tag gtag (advice gtagged))
-                                                       g)))
-                                  g))
-                       (f a))))))
+(lambda (pc advice f a)
+  (onapp 
+   (lambda (g)
+     (tagtest g
+              (lambda (gtag gtagged)
+                (if (pc gtag)
+                    (tag gtag (advice gtagged))
+                    g))
+              g))
+   (f a)))

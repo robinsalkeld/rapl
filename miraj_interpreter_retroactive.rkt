@@ -198,32 +198,6 @@
                                (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
     [builtinV (label f) (v*s*t v sto mt-trace)]))
 
-
-(define (deep-equal-values (left Value?) (left-sto Store?) (right Value?) (right-sto Store?)) boolean?
-  (type-case Value left
-    [numV (_)
-          (equal? left right)]
-    [boolV (_) 
-          (equal? left right)]
-    [strV (_) 
-          (equal? left right)]
-    [closV (arg body env)
-           (and (equal? left right)
-                ;; This is probably broken given the override implementation
-                (andmap (lambda (left-bind right-bind) 
-                          (let* ([left-loc (bind-loc left-bind)]
-                                 [left-value (fetch left-sto left-loc)]
-                                 [right-loc (bind-loc right-bind)]
-                                 [right-value (fetch right-sto right-loc)])
-                            (deep-equal-values left-value left-sto right-value right-sto)))
-                        env (closV-env right)))]
-    [boxV (left-loc)
-          (deep-equal-values (fetch left-sto left-loc) left-sto (fetch right-sto (boxV-l right)) right-sto)]
-    [taggedV (left-tag left-tagged)
-             (and (deep-equal-values left-tag left-sto (taggedV-tag right) right-sto)
-                  (deep-equal-values left-tagged left-sto (taggedV-value right) right-sto))]
-    [builtinV (label f) (equal? left right)]))
-
 (define-type Result
   [v*s*t (v Value?) (s Store?) (t Trace?)])
 
@@ -434,11 +408,10 @@
                            [else (prepend-trace t-v (interp g env adv s-v))])])]
                                          
                          
-    [aroundAppC (f in) 
-                (type-case Result (interp f env adv sto)
-                  [v*s*t (v-f s-f t-f)
-                         (prepend-trace t-f (interp in env (cons (aroundAppV v-f) adv) s-f))])]
-                
+    [onappC (f in) 
+            (type-case Result (interp f env adv sto)
+              [v*s*t (v-f s-f t-f)
+                     (prepend-trace t-f (interp in env (cons (aroundAppV v-f) adv) s-f))])]
     
     [aroundSetC (f in) 
                 (type-case Result (interp f env adv sto)

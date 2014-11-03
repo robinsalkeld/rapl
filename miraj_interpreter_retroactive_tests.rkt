@@ -71,10 +71,13 @@
 (test (interp-exp (writeC "The answer" (numC 42)))
       (numV 42))
 
-(test (interp-exp (parse '((file "examples/fact.rkt") 4)))
+(test (interp-exp (parse '((file "examples/fact.alpha") 4)))
       (numV 24))
 
-(test (interp-exp (appC (appC (fileC "examples/fact_advice.rkt") (fileC "examples/fact.rkt")) (numC 3)))
+(test (interp-exp (appC (appC (fileC "examples/fact_advice.rkt") (fileC "examples/fact.alpha")) (numC 3)))
+      (numV 6))
+
+(test (interp-exp (appC (appC (fileC "examples/fact_boxes_advice.rkt") (fileC "examples/fact_boxes.rkt")) (numC 3)))
       (numV 6))
 
 (test (struct->list/recursive (numC 4)) '(numC 4))
@@ -95,6 +98,9 @@
 
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
       "retroactive-side-effect: retroactive advice proceeded more than once")
+
+(test (interp-query "traces/fact_boxes_trace.txt" (list (fileC "examples/fact_boxes_advice.rkt")))
+      (numV 6))
 
 (define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6)) (cell 3 (boxV 4)) (cell 4 (numV 42)) (cell 5 (boxV 6)) (cell 6 (boxV 5))) mt-trace (no-store)))
 (define sto-cells (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)))

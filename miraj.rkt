@@ -1,6 +1,11 @@
 #lang plai
 
 (define-type ExprC
+  ;; Identifiers and functions
+  [idC (s symbol?)]
+  [appC (fun ExprC?) (arg ExprC?)]
+  [lamC (arg symbol?) (body ExprC?)]
+  [letC (s symbol?) (v ExprC?) (in ExprC?)]
   ;; Numbers and arithmetic
   [numC (n number?)]
   [plusC (l ExprC?) (r ExprC?)]
@@ -9,11 +14,6 @@
   [boolC (b boolean?)]
   [equalC (l ExprC?) (r ExprC?)]
   [ifC (c ExprC?) (t ExprC?) (f ExprC?)]
-  ;; Identifiers and functions
-  [idC (s symbol?)]
-  [appC (fun ExprC?) (arg ExprC?)]
-  [lamC (arg symbol?) (body ExprC?)]
-  [letC (s symbol?) (v ExprC?) (in ExprC?)]
   ;; Boxes and sequencing
   [boxC (b ExprC?)]
   [unboxC (b ExprC?)]
@@ -23,7 +23,7 @@
   [strC (s string?)]
   [tagC (tag ExprC?) (v ExprC?)]
   [tagtestC (v ExprC?) (f ExprC?) (g ExprC?)]
-  [aroundAppC (fun ExprC?) (in ExprC?)]
+  [onappC (fun ExprC?) (in ExprC?)]
   [aroundSetC (fun ExprC?) (in ExprC?)]
   ;; Input/Output
   [fileC (path string?)]

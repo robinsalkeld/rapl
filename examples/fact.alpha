@@ -1,0 +1,7 @@
+((file "examples/y-comb.rkt")
+ (lambda (fact) 
+   (tag "fact"
+        (lambda (x) 
+          (if (equal? x 0) 
+              1 
+              (* x (fact (+ x -1))))))))
