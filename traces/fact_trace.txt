@@ -14,7 +14,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -41,7 +41,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -55,7 +55,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -81,7 +81,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -95,7 +95,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -104,7 +104,7 @@
        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
     (list))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -132,7 +132,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -148,7 +148,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -176,7 +176,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -198,7 +198,7 @@
       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))))
     (list))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -226,7 +226,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -240,7 +240,7 @@
  (list
   (app-call
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -269,7 +269,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -306,7 +306,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -347,7 +347,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -361,7 +361,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -401,7 +401,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -415,7 +415,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -424,7 +424,7 @@
        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
     (list))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -466,7 +466,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -482,7 +482,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -524,7 +524,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -536,7 +536,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -579,7 +579,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -630,7 +630,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -685,7 +685,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -699,7 +699,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -753,7 +753,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -767,7 +767,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -776,7 +776,7 @@
        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
     (list))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -832,7 +832,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -848,7 +848,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -904,7 +904,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -916,7 +916,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -973,7 +973,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1038,7 +1038,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1107,7 +1107,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1121,7 +1121,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -1189,7 +1189,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1203,7 +1203,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact")
+     (symbolC 'fact)
      (lamC
       'x
       (ifC
@@ -1212,7 +1212,7 @@
        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
     (list))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -1282,7 +1282,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1298,7 +1298,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -1368,7 +1368,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1380,7 +1380,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -1451,7 +1451,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1463,7 +1463,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -1535,7 +1535,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1614,7 +1614,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1626,7 +1626,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -1698,7 +1698,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1777,7 +1777,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1789,7 +1789,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -1861,7 +1861,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1940,7 +1940,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC
@@ -1952,7 +1952,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact")
+    (symbolV 'fact)
     (closV
      'x
      (ifC
@@ -2024,7 +2024,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact")
+        (symbolC 'fact)
         (lamC
          'x
          (ifC

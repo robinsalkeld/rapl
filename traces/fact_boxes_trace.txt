@@ -14,7 +14,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -46,7 +46,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -65,7 +65,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -96,7 +96,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -115,7 +115,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -129,7 +129,7 @@
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
     (list))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -162,7 +162,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -183,7 +183,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -216,7 +216,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -243,7 +243,7 @@
       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))))
     (list))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -276,7 +276,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -305,7 +305,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -335,7 +335,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -352,7 +352,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -374,7 +374,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -404,7 +404,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -436,7 +436,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -466,7 +466,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -502,7 +502,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -532,7 +532,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -551,7 +551,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -586,7 +586,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -616,7 +616,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -635,7 +635,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -649,7 +649,7 @@
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
     (list))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -686,7 +686,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -716,7 +716,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -737,7 +737,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -774,7 +774,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -804,7 +804,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -821,7 +821,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -859,7 +859,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -889,7 +889,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -937,7 +937,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -967,7 +967,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1019,7 +1019,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1049,7 +1049,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1068,7 +1068,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -1119,7 +1119,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1149,7 +1149,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1168,7 +1168,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -1182,7 +1182,7 @@
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
     (list))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -1235,7 +1235,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1265,7 +1265,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1286,7 +1286,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -1339,7 +1339,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1369,7 +1369,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1386,7 +1386,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -1440,7 +1440,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1470,7 +1470,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1534,7 +1534,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1564,7 +1564,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1632,7 +1632,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1662,7 +1662,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1681,7 +1681,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -1748,7 +1748,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1778,7 +1778,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1797,7 +1797,7 @@
    (closV
     'fact
     (tagC
-     (strC "fact_boxes")
+     (symbolC 'fact_boxes)
      (lamC
       'bx
       (letC
@@ -1811,7 +1811,7 @@
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
     (list))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -1880,7 +1880,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -1910,7 +1910,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -1931,7 +1931,7 @@
     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
     (list (bind 'f 0)))
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -2000,7 +2000,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2030,7 +2030,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2047,7 +2047,7 @@
     (no-store)))
   (app-call
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -2117,7 +2117,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2147,7 +2147,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2164,7 +2164,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -2237,7 +2237,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2267,7 +2267,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2347,7 +2347,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2377,7 +2377,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2394,7 +2394,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -2467,7 +2467,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2497,7 +2497,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2577,7 +2577,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2607,7 +2607,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2624,7 +2624,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -2697,7 +2697,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2727,7 +2727,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2807,7 +2807,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2837,7 +2837,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -2854,7 +2854,7 @@
     (no-store)))
   (app-return
    (taggedV
-    (strV "fact_boxes")
+    (symbolV 'fact_boxes)
     (closV
      'bx
      (letC
@@ -2927,7 +2927,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -2957,7 +2957,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC
@@ -3037,7 +3037,7 @@
      (cell
       3
       (taggedV
-       (strV "fact_boxes")
+       (symbolV 'fact_boxes)
        (closV
         'bx
         (letC
@@ -3067,7 +3067,7 @@
       (closV
        'fact
        (tagC
-        (strC "fact_boxes")
+        (symbolC 'fact_boxes)
         (lamC
          'bx
          (letC

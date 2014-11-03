@@ -20,7 +20,7 @@
   [setboxC (b ExprC?) (v ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
   ;; Advice
-  [strC (s string?)]
+  [symbolC (s symbol?)]
   [tagC (tag ExprC?) (v ExprC?)]
   [tagtestC (v ExprC?) (f ExprC?) (g ExprC?)]
   [onappC (fun ExprC?) (in ExprC?)]

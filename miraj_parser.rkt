@@ -4,7 +4,7 @@
 
 (define (apply-parsed-args [p procedure?] [l list?])
   (cond [(equal? (procedure-arity p) (length l)) (apply p (map parse l))]
-        [else (error 'parse "Wrong number of arguments")]))
+        [else (error (format "~a" p) "Wrong number of arguments")]))
 
 (define (parse s) ExprC?
 ;  (begin (print s) (newline)
@@ -12,6 +12,8 @@
          (let ([head (car s)]
                [tail (cdr s)])
            (case head
+             ['quote
+              (symbolC (list-ref tail 0))]
              ;; Numbers and arithmetic
              ['+
               (apply-parsed-args plusC tail)]
@@ -57,7 +59,6 @@
               (let ([parsed (map parse s)])
                 (foldl (lambda (x y) (appC y x)) (car parsed) (cdr parsed)))]))]
         [(number? s) (numC s)]
-        [(string? s) (strC s)]
         [(boolean? s) (boolC s)]
         [(symbol? s) (idC s)] 
         [else (error 'parse "Unhandled case")]))
@@ -67,7 +68,7 @@
   (type-case ExprC e
     [numC (n) n]
     [boolC (b) b]
-    [strC (s) (string-append "\"" s "\"")]
+    [symbolC (s) (string-append "\'" (symbol->string s))]
     [plusC (l r) (list '+ (exp-syntax l) (exp-syntax r))]
     [multC (l r) (list '* (exp-syntax l) (exp-syntax r))]
     [equalC (l r) (list 'equal? (exp-syntax l) (exp-syntax r))]

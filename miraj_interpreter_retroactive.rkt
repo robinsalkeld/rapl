@@ -11,7 +11,7 @@
 (define-type Value
   (numV (n number?))
   (boolV (b boolean?))
-  (strV (s string?))
+  (symbolV (s symbol?))
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
   (taggedV (tag Value?) (value Value?))
@@ -184,7 +184,7 @@
           (v*s*t v sto mt-trace)]
     [boolV (_) 
           (v*s*t v sto mt-trace)]
-    [strV (_) 
+    [symbolV (_) 
           (v*s*t v sto mt-trace)]
     [closV (arg body env)
            (map-closure arg body env sto)]
@@ -245,7 +245,7 @@
   (type-case Value v
     [numV (n) (display n out)]
     [boolV (b) (display b out)]
-    [strV (s) (write s out)]
+    [symbolV (s) (write s out)]
     [closV (arg body env)
            (begin (display arg out) (display " -> " out) (display (exp-syntax body) out) (display-env env out))]
     [boxV (l)
@@ -385,7 +385,7 @@
     
     ;; Advice
     
-    [strC (s) (v*s*t (strV s) sto mt-trace)]
+    [symbolC (s) (v*s*t (symbolV s) sto mt-trace)]
     
     [tagC (tag v) 
           (type-case Result (interp tag env adv sto)

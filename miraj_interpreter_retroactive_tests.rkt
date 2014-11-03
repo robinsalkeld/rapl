@@ -16,7 +16,9 @@
       (lamC 'x (lamC 'y (lamC 'z (appC (appC (idC 'x) (idC 'y)) (idC 'z))))))
 
 (test/exn (parse '(+ 1 2 3))
-      "parse: Wrong number of arguments")
+      "#<procedure:plusC28> \"Wrong number of arguments\"")
+
+(test (parse '(quote a)) (symbolC 'a))
 
 (test (interp-exp (parse 
                    '(let ([const5 (lambda (_) 5)])
@@ -35,19 +37,19 @@
       (numV 22))
 
 (test (interp-exp (parse
-                   '((file "examples/untag.rkt") (tag "foo" 42))))
+                   '((file "examples/untag.rkt") (tag 'foo 42))))
       (numV 42))
 
 (test (interp-exp (parse
                    '((file "examples/around.rkt") 
-                     ((file "examples/call.rkt") "change")
+                     ((file "examples/call.rkt") 'change)
                      (lambda (proceed y) (proceed (* y 2)))
                      (lambda (dummy)
                        ((file "examples/around.rkt") 
-                        ((file "examples/call.rkt") "change")
+                        ((file "examples/call.rkt") 'change)
                         (lambda (proceed y) (proceed (+ y 3))) 
                         (lambda (dummy)
-                          (let ([change (tag "change" (lambda (x) (+ x 5)))])
+                          (let ([change (tag 'change (lambda (x) (+ x 5)))])
                             (change 2)))
                         0))
                      0)))
@@ -55,14 +57,14 @@
 
 (test (interp-exp (parse
                    '((file "examples/around.rkt") 
-                     ((file "examples/call.rkt") "change")
+                     ((file "examples/call.rkt") 'change)
                      (lambda (proceed y) (proceed (+ y 3)))
                      (lambda (dummy)
                        ((file "examples/around.rkt") 
-                        ((file "examples/call.rkt") "change")
+                        ((file "examples/call.rkt") 'change)
                         (lambda (proceed) (lambda (y) (proceed (* y 2))))
                         (lambda (dummy)
-                          (let ([change (tag "change" (lambda (x) (+ x 5)))])
+                          (let ([change (tag 'change (lambda (x) (+ x 5)))])
                               (change 2)))
                         0))
                      0)))
@@ -77,7 +79,7 @@
 (test (interp-exp (appC (appC (fileC "examples/fact_advice.rkt") (fileC "examples/fact.alpha")) (numC 3)))
       (numV 6))
 
-(test (interp-exp (appC (appC (fileC "examples/fact_boxes_advice.rkt") (fileC "examples/fact_boxes.rkt")) (numC 3)))
+(test (interp-exp (appC (appC (fileC "examples/fact_boxes_advice.rkt") (fileC "examples/fact_boxes.alpha")) (numC 3)))
       (numV 6))
 
 (test (struct->list/recursive (numC 4)) '(numC 4))
