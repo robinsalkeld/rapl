@@ -212,23 +212,21 @@
 ;; Advice
 
 (define-type Advice
-  [aroundAppV (value Value?)]
+  [onappV (value Value?)]
   [aroundSetV (value Value?)])
 (define AdvEnv? (listof Advice?))  
 (define mt-adv empty)
 
-(define (apply-around-app [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
+(define (apply-onapp [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
   (type-case Advice advice
-    [aroundAppV (f)
-                (type-case Result abs-sto
-                  (v*s*t (abs sto t) 
-                         (type-case Result (interp-closure-app f abs adv sto)
-                           [v*s*t (w s-w t-w)
-                                  (v*s*t w s-w (append t-w t))])))]
+    [onappV (f)
+            (type-case Result abs-sto
+              (v*s*t (abs sto t) 
+                     (prepend-trace t (interp-closure-app f abs adv sto))))]
     [else abs-sto]))
 
 (define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
-  (foldr (curry apply-around-app adv) (v*s*t f sto mt-trace) adv))
+  (foldr (curry apply-onapp adv) (v*s*t f sto mt-trace) adv))
 
 (define (interp-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (type-case Result (weave adv abs sto)
@@ -408,10 +406,10 @@
                            [else (prepend-trace t-v (interp g env adv s-v))])])]
                                          
                          
-    [onappC (f in) 
-            (type-case Result (interp f env adv sto)
-              [v*s*t (v-f s-f t-f)
-                     (prepend-trace t-f (interp in env (cons (aroundAppV v-f) adv) s-f))])]
+    [onappC (wrapper scope) 
+            (type-case Result (interp wrapper env adv sto)
+              [v*s*t (v-w s-w t-w)
+                     (prepend-trace t-w (interp scope env (cons (onappV v-w) adv) s-w))])]
     
     [aroundSetC (f in) 
                 (type-case Result (interp f env adv sto)

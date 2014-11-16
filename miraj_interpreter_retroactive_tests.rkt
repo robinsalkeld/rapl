@@ -76,7 +76,7 @@
 (test (interp-exp (parse '((file "examples/fact.alpha") 4)))
       (numV 24))
 
-(test (interp-exp (appC (appC (fileC "examples/fact_advice.rkt") (fileC "examples/fact.alpha")) (numC 3)))
+(test (interp-exp (appC (appC (fileC "examples/fact_advice.alpha") (fileC "examples/fact.alpha")) (numC 3)))
       (numV 6))
 
 (test (interp-exp (appC (appC (fileC "examples/fact_boxes_advice.rkt") (fileC "examples/fact_boxes.alpha")) (numC 3)))
@@ -92,7 +92,7 @@
 (test-roundtrip (appC (idC 'foo) (numC 4)))
 (test-roundtrip (lamC 'bar (multC (numC 4) (idC 'bar))))
 
-(test (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice.rkt")))
+(test (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice.alpha")))
       (numV 6))
 
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_arg.rkt")))
