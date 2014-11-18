@@ -15,11 +15,15 @@
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
   (taggedV (tag Value?) (value Value?))
-  (builtinV (label string?) (f procedure?)))
+  (resumeV (label string?) (pos number?)))
+
+;; TODO-RS: not quite a continuation, but similar
+(define-type Cont
+  [app-call (abs Value?) (arg Value?)]
+  [app-result (abs Value?) (r Value?)])
 
 (define-type JoinPoint
-  [app-call (abs Value?) (arg Value?) (adv AdvEnv?) (sto Store?)]
-  [app-return (abs Value?) (result Value?) (adv AdvEnv?) (sto Store?)])
+  [joinpoint (c Cont?) (adv AdvEnv?) (sto Store?)])
 (define Trace? (listof JoinPoint?))
 (define mt-trace empty)
 
@@ -85,8 +89,10 @@
   (type-case Value (deep-untag closure)
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
-    [builtinV (label f)
-             (f a adv sto)]
+    [resumeV (label pos)
+             (type-case Store sto
+               [store (cells t)
+                      (retroactive-weave-call (first t) a adv sto)])]
     [else (error 'interp (string-append "only abstractions can be applied: " (value->string closure)))]))
 
 ;; Mutations and side-effects
@@ -107,34 +113,33 @@
        [mapping (l t-loc)
              (cond
                [(= loc l) 
-                (let* ([trace-value (fetch (store-t-sto sto) t-loc)])
+                (let* ([trace-value (fetch (trace-store sto) t-loc)])
                   (type-case Result (map-value trace-value sto)
                     [v*s*t (v s-v t-v) v]))]
                [else (fetch-from-cells (rest cells) sto loc)])])]))
 
 (define (fetch [sto Store?] [loc Location?]) Value?
   (type-case Store sto
-    [store (cells t t-sto)
-           (fetch-from-cells cells sto loc)]
-    [no-store () (error 'fetch "no-store")]))
+    [store (cells t)
+           (fetch-from-cells cells sto loc)]))
 
 (define-type Store 
-  [store (cells (listof Storage?)) (t Trace?) (t-sto Store?)]
-  [no-store])
+  [store (cells (listof Storage?)) (t Trace?)])
+
+(define (trace-store [s Store?]) Store?
+  (joinpoint-sto (first (store-t s))))
 
 (define (new-loc [sto Store?]) Location?
   (type-case Store sto
-    [store (cells t t-sto)
-           (length cells)]
-    [no-store () (error 'new-loc "no-store")]))
+    [store (cells t)
+           (length cells)]))
 
 (define (override-store [sto Store?] [loc Location?] [value Value?]) Store?
   (type-case Store sto
-    [store (cells trace trace-sto)
-           (store (cons (cell loc value) cells) trace trace-sto)]
-    [no-store () (error 'new-loc "no-store")]))
+    [store (cells trace)
+           (store (cons (cell loc value) cells) trace)]))
 
-(define mt-store (store empty empty (no-store)))
+(define mt-store (store empty empty))
 
 ;; Mapping trace values
 
@@ -153,14 +158,13 @@
 ;; The result value will always be a box
 (define (map-location [t-loc Location?] [sto Store?]) Result?
   (type-case Store sto
-    [no-store () (error 'map-location "no-store")]
-    [store (cells t t-sto)
+    [store (cells t)
            (let ([mapped-loc (mapped-location cells t-loc)])
              (if mapped-loc
                  (v*s*t (boxV mapped-loc) sto mt-trace)
                  (let* ([to-loc (new-loc sto)]
-                        [sto2 (store (cons (mapping to-loc t-loc) cells) t t-sto)]
-                        [value-result (map-value (fetch t-sto t-loc) sto2)])
+                        [sto2 (store (cons (mapping to-loc t-loc) cells) t)]
+                        [value-result (map-value (fetch (trace-store sto) t-loc) sto2)])
                    (v*s*t (boxV to-loc) (v*s*t-s value-result) mt-trace))))]))
 
 (define (map-binding [b Binding?] [result Result?]) Result?
@@ -196,7 +200,7 @@
                       (type-case Result (map-value tagged s-tag)
                         [v*s*t (mapped-tagged s-tagged t-tagged)
                                (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
-    [builtinV (label f) (v*s*t v sto mt-trace)]))
+    [resumeV (label pos) (v*s*t v sto mt-trace)]))
 
 (define-type Result
   [v*s*t (v Value?) (s Store?) (t Trace?)])
@@ -233,8 +237,8 @@
       (v*s*t (woven-abs s-w t-w)
              (type-case Result (interp-closure-app woven-abs arg adv s-w)
                  (v*s*t (v s-v t-v)
-                        (let ([call-jp (app-call abs arg adv sto)]
-                              [return-jp (app-return abs v adv s-v)])
+                        (let ([call-jp (joinpoint (app-call abs arg) adv sto)]
+                              [return-jp (joinpoint (app-result abs v) adv s-v)])
                             (v*s*t v s-v (append (list call-jp) t-w t-v (list return-jp)))))))))
 
 ;; Debugging
@@ -250,7 +254,7 @@
           (begin (display "box(" out) (display l out) (display ")" out))]
     [taggedV (t v)
             (begin (display "(tag " out) (display-value t out) (display " " out) (display-value v out) (display ")" out))]
-    [builtinV (label f) (display label out)]))
+    [resumeV (label f) (display label out)]))
 
 (define (value->string [v Value?]) string?
   (letrec ([out (open-output-string)]
@@ -281,10 +285,12 @@
 
 (define (display-joinpoint [jp JoinPoint?] [out output-port?])
   (type-case JoinPoint jp
-    [app-call (abs arg adv sto)
-              (begin (display "(app-call " out) (display-value abs out) (display ")" out))]
-    [app-return (abs result adv sto)
-                (begin (display "(app-return " out) (display-value result out) (display ")" out))]))
+    [joinpoint (c adv sto)
+               (type-case Cont c
+                 [app-call (abs arg)
+                           (begin (display "(app-call " out) (display-value abs out) (display ")" out))]
+                 [app-result (abs result)
+                             (begin (display "(app-return " out) (display-value result out) (display ")" out))])]))
     
 
 (define (display-with-label [label string?] [val Value?] [out output-port?])
@@ -484,9 +490,7 @@
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
                        [jp (first app-jps)]
-                       [weave-closure (builtinV "interp-query" 
-                                                (lambda (val adv sto) 
-                                                  (retroactive-weave-call jp adv (store (store-cells sto) (rest app-jps) (app-call-sto jp)))))]
+                       [weave-closure (retroactive-resume-value (app-call-abs jp) (store empty app-jps))]
                        [x (interp-closure-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
                        [result (interp-closure-app (v*s*t-v x) (numV 0) mt-adv (v*s*t-s x))])
                   (v*s*t-v result))]))
@@ -502,52 +506,61 @@
 
 ;; TODO-RS: Merge advice in scope properly wherever retroactive execution meets prior state
 
-(define (retroactive-weave-call [jp JoinPoint?] [adv AdvEnv?] [sto Store?]) Result?
-  (type-case JoinPoint jp
-    [app-call (abs arg jp-adv jp-sto)
-              (let* ([label (value->string abs)]
-                     [abs-copy-result (map-value abs sto)]
-                     [arg-copy-result (map-value arg (v*s*t-s abs-copy-result))]
-                     [proceed-result (box #f)]
-                     [proceed (lambda (val adv sto)
-                                (if (unbox proceed-result)
-                                    (error 'retroactive-side-effect "retroactive advice proceeded more than once")
-                                    (if (boolV-b (equal-values val (v*s*t-v arg-copy-result)))
-                                        (begin 
-                                          (set-box! proceed-result (retroactive-weave-return adv sto))
-                                          (unbox proceed-result))
-                                        (error 'retroactive-side-effect 
-                                               (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" 
-                                                       (v*s*t-v arg-copy-result) val)))))]
-                     [proceed-value (builtinV label proceed)]
-                     [tagged (deep-tag (all-tags abs) proceed-value)]
-                     [woven-result (weave adv tagged (v*s*t-s arg-copy-result))]
-                     [result (interp-closure-app (v*s*t-v woven-result) (v*s*t-v arg-copy-result) adv (v*s*t-s woven-result))])
-                (if (not (unbox proceed-result))
-                    (error 'retroactive-side-effect "retroactive advice failed to proceed")
-                    (if (not (boolV-b (equal-values (v*s*t-v (unbox proceed-result)) (v*s*t-v result))))
-                        (error 'retroactive-side-effect 
-                               (format "incorrect retroactive result: expected\n ~a but got\n ~a" 
-                                       (v*s*t-v (unbox proceed-result)) (v*s*t-v result)))
-                        ;; TODO-RS: Verify the store - check that f and a are still equal
-                        result)))]
-    [app-return (abs result jp-adv jp-sto)
-                (error 'retroactive-weave-call "Unexpected app-return")]))
+(define (pop-joinpoint [s Store?]) Store?
+  (type-case Store s
+    [store (cells trace)
+           (store cells (rest trace))]))
 
-(define (retroactive-weave-return [adv AdvEnv?] [sto Store?]) Result?
+(define (retroactive-replay-joinpoint [jp JoinPoint?] [adv AdvEnv?] [sto Store?]) Result?
+  (type-case JoinPoint jp
+    [joinpoint (c jp-adv jp-sto)
+               (let ([s-proceed (pop-joinpoint sto)])
+                 (type-case Cont c
+                   [app-call (abs arg) 
+                             (let ([result (retroactive-replay-joinpoint jp adv s-proceed)])
+                               (retroactive-weave-result adv (v*s*t-s result)))]
+                   [app-result (abs result) 
+                               (v*s*t result s-proceed mt-trace)]))]))
+
+(define (retroactive-resume-value [v Value?] [sto Store?]) Value?
   (type-case Store sto
-    [no-store () (error 'retroactive-weave-return "no-store")]
-    [store (cells trace trace-sto)
+    [store (cells t)
+           (let ([r (resumeV (value->string v) (length t))])
+             (deep-tag (all-tags v) r))]))
+
+(define (retroactive-weave-call [jp JoinPoint?] [pos number?] [a Value?] [adv AdvEnv?] [sto Store?]) Result?
+  (type-case JoinPoint jp
+    [joinpoint (c jp-adv jp-sto)
+               (type-case Cont c
+                 [app-call (abs arg)
+                           (type-case Store sto
+                             [store (cells t)
+                                    (cond [(= pos (length t))
+                                           (let* ([abs-copy-result (map-value abs sto)]
+                                                  [arg-copy-result (map-value arg (v*s*t-s abs-copy-result))])
+                                             (if (boolV-b (equal-values a (v*s*t-v arg-copy-result)))
+                                                 (retroactive-weave-result adv sto)
+                                                 (error 'retroactive-side-effect 
+                                                        (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" 
+                                                                (v*s*t-v arg-copy-result) a))))]
+                                          [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])])]
+                 [else (error 'retroactive-weave-call "Unexpected continuation")])]))
+
+(define (retroactive-weave-result [adv AdvEnv?] [sto Store?]) Result?
+  (type-case Store sto
+    [store (cells trace)
            (let* ([jp (first trace)]
                   [_ (if (unbox verbose-interp)
                          (begin
                            (display "Weaving joinpoint: ") (display-joinpoint jp (current-output-port)) (newline))
                          '())])
              (type-case JoinPoint jp
-               [app-call (abs arg jp-adv jp-sto) 
-                         (let* ([s-proceed (store cells (rest trace) jp-sto)]
-                                [result (retroactive-weave-call jp adv s-proceed)])
-                           (retroactive-weave-return adv (v*s*t-s result)))]
-               [app-return (abs result jp-adv jp-sto) 
-                           (let ([s-proceed (store cells (rest trace) jp-sto)])
-                             (v*s*t result s-proceed mt-trace))]))]))
+               [joinpoint (c jp-adv jp-sto)
+                          (type-case Cont c
+                            [app-call (abs arg) 
+                                      (let* ([s-proceed (store cells (rest trace) jp-sto)]
+                                             [result (retroactive-weave-call jp adv s-proceed)])
+                                        (retroactive-weave-result adv (v*s*t-s result)))]
+                            [app-result (abs result) 
+                                        (let ([s-proceed (store cells (rest trace) jp-sto)])
+                                          (v*s*t result s-proceed mt-trace))])]))]))
