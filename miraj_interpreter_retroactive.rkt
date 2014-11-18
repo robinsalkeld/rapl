@@ -490,7 +490,7 @@
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv mt-store)]
                        [jp (first app-jps)]
-                       [weave-closure (retroactive-resume-value (app-call-abs jp) (store empty app-jps))]
+                       [weave-closure (retroactive-resume-value (app-call-abs (joinpoint-c jp)) (store empty app-jps))]
                        [x (interp-closure-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
                        [result (interp-closure-app (v*s*t-v x) (numV 0) mt-adv (v*s*t-s x))])
                   (v*s*t-v result))]))
