@@ -59,7 +59,7 @@
     [else v]))
 
 (define (equal-values [l Value?] [r Value?]) Value?
-  (boolV (equal? l r)))
+  (equal? l r))
      
 ;; Identifiers and functions
 
@@ -335,7 +335,7 @@
                [v*s*t (v-l s-l t-l)
                       (type-case Result (interp r env adv s-l)
                         [v*s*t (v-r s-r t-r)
-                               (v*s*t (equal-values v-l v-r) s-r (append t-l t-r))])])]
+                               (v*s*t (boolV (equal-values v-l v-r)) s-r (append t-l t-r))])])]
     
     [ifC (c t f) (type-case Result (interp c env adv sto)
                    [v*s*t (v-c s-c t-c)
@@ -467,8 +467,7 @@
 ;; TODO-RS: Obviously needs generalizing beyond exactly two CLI inputs
   
 (define-type MirajTrace
-  [mirajTrace (f-jps Trace?)
-              (a-jps Trace?)
+  [mirajTrace (a Value?)
               (app-jps Trace?)])
 
 (define (interp-with-tracing (exps list?) (trace-path path-string?)) Value?
@@ -478,7 +477,7 @@
              [v*s*t (v-a s-a t-a)
                     (type-case Result (interp-app v-f v-a mt-adv s-a)
                       [v*s*t (v-r s-r t-r)
-                             (let* ([trace (mirajTrace t-f t-a t-r)]
+                             (let* ([trace (mirajTrace v-a t-r)]
                                     [_ (write-struct-to-file trace trace-path)])
                                v-r)])])]))
        
@@ -486,13 +485,13 @@
 
 (define (interp-query (trace-path path-string?) (exprs list?)) Value?
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
-    [mirajTrace (f-jps a-jps app-jps)
+    [mirajTrace (a app-jps)
                 (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
                        [query-result (interp (app-chain exprs) mt-env mt-adv (store empty app-jps))]
                        [jp (first app-jps)]
                        [weave-closure (retroactive-resume-value (app-call-abs (joinpoint-c jp)) (v*s*t-s query-result))]
                        [x (interp-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
-                       [result (interp-app (v*s*t-v x) (numV 0) mt-adv (v*s*t-s x))])
+                       [result (interp-app (v*s*t-v x) a mt-adv (v*s*t-s x))])
                   (v*s*t-v result))]))
 
 (define (all-tags [v Value?]) (listof Value?)
@@ -524,20 +523,21 @@
 (define (retroactive-weave-call [pos number?] [a Value?] [adv AdvEnv?] [sto Store?]) Result?
   (type-case Store sto
     [store (cells t)
-           (type-case JoinPoint (first t)
-             [joinpoint (c jp-adv jp-sto)
-                        (type-case Cont c
-                          [app-call (abs arg)
-                                    (cond [(= pos (length t))
+           (cond [(= pos (length t))
+                  (type-case JoinPoint (first t)
+                    [joinpoint (c jp-adv jp-sto)
+                               (type-case Cont c
+                                 [app-call (abs arg)
                                            (let* ([abs-copy-result (map-value abs sto)]
                                                   [arg-copy-result (map-value arg (v*s*t-s abs-copy-result))])
-                                             (if (or #t (boolV-b (equal-values a (v*s*t-v arg-copy-result))))
+                                             (if (or #t (equal-values a (v*s*t-v arg-copy-result)))
                                                  (retroactive-weave-result adv (pop-joinpoint sto))
                                                  (error 'retroactive-side-effect
                                                         (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" 
                                                                 (v*s*t-v arg-copy-result) a))))]
-                                          [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])]
-                          [else (error 'retroactive-weave-call "Unexpected continuation")])])]))
+                                         
+                                 [else (error 'retroactive-weave-call "Unexpected continuation")])])]
+                 [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])]))
 
 (define (retroactive-weave-result [adv AdvEnv?] [sto Store?]) Result?
   (type-case Store sto
