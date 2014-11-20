@@ -210,9 +210,6 @@
     [v*s*t (v-r s-r t-r)
            (v*s*t v-r s-r (append t t-r))]))
 
-(define-type Context
-  [e*s (e Env?) (s Store?)])
-
 ;; Advice
 
 (define-type Advice
@@ -261,11 +258,11 @@
            [_ (display-value v out)])
     (get-output-string out)))
 
-(define (display-context [c Context?] [out output-port?])
+(define (display-context [env Env?] [sto Store?] [out output-port?])
   (begin (display "Environment: \n" out)
-         (display-env (e*s-e c) out)
+         (display-env env out)
          (display "Store: \n" out)
-         (display-store (e*s-s c) out)))
+         (display-store sto out)))
          
 (define (display-env [env Env?] [out output-port?])
   (map (lambda (def) 
@@ -305,7 +302,7 @@
   (if (unbox verbose-interp)
       (begin
         (display "Expression: ") (display (exp-syntax expr)) (newline)
-        (display-context (e*s env sto) (current-output-port)) 
+        (display-context env sto (current-output-port)) 
         (newline))
       '())
 
@@ -512,7 +509,9 @@
 
 (define (retroactive-replay-call [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (let ([resume (retroactive-resume-value abs sto)])
-    (interp-app resume arg adv sto)))
+    (type-case Result (map-value arg sto)
+      (v*s*t (v-arg s-arg t-arg)
+             (interp-app resume v-arg adv s-arg)))))
 
 (define (retroactive-resume-value [v Value?] [sto Store?]) Value?
   (type-case Store sto
@@ -530,7 +529,7 @@
                                  [app-call (abs arg)
                                            (let* ([abs-copy-result (map-value abs sto)]
                                                   [arg-copy-result (map-value arg (v*s*t-s abs-copy-result))])
-                                             (if (or #t (equal-values a (v*s*t-v arg-copy-result)))
+                                             (if (equal-values a (v*s*t-v arg-copy-result))
                                                  (retroactive-weave-result adv (pop-joinpoint sto))
                                                  (error 'retroactive-side-effect
                                                         (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" 
