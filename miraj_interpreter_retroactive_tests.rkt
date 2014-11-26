@@ -106,7 +106,7 @@
 
 (define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6)) (cell 3 (boxV 4)) (cell 4 (numV 42)) (cell 5 (boxV 6)) (cell 6 (boxV 5))) mt-trace))
 (define sto-cells (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)))
-(define sto (store sto-cells (list (joinpoint (app-result (numV 0) (numV 0)) mt-adv t-sto))))
+(define sto (store sto-cells (list (state (app-result (numV 0)) mt-adv t-sto))))
 
 (test (fetch sto 0) (numV 7))
 (test (fetch sto 1) (numV 5))

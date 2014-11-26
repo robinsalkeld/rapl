@@ -1,7 +1,7 @@
 (mirajTrace
  (numV 3)
  (list
-  (joinpoint
+  (state
    (app-call
     (taggedV
      (symbolV 'fact)
@@ -42,7 +42,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'y
@@ -79,7 +79,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'x
@@ -120,7 +120,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'fact
@@ -174,19 +174,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-result
-    (closV
-     'fact
-     (tagC
-      (symbolC 'fact)
-      (lamC
-       'x
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (numC 1)
-        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
-     (list))
     (taggedV
      (symbolV 'fact)
      (closV
@@ -239,12 +228,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-result
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0)))
     (taggedV
      (symbolV 'fact)
      (closV
@@ -297,7 +282,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (taggedV
      (symbolV 'fact)
@@ -352,7 +337,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'y
@@ -403,7 +388,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'x
@@ -458,7 +443,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'fact
@@ -526,19 +511,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-result
-    (closV
-     'fact
-     (tagC
-      (symbolC 'fact)
-      (lamC
-       'x
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (numC 1)
-        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
-     (list))
     (taggedV
      (symbolV 'fact)
      (closV
@@ -605,12 +579,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-result
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0)))
     (taggedV
      (symbolV 'fact)
      (closV
@@ -677,7 +647,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (taggedV
      (symbolV 'fact)
@@ -746,7 +716,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'y
@@ -811,7 +781,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'x
@@ -880,7 +850,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (closV
      'fact
@@ -962,19 +932,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-result
-    (closV
-     'fact
-     (tagC
-      (symbolC 'fact)
-      (lamC
-       'x
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (numC 1)
-        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
-     (list))
     (taggedV
      (symbolV 'fact)
      (closV
@@ -1055,12 +1014,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-result
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0)))
     (taggedV
      (symbolV 'fact)
      (closV
@@ -1141,7 +1096,7 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
+  (state
    (app-call
     (taggedV
      (symbolV 'fact)
@@ -1224,18 +1179,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (taggedV
-     (symbolV 'fact)
-     (closV
-      'x
-      (ifC
-       (equalC (idC 'x) (numC 0))
-       (numC 1)
-       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
-      (list (bind 'fact 14))))
-    (numV 1))
+  (state
+   (app-result (numV 1))
    (list)
    (store
     (list
@@ -1308,13 +1253,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 9) (bind 'f 0)))
-    (numV 1))
+  (state
+   (app-result (numV 1))
    (list)
    (store
     (list
@@ -1387,18 +1327,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (taggedV
-     (symbolV 'fact)
-     (closV
-      'x
-      (ifC
-       (equalC (idC 'x) (numC 0))
-       (numC 1)
-       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
-      (list (bind 'fact 10))))
-    (numV 1))
+  (state
+   (app-result (numV 1))
    (list)
    (store
     (list
@@ -1471,13 +1401,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 5) (bind 'f 0)))
-    (numV 1))
+  (state
+   (app-result (numV 1))
    (list)
    (store
     (list
@@ -1550,18 +1475,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (taggedV
-     (symbolV 'fact)
-     (closV
-      'x
-      (ifC
-       (equalC (idC 'x) (numC 0))
-       (numC 1)
-       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
-      (list (bind 'fact 6))))
-    (numV 2))
+  (state
+   (app-result (numV 2))
    (list)
    (store
     (list
@@ -1634,13 +1549,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 1) (bind 'f 0)))
-    (numV 2))
+  (state
+   (app-result (numV 2))
    (list)
    (store
     (list
@@ -1713,18 +1623,8 @@
           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
        (list))))
     (list)))
-  (joinpoint
-   (app-result
-    (taggedV
-     (symbolV 'fact)
-     (closV
-      'x
-      (ifC
-       (equalC (idC 'x) (numC 0))
-       (numC 1)
-       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
-      (list (bind 'fact 2))))
-    (numV 6))
+  (state
+   (app-result (numV 6))
    (list)
    (store
     (list
