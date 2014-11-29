@@ -89,9 +89,7 @@
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
     [resumeV (label pos)
-             (type-case Store sto
-               [store (cells t)
-                      (retroactive-weave-call pos a adv sto)])]
+             (retroactive-weave-call pos a adv sto)]
     [else (error 'interp (string-append "only abstractions can be applied: " (value->string closure)))]))
 
 ;; Mutations and side-effects
@@ -99,7 +97,9 @@
 (define-type Storage
   [cell (location Location?) (val Value?)]
   [mapping (location Location?) (trace-loc Location?)])
- 
+(define-type Store 
+  [store (cells (listof Storage?)) (t Trace?)])
+
 (define (fetch-from-cells [cells (listof Storage?)] [sto Store?] [loc Location?]) Value?
   (cond
     [(empty? cells) (error 'fetch "location not found")]
@@ -122,11 +122,11 @@
     [store (cells t)
            (fetch-from-cells cells sto loc)]))
 
-(define-type Store 
-  [store (cells (listof Storage?)) (t Trace?)])
+(define (trace-state [s Store?]) State?
+  (first (store-t s)))
 
 (define (trace-store [s Store?]) Store?
-  (state-sto (first (store-t s))))
+  (state-sto (trace-state s)))
 
 (define (new-loc [sto Store?]) Location?
   (type-case Store sto
@@ -154,7 +154,7 @@
                [(= loc t-loc) l]
                [else (mapped-location (rest cells) loc)])])]))
 
-;; The result value will always be a box
+;; The result value will always be a box containing the mapped location
 (define (map-location [t-loc Location?] [sto Store?]) Result?
   (type-case Store sto
     [store (cells t)
@@ -232,10 +232,10 @@
   (type-case Result (weave adv abs sto)
       (v*s*t (woven-abs s-w t-w)
              (type-case Result (interp-closure-app woven-abs arg adv s-w)
-                 (v*s*t (v s-v t-v)
+                 (v*s*t (r s-r t-r)
                         (let ([call-state (state (app-call abs arg) adv sto)]
-                              [return-state (state (app-result v) adv s-v)])
-                            (v*s*t v s-v (append (list call-state) t-w t-v (list return-state)))))))))
+                              [return-state (state (app-result r) adv s-r)])
+                            (v*s*t r s-r (append (list call-state) t-w t-r (list return-state)))))))))
 
 ;; Debugging
 
@@ -494,22 +494,58 @@
   (type-case Value v
     [taggedV (tag tagged)
              (cons tag (all-tags tagged))]
-    [else '()]))
+    [else empty]))
 
 (define (deep-tag [tags (listof Value?)] [v Value?]) Value?
   (foldr taggedV v tags))
 
 ;; TODO-RS: Merge advice in scope properly wherever retroactive execution meets prior state
 
-(define (pop-joinpoint [s Store?]) Store?
+(define (next-trace-state [s Store?]) Store?
   (type-case Store s
     [store (cells trace)
            (store cells (rest trace))]))
+
+;; Without error checking
+
+(define (map-state [s State?] [sto Store?])
+  (type-case State s
+    [state (c adv t-sto)
+           (type-case Cont c
+             [app-call (abs arg) 
+                       (type-case Result (map-value arg sto)
+                           (v*s*t (v-a s-a t-a)
+                                  (state (app-call (rw-resume-value-no-error abs) v-a) adv s-a)))]
+             [app-result (r)
+                         (type-case Result (map-value r sto)
+                           (v*s*t (v-r s-r t-r)
+                                  (state (app-result v-r) adv s-r)))])]))
+
+(define (rw-resume-value-no-error [v Value?]) Value?
+  (deep-tag (all-tags v) (resumeV 'dummy' 0)))
+
+(define (rw-replay-call-no-error [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
+  (interp-app abs arg adv sto))
+
+(define (rw-call-no-error [a Value?] [adv AdvEnv?] [sto Store?]) Result?
+  (rw-result-no-error adv (next-trace-state sto)))
+
+(define (rw-result-no-error [adv AdvEnv?] [sto Store?]) Result?
+  (type-case State (trace-state sto)
+    [state (c t-adv t-sto)
+           (type-case Cont c
+             [app-call (abs arg) 
+                       (let ([result (rw-replay-call-no-error abs arg adv sto)])
+                         (rw-result-no-error adv (next-trace-state (v*s*t-s result))))]
+             [app-result (r) r])]))
+
+;; With error checking 
 
 (define (retroactive-replay-call [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (let ([resume (retroactive-resume-value abs sto)])
     (type-case Result (map-value arg sto)
       (v*s*t (v-arg s-arg t-arg)
+             ;; TODO-RS: Need to check return value here
              (interp-app resume v-arg adv s-arg)))))
 
 (define (retroactive-resume-value [v Value?] [sto Store?]) Value?
@@ -529,7 +565,7 @@
                                        (let* ([abs-copy-result (map-value abs sto)]
                                               [arg-copy-result (map-value arg (v*s*t-s abs-copy-result))])
                                          (if (equal-values a (v*s*t-v arg-copy-result))
-                                             (retroactive-weave-result adv (pop-joinpoint sto))
+                                             (retroactive-weave-result adv (next-trace-state sto))
                                              (error 'retroactive-side-effect
                                                     (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" 
                                                             (v*s*t-v arg-copy-result) a))))]
@@ -550,6 +586,6 @@
                       (type-case Cont c
                         [app-call (abs arg) 
                                   (let ([result (retroactive-replay-call abs arg adv sto)])
-                                    (retroactive-weave-result adv (pop-joinpoint (v*s*t-s result))))]
+                                    (retroactive-weave-result adv (next-trace-state (v*s*t-s result))))]
                         [app-result (result) 
-                                    (v*s*t result sto mt-trace)])]))]))
+                                    (map-value result sto)])]))]))
