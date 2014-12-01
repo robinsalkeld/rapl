@@ -247,7 +247,7 @@
     [boolV (b) (display b out)]
     [symbolV (s) (write s out)]
     [closV (arg body env)
-           (begin (display arg out) (display " -> " out) (display (exp-syntax body) out) (display-env env out))]
+           (begin (display arg out) (display " -> " out) (display (exp-syntax body) out) (newline out) (display-env env out))]
     [boxV (l)
           (begin (display "box(" out) (display l out) (display ")" out))]
     [taggedV (t v)
@@ -260,16 +260,19 @@
     (get-output-string out)))
 
 (define (display-context [env Env?] [sto Store?] [out output-port?])
-  (begin (display "Environment: \n" out)
+  (begin (display "=======================================\n" out)
+         (display "Environment: \n" out)
          (display-env env out)
          (display "Store: \n" out)
-         (display-store sto out)))
+         (display-store sto out)
+         (display "Trace Store: \n" out)
+         (display-store (trace-store sto) out)))
          
 (define (display-env [env Env?] [out output-port?])
   (map (lambda (def) 
          (type-case Binding def
            [bind (n l)
-                 (begin (display "\t" out) (display n out) (display " -> " out) (display l out) (display "\n" out))])) 
+                 (begin (display "\t\t" out) (display n out) (display " -> " out) (display l out) (display "\n" out))])) 
        env))
 
 (define (display-store [sto Store?] [out output-port?])
@@ -523,7 +526,9 @@
 (define (map-trace-state-no-error [sto Store?]) Store?
   (type-case Store sto
     [store (cells trace)
-           (store cells (cons (map-state-no-error (first trace) sto) (rest trace)))]))
+           (type-case State (map-state-no-error (first trace) sto)
+             [state (c adv mapped-sto)
+                    (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))])]))
 
 (define (map-state-no-error [s State?] [sto Store?]) State?
   (type-case State s
@@ -559,10 +564,12 @@
 
 ;; With error checking 
 
-(define (map-trace-state [s Store?]) Store?
-  (type-case Store s
+(define (map-trace-state [sto Store?]) Store?
+  (type-case Store sto
     [store (cells trace)
-           (store cells (cons (map-state (first trace) s) (rest trace)))]))
+           (type-case State (map-state (first trace) sto)
+             [state (c adv mapped-sto)
+                    (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))])]))
 
 (define (map-state [s State?] [sto Store?])
   (type-case State s
