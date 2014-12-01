@@ -15,6 +15,7 @@
 (define query-path (make-parameter #f))
 (define file-paths (make-parameter '()))
 (define verbose (make-parameter #f))
+(define unsafe (make-parameter #f))
 
 (command-line 
  #:program "miraj"
@@ -24,9 +25,11 @@
  [("-t" "--trace") path "Trace execution" (trace-path path)]
  [("-q" "--query") path "Query execution" (query-path path)]
  [("-v" "--verbose") "Verbose interpretation" (verbose true)]
+ [("-u" "--unsafe") "Unsafe interpretation (no retroactive errors)" (unsafe true)]
  #:args sources (file-paths sources))
 
 (set-box! verbose-interp (verbose))
+(set-box! retroactive-error-checking (not (unsafe)))
 
 (define exps (map parse-file (file-paths)))
 
