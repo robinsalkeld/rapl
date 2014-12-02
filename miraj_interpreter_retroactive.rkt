@@ -585,8 +585,12 @@
                                   (state (app-result v-r) adv s-r)))])]))
 
 (define (rw-replay-call [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
-  ;; TODO-RS: Need to check return value here
-  (interp-app abs arg adv sto))
+  (type-case Result (interp-app abs arg adv sto)
+    [v*s*t (v-r s-r t-r)
+           (let ([r (app-result-r (state-c (trace-state s-r)))])
+             (if (equal-values v-r r)
+                 (v*s*t v-r s-r t-r)
+                 (error 'retroactive-side-effect (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
 
 (define (rw-resume-value [v Value?] [sto Store?]) Value?
   (type-case Store sto

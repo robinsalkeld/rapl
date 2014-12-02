@@ -98,6 +98,9 @@
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_arg.rkt")))
       "retroactive-side-effect: incorrect argument passed retroactively: expected\n #(struct:numV 3) but got\n #(struct:numV 2)")
 
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_base_case.rkt")))
+      "retroactive-side-effect: incorrect retroactive result: expected\n #(struct:numV 1) but got\n #(struct:numV 7)")
+
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
       "retroactive-side-effect: retroactive advice proceeded out of order")
 
