@@ -1,6 +1,6 @@
 (lambda (f a)
   ((file "examples/around.rkt") 
-   ((file "examples/call.rkt") "fact_boxes")
+   ((file "examples/call.rkt") 'fact_boxes)
    (lambda (proceed ybox) 
      (let ([y (unbox ybox)])
        (seq (set-box! ybox (+ y -1))
@@ -8,5 +8,4 @@
               (seq (write "y" y)
                    (seq (write "result" result)
                         result))))))
-   f
-   a))
+   f a))

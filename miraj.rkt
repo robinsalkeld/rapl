@@ -39,6 +39,7 @@
          next))
 
 (define read-source (box (lambda () (string->number (read-line)))))
+(define write-sink (box (lambda (s) (begin (display s) (newline)))))
 
 (define interp-input (box '()))
 

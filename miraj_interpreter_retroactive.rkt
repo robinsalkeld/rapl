@@ -102,27 +102,33 @@
 (define-type Store 
   [store (cells (listof Storage?)) (t Trace?)])
 
-(define (fetch-from-cells [cells (listof Storage?)] [sto Store?] [loc Location?]) Value?
+(define (storage-at [storage (listof Storage?)] [loc Location?]) Storage?
   (cond
-    [(empty? cells) (error 'fetch "location not found")]
+    [(empty? storage) #f]
     [else 
-     (type-case Storage (first cells)
-       [cell (l val)
-             (cond
-               [(= loc l) val]
-               [else (fetch-from-cells (rest cells) sto loc)])]
-       [mapping (l t-loc)
-             (cond
-               [(= loc l) 
-                (let* ([trace-value (fetch (trace-store sto) t-loc)])
-                  (type-case Result (map-value trace-value sto)
-                    [v*s*t (v s-v t-v) v]))]
-               [else (fetch-from-cells (rest cells) sto loc)])])]))
+     (let ([s (first storage)])
+       (type-case Storage s
+         [cell (l val) 
+               (cond
+                 [(= loc l) s]
+                 [else (storage-at (rest storage) loc)])]
+         [mapping (l t-loc) 
+                  (cond
+                    [(= loc l) s]
+                    [else (storage-at (rest storage) loc)])]))]))
 
 (define (fetch [sto Store?] [loc Location?]) Value?
   (type-case Store sto
     [store (cells t)
-           (fetch-from-cells cells sto loc)]))
+           (let ([storage (storage-at cells loc)])
+             (if storage
+                 (type-case Storage (storage-at cells loc)
+                   [cell (l val) val]
+                   [mapping (l t-loc)
+                            (let* ([trace-value (fetch (trace-store sto) t-loc)])
+                              (type-case Result (map-value trace-value sto)
+                                [v*s*t (v s-v t-v) v]))])
+                 (error 'fetch "location not found")))]))
 
 (define (trace-state [s Store?]) State?
   (first (store-t s)))
@@ -138,7 +144,9 @@
 (define (override-store [sto Store?] [loc Location?] [value Value?]) Store?
   (type-case Store sto
     [store (cells trace)
-           (store (cons (cell loc value) cells) trace)]))
+           (if (mapping? (storage-at cells loc))
+               (error 'retroactive-side-effect "attempt to retroactively set box")
+               (store (cons (cell loc value) cells) trace))]))
 
 (define mt-store (store empty empty))
 
@@ -430,8 +438,8 @@
     
     [writeC (l a) (type-case Result (interp a env adv sto)
                [v*s*t (v-a s-a t-a) 
-                      (begin (display-with-label l v-a (current-output-port)) 
-                             (v*s*t v-a s-a t-a))])]
+                      (begin ((unbox write-sink) (string-append l ": " (value->string v-a)))
+                               (v*s*t v-a s-a t-a))])]
     
     [readC (l) (let* ([_ (display l)]
                       [_ (display "> ")]
@@ -590,7 +598,8 @@
            (let ([r (app-result-r (state-c (trace-state s-r)))])
              (if (equal-values v-r r)
                  (v*s*t v-r s-r t-r)
-                 (error 'retroactive-side-effect (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
+                 (error 'retroactive-side-effect 
+                        (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
 
 (define (rw-resume-value [v Value?] [sto Store?]) Value?
   (type-case Store sto
