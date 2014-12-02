@@ -38,7 +38,10 @@
          [_ (set-box! b (rest (unbox b)))])
          next))
 
-(define read-source (box (lambda () (string->number (read-line)))))
+(define read-source (box (lambda (prompt) 
+                           (display prompt)
+                           (display "> ")
+                           (string->number (read-line)))))
 (define write-sink (box (lambda (s) (begin (display s) (newline)))))
 
 (define interp-input (box '()))

@@ -147,6 +147,9 @@
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
       "retroactive-side-effect: retroactive advice proceeded out of order")
 
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_bad_read.rkt")))
+      "retroactive-side-effect: attempt to retroactively read input")
+
 (test (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "examples/fact_boxes_advice.rkt")))
       (v*o (numV 6) '("y before: 3"
                       "y before: 2"

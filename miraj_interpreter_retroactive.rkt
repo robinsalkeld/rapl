@@ -441,9 +441,7 @@
                       (begin ((unbox write-sink) (string-append l ": " (value->string v-a)))
                                (v*s*t v-a s-a t-a))])]
     
-    [readC (l) (let* ([_ (display l)]
-                      [_ (display "> ")]
-                      [val ((unbox read-source))]
+    [readC (l) (let* ([val ((unbox read-source) l)]
                       [_ (record-interp-input val)])
                  (v*s*t (numV val) sto mt-trace))]))
 )
@@ -469,7 +467,7 @@
 (define (replay-interp (recording-path path-string?))
   (let* ([recording (read-struct-from-file recording-path)]
          [remaining-input (box (mirajRecForReplay-input recording))]
-         [_ (set-box! read-source (lambda () (list-box-pop! remaining-input)))])
+         [_ (set-box! read-source (lambda (prompt) (list-box-pop! remaining-input)))])
     ((interp-exp (app-chain (mirajRecForReplay-program recording))))))
          
 ;; Tracing
@@ -497,7 +495,7 @@
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
     [mirajTrace (a app-trace)
                 (if (unbox retroactive-error-checking)
-                    (let* ([_ (set-box! read-source (lambda () (error 'retroactive-side-effect "cannot call read in retroactive advice")))]
+                    (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
                            [query-result (interp (app-chain exprs) mt-env mt-adv (map-trace-state (store empty app-trace)))]
                            [app-state (trace-state (v*s*t-s query-result))]
                            [weave-closure (rw-resume-value (app-call-abs (state-c app-state)) (v*s*t-s query-result))]
