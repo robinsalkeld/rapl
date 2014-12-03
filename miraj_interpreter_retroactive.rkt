@@ -593,12 +593,12 @@
 (define (rw-replay-call [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (rw-check-result (interp-woven-app abs arg adv sto)))
 
-(define (rw-check-result [r Result?] [sto Store?]) Result?
-  (type-case Result r
+(define (rw-check-result [result Result?] [sto Store?]) Result?
+  (type-case Result result
     [v*s*t (v-r s-r t-r)
            (let ([r (app-result-r (state-c (trace-state s-r)))])
              (if (equal-values v-r r)
-                 r
+                 result
                  (error 'retroactive-side-effect 
                         (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
   
