@@ -84,7 +84,7 @@
          [new-sto (override-store sto where a)])
             (interp expr new-env adv new-sto)))
 
-(define (interp-closure-app [closure Value?] [a Value?] [adv AdvEnv?] [sto Store?]) Result? 
+(define (interp-app [closure Value?] [a Value?] [adv AdvEnv?] [sto Store?]) Result? 
   (type-case Value (deep-untag closure)
     [closV (arg body env)
            (interp-with-binding arg a body env adv sto)]
@@ -232,16 +232,16 @@
     [onappV (f)
             (type-case Result abs-sto
               (v*s*t (abs sto t) 
-                     (prepend-trace t (interp-closure-app f abs adv sto))))]
+                     (prepend-trace t (interp-app f abs adv sto))))]
     [else abs-sto]))
 
 (define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (foldr (curry apply-onapp adv) (v*s*t f sto mt-trace) adv))
 
-(define (interp-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
+(define (interp-woven-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (type-case Result (weave adv abs sto)
       (v*s*t (woven-abs s-w t-w)
-             (type-case Result (interp-closure-app woven-abs arg adv s-w)
+             (type-case Result (interp-app woven-abs arg adv s-w)
                  (v*s*t (r s-r t-r)
                         (let ([call-state (state (app-call abs arg) adv sto)]
                               [return-state (state (app-result r) adv s-r)])
@@ -365,7 +365,7 @@
                   [v*s*t (v-f s-f t-f)
                          (type-case Result (interp a env adv s-f)
                            [v*s*t (v-a s-a t-a) 
-                                  (type-case Result (interp-app v-f v-a adv s-a)
+                                  (type-case Result (interp-woven-app v-f v-a adv s-a)
                                     [v*s*t (v-r s-r t-r)
                                            (v*s*t v-r s-r (append t-f t-a t-r))])])])]
     
@@ -415,10 +415,10 @@
                            [taggedV (tag tagged)
                                     (type-case Result (interp f env adv s-v)
                                       [v*s*t (v-f s-f t-f)
-                                             (type-case Result (interp-app v-f tag adv s-f)
+                                             (type-case Result (interp-woven-app v-f tag adv s-f)
                                                [v*s*t (v-f2 s-f2 t-f2)
                                                       (prepend-trace (append t-v t-f t-f2)
-                                                                     (interp-app v-f2 tagged adv s-f2))])])]
+                                                                     (interp-woven-app v-f2 tagged adv s-f2))])])]
                            [else (prepend-trace t-v (interp g env adv s-v))])])]
                                          
                          
@@ -483,7 +483,7 @@
     [v*s*t (v-f s-f t-f)
            (type-case Result (interp (first (rest exps)) mt-env mt-adv s-f)
              [v*s*t (v-a s-a t-a)
-                    (type-case Result (interp-app v-f v-a mt-adv s-a)
+                    (type-case Result (interp-woven-app v-f v-a mt-adv s-a)
                       [v*s*t (v-r s-r t-r)
                              (let* ([trace (mirajTrace v-a t-r)]
                                     [_ (write-struct-to-file trace trace-path)])
@@ -499,15 +499,15 @@
                            [query-result (interp (app-chain exprs) mt-env mt-adv (map-trace-state (store empty app-trace)))]
                            [app-state (trace-state (v*s*t-s query-result))]
                            [weave-closure (rw-resume-value (app-call-abs (state-c app-state)) (v*s*t-s query-result))]
-                           [x (interp-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
-                           [result (interp-app (v*s*t-v x) a mt-adv (v*s*t-s x))])
+                           [x (interp-woven-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
+                           [result (interp-woven-app (v*s*t-v x) a mt-adv (v*s*t-s x))])
                       (v*s*t-v result))
                     (let* ([sto (map-trace-state-no-error (store empty app-trace))]
                            [query-result (interp (app-chain exprs) mt-env mt-adv sto)]
                            [app-state (trace-state (v*s*t-s query-result))]
                            [weave-closure (rw-resume-value-no-error (app-call-abs (state-c app-state)))]
-                           [x (interp-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
-                           [result (interp-app (v*s*t-v x) a mt-adv (v*s*t-s x))])
+                           [x (interp-woven-app (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
+                           [result (interp-woven-app (v*s*t-v x) a mt-adv (v*s*t-s x))])
                       (v*s*t-v result)))]))
 
 
@@ -553,7 +553,7 @@
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
 
 (define (rw-replay-call-no-error [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
-  (interp-app abs arg adv sto))
+  (interp-woven-app abs arg adv sto))
 
 (define (rw-call-no-error [a Value?] [adv AdvEnv?] [sto Store?]) Result?
   (rw-result-no-error adv (map-trace-state-no-error (next-trace-state sto))))
@@ -591,7 +591,7 @@
                                   (state (app-result v-r) adv s-r)))])]))
 
 (define (rw-replay-call [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
-  (type-case Result (interp-app abs arg adv sto)
+  (type-case Result (interp-woven-app abs arg adv sto)
     [v*s*t (v-r s-r t-r)
            (let ([r (app-result-r (state-c (trace-state s-r)))])
              (if (equal-values v-r r)
@@ -599,6 +599,15 @@
                  (error 'retroactive-side-effect 
                         (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
 
+(define (rw-check-result [r Result?] [sto Store?]) Result?
+  (type-case Result r
+    [v*s*t (v-r s-r t-r)
+           (let ([r (app-result-r (state-c (trace-state s-r)))])
+             (if (equal-values v-r r)
+                 (v*s*t v-r s-r t-r)
+                 (error 'retroactive-side-effect 
+                        (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
+  
 (define (rw-resume-value [v Value?] [sto Store?]) Value?
   (type-case Store sto
     [store (cells t)
