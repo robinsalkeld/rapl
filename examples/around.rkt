@@ -1,10 +1,7 @@
 (lambda (pc advice f a)
-  (onapp 
-   (lambda (g)
-     (tagtest g
-              (lambda (gtag gtagged)
-                (if (pc gtag)
-                    (tag gtag (advice gtagged))
-                    g))
-              g))
+  (aroundapp 
+   (lambda (tag g)
+     (if (pc tag)
+         (advice g)
+         g))
    (f a)))

@@ -16,7 +16,7 @@
       (lamC 'x (lamC 'y (lamC 'z (appC (appC (idC 'x) (idC 'y)) (idC 'z))))))
 
 (test/exn (parse '(+ 1 2 3))
-      "#<procedure:plusC28> \"Wrong number of arguments\"")
+      "#<procedure:plusC27> \"Wrong number of arguments\"")
 
 (test (parse '(quote a)) (symbolC 'a))
 
@@ -35,10 +35,6 @@
                       (let ([quadruple (lambda (x) (double (double x)))])
                         (+ 10 (quadruple (+ 1 2)))))))
       (numV 22))
-
-(test (interp-exp (parse
-                   '((file "examples/untag.rkt") (tag 'foo 42))))
-      (numV 42))
 
 (test (interp-exp (parse
                    '((file "examples/around.rkt") 

@@ -22,8 +22,7 @@
   ;; Advice
   [symbolC (s symbol?)]
   [tagC (tag ExprC?) (v ExprC?)]
-  [tagtestC (v ExprC?) (f ExprC?) (g ExprC?)]
-  [onappC (fun ExprC?) (in ExprC?)]
+  [aroundAppC (fun ExprC?) (in ExprC?)]
   [aroundSetC (fun ExprC?) (in ExprC?)]
   ;; Input/Output
   [fileC (path string?)]

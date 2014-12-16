@@ -94,6 +94,13 @@
                  (rw-call-no-error a adv sto))]
     [else (error 'interp (string-append "only abstractions can be applied: " (value->string closure)))]))
 
+(define (interp-app-chain [value Value?] [values (listof Value?)] [adv AdvEnv?] [sto Store?]) Result?
+  (let ([helper (lambda (v r) 
+                  (type-case Result r
+                    [v*s*t (f sto t) 
+                           (prepend-trace t (interp-app f v adv sto))]))])
+    (foldl helper (v*s*t value sto mt-trace) values)))
+
 ;; Mutations and side-effects
 
 (define-type Storage
@@ -222,21 +229,24 @@
 ;; Advice
 
 (define-type Advice
-  [onappV (value Value?)]
+  [aroundAppV (value Value?)]
   [aroundSetV (value Value?)])
 (define AdvEnv? (listof Advice?))  
 (define mt-adv empty)
 
-(define (apply-onapp [adv AdvEnv?] [advice Advice?] [abs-sto Result?]) Result?
+(define (apply-aroundapp [adv AdvEnv?] [tag Value?] [advice Advice?] [abs-sto Result?]) Result?
   (type-case Advice advice
-    [onappV (f)
-            (type-case Result abs-sto
-              (v*s*t (abs sto t) 
-                     (prepend-trace t (interp-app f abs adv sto))))]
+    [aroundAppV (f)
+                (type-case Result abs-sto
+                  (v*s*t (abs sto t) 
+                         (prepend-trace t (interp-app-chain f (list tag abs) adv sto))))]
     [else abs-sto]))
 
 (define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
-  (foldr (curry apply-onapp adv) (v*s*t f sto mt-trace) adv))
+  (type-case Value f
+    [taggedV (tag tagged)
+             (foldr (curry apply-aroundapp adv tag) (v*s*t tagged sto mt-trace) adv)]
+    [else (v*s*t f sto mt-trace)]))
 
 (define (interp-woven-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
   (type-case Result (weave adv abs sto)
@@ -408,24 +418,10 @@
                      [v*s*t (v-v s-v t-v)
                             (v*s*t (taggedV v-tag v-v) s-v (append t-tag t-v))])])]
     
-    [tagtestC (v f g)
-              (type-case Result (interp v env adv sto)
-                  [v*s*t (v-v s-v t-v)
-                         (type-case Value v-v
-                           [taggedV (tag tagged)
-                                    (type-case Result (interp f env adv s-v)
-                                      [v*s*t (v-f s-f t-f)
-                                             (type-case Result (interp-woven-app v-f tag adv s-f)
-                                               [v*s*t (v-f2 s-f2 t-f2)
-                                                      (prepend-trace (append t-v t-f t-f2)
-                                                                     (interp-woven-app v-f2 tagged adv s-f2))])])]
-                           [else (prepend-trace t-v (interp g env adv s-v))])])]
-                                         
-                         
-    [onappC (wrapper scope) 
+    [aroundAppC (wrapper scope) 
             (type-case Result (interp wrapper env adv sto)
               [v*s*t (v-w s-w t-w)
-                     (prepend-trace t-w (interp scope env (cons (onappV v-w) adv) s-w))])]
+                     (prepend-trace t-w (interp scope env (cons (aroundAppV v-w) adv) s-w))])]
     
     [aroundSetC (f in) 
                 (type-case Result (interp f env adv sto)

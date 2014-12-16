@@ -43,10 +43,8 @@
              ;; Advice
              ['tag
               (tagC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
-             ['tagtest
-              (tagtestC (parse (list-ref tail 0)) (parse (list-ref tail 1)) (parse (list-ref tail 2)))]
-             ['onapp
-              (onappC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
+             ['aroundapp
+              (aroundAppC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
              ;; Input/Output
              ['read
               (readC (list-ref tail 0))]
@@ -82,8 +80,7 @@
     [setboxC (b val) (list 'set-box! (exp-syntax b) (exp-syntax val))]
     [seqC (b1 b2) (list 'seq (exp-syntax b1) (exp-syntax b2))]
     [tagC (tag v) (list 'tag (exp-syntax tag) (exp-syntax v))]
-    [tagtestC (v f g) (list 'tagtest (exp-syntax v) (exp-syntax f) (exp-syntax g))]
-    [onappC (f in) (list 'onapp (exp-syntax f) (exp-syntax in))]
+    [aroundAppC (f in) (list 'aroundapp (exp-syntax f) (exp-syntax in))]
     [aroundSetC (f in) (list 'aroundset (exp-syntax f) (exp-syntax in))]
     [fileC (path) (list 'file path)]
     [writeC (l a) (list 'write l (exp-syntax a))]
