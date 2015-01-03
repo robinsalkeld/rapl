@@ -63,26 +63,24 @@
 ;; Identifiers and functions
 
 (define-type Binding
-  [bind (name symbol?) (loc Location?)])
+  [bind (name symbol?) (value Value?)])
 (define Location? number?)
 (define Env? (listof Binding?))
 (define mt-env empty)
 
-(define (lookup [for symbol?] [env Env?])
+(define (lookup [for symbol?] [env Env?]) Value?
   (cond
     [(empty? env) (error 'lookup (string-append "name not found: " (symbol->string for)))]
     [else 
      (type-case Binding (first env)
-       [bind (name loc)
+       [bind (name value)
              (cond
-               [(symbol=? for name) loc]
+               [(symbol=? for name) value]
                [else (lookup for (rest env))])])]))
 
 (define (interp-with-binding [name symbol?] [a Value?] [expr ExprC?] [env Env?] [adv AdvEnv?] [sto Store?]) Result?
-  (let* ([where (new-loc sto)]
-         [new-env (cons (bind name where) env)]
-         [new-sto (override-store sto where a)])
-            (interp expr new-env adv new-sto)))
+  (let* ([new-env (cons (bind name a) env)])
+            (interp expr new-env adv sto)))
 
 (define (interp-app [closure Value?] [a Value?] [adv AdvEnv?] [sto Store?]) Result? 
   (type-case Value (deep-untag closure)
@@ -171,8 +169,7 @@
                [(= loc t-loc) l]
                [else (mapped-location (rest cells) loc)])])]))
 
-;; The result value will always be a box containing the mapped location
-(define (map-location [t-loc Location?] [sto Store?]) Result?
+(define (map-box [t-loc Location?] [sto Store?]) Result?
   (type-case Store sto
     [store (cells t)
            (let ([mapped-loc (mapped-location cells t-loc)])
@@ -185,14 +182,14 @@
 
 (define (map-binding [b Binding?] [result Result?]) Result?
   (type-case Binding b
-    [bind (name loc)
+    [bind (name value)
           (type-case Result result
             [v*s*t (c sto t)
                    (type-case Value c
                      [closV (arg body env)
-                            (type-case Result (map-location loc sto)
-                              [v*s*t (box s-box t-box)
-                                     (v*s*t (closV arg body (cons (bind name (boxV-l box)) env)) s-box mt-trace)])]
+                            (type-case Result (map-value value sto)
+                              [v*s*t (m s-m t-m)
+                                     (v*s*t (closV arg body (cons (bind name m) env)) s-m mt-trace)])]
                      [else (error 'map-binding "result parametmer must wrap a closure")])])]))
 
 (define (map-closure [arg symbol?] [body ExprC?] [env Env?] [sto Store?]) Result?
@@ -209,7 +206,7 @@
     [closV (arg body env)
            (map-closure arg body env sto)]
     [boxV (loc)
-          (map-location loc sto)]
+          (map-box loc sto)]
     [taggedV (tag tagged) 
              (type-case Result (map-value tag sto)
                [v*s*t (mapped-tag s-tag t-tag)
@@ -242,14 +239,14 @@
                          (prepend-trace t (interp-app-chain f (list tag abs) adv sto))))]
     [else abs-sto]))
 
-(define (weave [adv AdvEnv?] [f Value?] [sto Store?]) Result?
+(define (weave-app [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (type-case Value f
     [taggedV (tag tagged)
              (foldr (curry apply-aroundapp adv tag) (v*s*t tagged sto mt-trace) adv)]
     [else (v*s*t f sto mt-trace)]))
 
 (define (interp-woven-app [abs Value?] [arg Value?] [adv AdvEnv?] [sto Store?]) Result?
-  (type-case Result (weave adv abs sto)
+  (type-case Result (weave-app adv abs sto)
       (v*s*t (woven-abs s-w t-w)
              (type-case Result (interp-app woven-abs arg adv s-w)
                  (v*s*t (r s-r t-r)
@@ -289,8 +286,8 @@
 (define (display-env [env Env?] [out output-port?])
   (map (lambda (def) 
          (type-case Binding def
-           [bind (n l)
-                 (begin (display "\t\t" out) (display n out) (display " -> " out) (display l out) (display "\n" out))])) 
+           [bind (n v)
+                 (begin (display "\t\t" out) (display n out) (display " -> " out) (display-value v out) (display "\n" out))])) 
        env))
 
 (define (display-store [sto Store?] [out output-port?])
@@ -367,7 +364,7 @@
     
     ;; Identifiers and abstractions
     
-    [idC (n) (v*s*t (fetch sto (lookup n env)) sto mt-trace)]
+    [idC (n) (v*s*t (lookup n env) sto mt-trace)]
     
     [lamC (a b) (v*s*t (closV a b env) sto mt-trace)]
     

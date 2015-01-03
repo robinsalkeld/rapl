@@ -6,58 +6,76 @@
     (closV
      'x
      (appC (idC 'fact_recursive) (boxC (idC 'x)))
-     (list (bind 'fact_recursive 3)))
+     (list
+      (bind
+       'fact_recursive
+       (taggedV
+        (symbolV 'fact_boxes)
+        (closV
+         'bx
+         (letC
+          'x
+          (unboxC (idC 'bx))
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+           (seqC
+            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+         (list
+          (bind
+           'fact
+           (closV
+            'y
+            (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+            (list
+             (bind
+              'x
+              (closV
+               'x
+               (appC
+                (idC 'f)
+                (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+               (list
+                (bind
+                 'f
+                 (closV
+                  'fact
+                  (tagC
+                   (symbolC 'fact_boxes)
+                   (lamC
+                    'bx
+                    (letC
+                     'x
+                     (unboxC (idC 'bx))
+                     (ifC
+                      (equalC (idC 'x) (numC 0))
+                      (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                      (seqC
+                       (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                       (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+                  (list))))))
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))))))))
     (numV 3))
    (list)
-   (store
-    (list
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
+   (store (list) (list)))
   (state
    (app-call
     (taggedV
@@ -73,187 +91,896 @@
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 2))))
-    (boxV 5))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list)))))))))
+    (boxV 0))
    (list)
-   (store
-    (list
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
+   (store (list (cell 0 (numV 3))) (list)))
   (state
    (app-call
     (closV
      'y
      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 1) (bind 'f 0)))
-    (boxV 5))
+     (list
+      (bind
+       'x
+       (closV
+        'x
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact_boxes)
+            (lamC
+             'bx
+             (letC
+              'x
+              (unboxC (idC 'bx))
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (seqC
+                (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list)))))
+    (boxV 0))
+   (list)
+   (store (list (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list)))))
+    (closV
+     'x
+     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list))))))
+   (list)
+   (store (list (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (closV
+     'fact
+     (tagC
+      (symbolC 'fact_boxes)
+      (lamC
+       'bx
+       (letC
+        'x
+        (unboxC (idC 'bx))
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (seqC
+          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+     (list))
+    (closV
+     'y
+     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+     (list
+      (bind
+       'x
+       (closV
+        'x
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact_boxes)
+            (lamC
+             'bx
+             (letC
+              'x
+              (unboxC (idC 'bx))
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (seqC
+                (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list))))))
+   (list)
+   (store (list (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact_boxes)
+     (closV
+      'bx
+      (letC
+       'x
+       (unboxC (idC 'bx))
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (seqC
+         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list))))))))))
+   (list)
+   (store (list (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact_boxes)
+     (closV
+      'bx
+      (letC
+       'x
+       (unboxC (idC 'bx))
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (seqC
+         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list))))))))))
+   (list)
+   (store (list (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (taggedV
+     (symbolV 'fact_boxes)
+     (closV
+      'bx
+      (letC
+       'x
+       (unboxC (idC 'bx))
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (seqC
+         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list)))))))))
+    (boxV 0))
+   (list)
+   (store (list (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (closV
+     'y
+     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+     (list
+      (bind
+       'x
+       (closV
+        'x
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact_boxes)
+            (lamC
+             'bx
+             (letC
+              'x
+              (unboxC (idC 'bx))
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (seqC
+                (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list)))))
+    (boxV 0))
+   (list)
+   (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list)))))
+    (closV
+     'x
+     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list))))))
+   (list)
+   (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (closV
+     'fact
+     (tagC
+      (symbolC 'fact_boxes)
+      (lamC
+       'bx
+       (letC
+        'x
+        (unboxC (idC 'bx))
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (seqC
+          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+     (list))
+    (closV
+     'y
+     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+     (list
+      (bind
+       'x
+       (closV
+        'x
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact_boxes)
+            (lamC
+             'bx
+             (letC
+              'x
+              (unboxC (idC 'bx))
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (seqC
+                (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list))))))
+   (list)
+   (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact_boxes)
+     (closV
+      'bx
+      (letC
+       'x
+       (unboxC (idC 'bx))
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (seqC
+         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list))))))))))
+   (list)
+   (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact_boxes)
+     (closV
+      'bx
+      (letC
+       'x
+       (unboxC (idC 'bx))
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (seqC
+         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list))))))))))
+   (list)
+   (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (taggedV
+     (symbolV 'fact_boxes)
+     (closV
+      'bx
+      (letC
+       'x
+       (unboxC (idC 'bx))
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (seqC
+         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list)))))))))
+    (boxV 0))
+   (list)
+   (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))) (list)))
+  (state
+   (app-call
+    (closV
+     'y
+     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+     (list
+      (bind
+       'x
+       (closV
+        'x
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact_boxes)
+            (lamC
+             'bx
+             (letC
+              'x
+              (unboxC (idC 'bx))
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (seqC
+                (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list)))))
+    (boxV 0))
    (list)
    (store
     (list
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-call
     (closV
      'x
      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0)))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list)))))
     (closV
      'x
      (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list))))))
    (list)
    (store
     (list
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-call
@@ -276,581 +1003,56 @@
     (closV
      'y
      (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 10) (bind 'f 0))))
-   (list)
-   (store
-    (list
-     (cell
-      10
-      (closV
+     (list
+      (bind
        'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
        (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-result
-    (taggedV
-     (symbolV 'fact_boxes)
-     (closV
-      'bx
-      (letC
-       'x
-       (unboxC (idC 'bx))
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-        (seqC
-         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 11)))))
-   (list)
-   (store
-    (list
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-result
-    (taggedV
-     (symbolV 'fact_boxes)
-     (closV
-      'bx
-      (letC
-       'x
-       (unboxC (idC 'bx))
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-        (seqC
-         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 11)))))
-   (list)
-   (store
-    (list
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (taggedV
-     (symbolV 'fact_boxes)
-     (closV
-      'bx
-      (letC
-       'x
-       (unboxC (idC 'bx))
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-        (seqC
-         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 11))))
-    (boxV 5))
-   (list)
-   (store
-    (list
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 10) (bind 'f 0)))
-    (boxV 5))
-   (list)
-   (store
-    (list
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0)))
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0))))
-   (list)
-   (store
-    (list
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (closV
-     'fact
-     (tagC
-      (symbolC 'fact_boxes)
-      (lamC
-       'bx
-       (letC
         'x
-        (unboxC (idC 'bx))
-        (ifC
-         (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-         (seqC
-          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-     (list))
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 16) (bind 'f 0))))
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact_boxes)
+            (lamC
+             'bx
+             (letC
+              'x
+              (unboxC (idC 'bx))
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (seqC
+                (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact_boxes)
+         (lamC
+          'bx
+          (letC
+           'x
+           (unboxC (idC 'bx))
+           (ifC
+            (equalC (idC 'x) (numC 0))
+            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (seqC
+             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+        (list))))))
    (list)
    (store
     (list
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result
@@ -867,90 +1069,62 @@
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 17)))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list))))))))))
    (list)
    (store
     (list
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result
@@ -967,90 +1141,62 @@
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 17)))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list))))))))))
    (list)
    (store
     (list
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-call
@@ -1067,1586 +1213,149 @@
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 17))))
-    (boxV 5))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact_boxes)
+                (lamC
+                 'bx
+                 (letC
+                  'x
+                  (unboxC (idC 'bx))
+                  (ifC
+                   (equalC (idC 'x) (numC 0))
+                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (seqC
+                    (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                    (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact_boxes)
+             (lamC
+              'bx
+              (letC
+               'x
+               (unboxC (idC 'bx))
+               (ifC
+                (equalC (idC 'x) (numC 0))
+                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (seqC
+                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
+                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
+            (list)))))))))
+    (boxV 0))
    (list)
    (store
     (list
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 16) (bind 'f 0)))
-    (boxV 5))
-   (list)
-   (store
-    (list
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0)))
-    (closV
-     'x
-     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-     (list (bind 'f 0))))
-   (list)
-   (store
-    (list
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (closV
-     'fact
-     (tagC
-      (symbolC 'fact_boxes)
-      (lamC
-       'bx
-       (letC
-        'x
-        (unboxC (idC 'bx))
-        (ifC
-         (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-         (seqC
-          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-     (list))
-    (closV
-     'y
-     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-     (list (bind 'x 22) (bind 'f 0))))
-   (list)
-   (store
-    (list
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-result
-    (taggedV
-     (symbolV 'fact_boxes)
-     (closV
-      'bx
-      (letC
-       'x
-       (unboxC (idC 'bx))
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-        (seqC
-         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 23)))))
-   (list)
-   (store
-    (list
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-result
-    (taggedV
-     (symbolV 'fact_boxes)
-     (closV
-      'bx
-      (letC
-       'x
-       (unboxC (idC 'bx))
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-        (seqC
-         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 23)))))
-   (list)
-   (store
-    (list
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
-    (list)))
-  (state
-   (app-call
-    (taggedV
-     (symbolV 'fact_boxes)
-     (closV
-      'bx
-      (letC
-       'x
-       (unboxC (idC 'bx))
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-        (seqC
-         (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-         (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-      (list (bind 'fact 23))))
-    (boxV 5))
-   (list)
-   (store
-    (list
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 1))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 1))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 1))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 1))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 2))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 2))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 6))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))
   (state
    (app-result (numV 6))
    (list)
    (store
     (list
-     (cell 5 (numV 42))
-     (cell 25 (numV 0))
-     (cell 24 (boxV 5))
-     (cell
-      23
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 22) (bind 'f 0))))
-     (cell
-      22
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 21 (boxV 5))
-     (cell 5 (numV 0))
-     (cell 19 (numV 1))
-     (cell 18 (boxV 5))
-     (cell
-      17
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 16) (bind 'f 0))))
-     (cell
-      16
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 15 (boxV 5))
-     (cell 5 (numV 1))
-     (cell 13 (numV 2))
-     (cell 12 (boxV 5))
-     (cell
-      11
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 10) (bind 'f 0))))
-     (cell
-      10
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell 9 (boxV 5))
-     (cell 5 (numV 2))
-     (cell 7 (numV 3))
-     (cell 6 (boxV 5))
-     (cell 5 (numV 3))
-     (cell 4 (numV 3))
-     (cell
-      3
-      (taggedV
-       (symbolV 'fact_boxes)
-       (closV
-        'bx
-        (letC
-         'x
-         (unboxC (idC 'bx))
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-          (seqC
-           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
-        (list (bind 'fact 2)))))
-     (cell
-      2
-      (closV
-       'y
-       (appC (appC (idC 'x) (idC 'x)) (idC 'y))
-       (list (bind 'x 1) (bind 'f 0))))
-     (cell
-      1
-      (closV
-       'x
-       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
-       (list (bind 'f 0))))
-     (cell
-      0
-      (closV
-       'fact
-       (tagC
-        (symbolC 'fact_boxes)
-        (lamC
-         'bx
-         (letC
-          'x
-          (unboxC (idC 'bx))
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
-           (seqC
-            (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
-            (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
-       (list))))
+     (cell 0 (numV 42))
+     (cell 0 (numV 0))
+     (cell 0 (numV 1))
+     (cell 0 (numV 2))
+     (cell 0 (numV 3)))
     (list)))))

@@ -171,13 +171,13 @@
 (test (fetch sto 1) (numV 5))
 (test (fetch sto 2) (boxV 3))
 
-(type-case Result (map-location 3 sto)
+(type-case Result (map-box 3 sto)
   (v*s*t (v s t)
          (let ([b (fetch s (boxV-l v))])
            (test (fetch s (boxV-l b)) (numV 42)))))
 
 ;; Watch out for infinite recursion on recursive data
-(type-case Result (map-location 5 sto)
+(type-case Result (map-box 5 sto)
   (v*s*t (v s t)
          (test v (boxV 4))))
  
