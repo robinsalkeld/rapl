@@ -14,6 +14,7 @@
   (symbolV (s symbol?))
   (closV (arg symbol?) (body ExprC?) (env Env?))
   (boxV (l Location?))
+  (voidV)
   (taggedV (tag Value?) (value Value?))
   (resumeV (label string?) (pos number?)))
 
@@ -207,6 +208,8 @@
            (map-closure arg body env sto)]
     [boxV (loc)
           (map-box loc sto)]
+    [voidV ()
+           (v*s*t v sto mt-trace)]
     [taggedV (tag tagged) 
              (type-case Result (map-value tag sto)
                [v*s*t (mapped-tag s-tag t-tag)
@@ -226,8 +229,7 @@
 ;; Advice
 
 (define-type Advice
-  [aroundAppV (value Value?)]
-  [aroundSetV (value Value?)])
+  [aroundAppV (value Value?)])
 (define AdvEnv? (listof Advice?))  
 (define mt-adv empty)
 
@@ -236,8 +238,7 @@
     [aroundAppV (f)
                 (type-case Result abs-sto
                   (v*s*t (abs sto t) 
-                         (prepend-trace t (interp-app-chain f (list tag abs) adv sto))))]
-    [else abs-sto]))
+                         (prepend-trace t (interp-app-chain f (list tag abs) adv sto))))]))
 
 (define (weave-app [adv AdvEnv?] [f Value?] [sto Store?]) Result?
   (type-case Value f
@@ -265,6 +266,8 @@
            (begin (display arg out) (display " -> " out) (display (exp-syntax body) out) (newline out) (display-env env out))]
     [boxV (l)
           (begin (display "box(" out) (display l out) (display ")" out))]
+    [voidV ()
+           (display "(void)" out)]
     [taggedV (t v)
             (begin (display "(tag " out) (display-value t out) (display " " out) (display-value v out) (display ")" out))]
     [resumeV (label f) (display label out)]))
@@ -404,6 +407,8 @@
                [v*s*t (v-b1 s-b1 t-b1)
                       (prepend-trace t-b1 (interp b2 env adv s-b1))])]
     
+    [voidC () (v*s*t (voidV) sto mt-trace)]
+    
     ;; Advice
     
     [symbolC (s) (v*s*t (symbolV s) sto mt-trace)]
@@ -419,11 +424,6 @@
             (type-case Result (interp wrapper env adv sto)
               [v*s*t (v-w s-w t-w)
                      (prepend-trace t-w (interp scope env (cons (aroundAppV v-w) adv) s-w))])]
-    
-    [aroundSetC (f in) 
-                (type-case Result (interp f env adv sto)
-                  [v*s*t (v-f s-f t-f)
-                         (prepend-trace t-f (interp in env (cons (aroundSetV v-f) adv) s-f))])]
     
     ;; Input/Output
     

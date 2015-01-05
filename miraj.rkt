@@ -19,11 +19,11 @@
   [unboxC (b ExprC?)]
   [setboxC (b ExprC?) (v ExprC?)]
   [seqC (b1 ExprC?) (b2 ExprC?)]
+  [voidC]
   ;; Advice
   [symbolC (s symbol?)]
   [tagC (tag ExprC?) (v ExprC?)]
   [aroundAppC (fun ExprC?) (in ExprC?)]
-  [aroundSetC (fun ExprC?) (in ExprC?)]
   ;; Input/Output
   [fileC (path string?)]
   [writeC (l string?) (v ExprC?)]

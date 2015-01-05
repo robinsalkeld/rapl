@@ -20,6 +20,8 @@
 
 (test (parse '(quote a)) (symbolC 'a))
 
+(test (parse '(void)) (voidC))
+
 (test (interp-exp (parse 
                    '(let ([const5 (lambda (_) 5)])
                       (+ 10 (const5 10)))))
@@ -196,3 +198,5 @@
                       "result: 6")))
 
 ;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))
+
+(display "Done!")

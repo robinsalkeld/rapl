@@ -40,6 +40,8 @@
               (setboxC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
              ['seq
               (seqC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
+             ['void
+              (voidC)]
              ;; Advice
              ['tag
               (tagC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
@@ -79,9 +81,9 @@
     [unboxC (a) (list 'unbox (exp-syntax a))]
     [setboxC (b val) (list 'set-box! (exp-syntax b) (exp-syntax val))]
     [seqC (b1 b2) (list 'seq (exp-syntax b1) (exp-syntax b2))]
+    [voidC () (list 'void)]
     [tagC (tag v) (list 'tag (exp-syntax tag) (exp-syntax v))]
     [aroundAppC (f in) (list 'aroundapp (exp-syntax f) (exp-syntax in))]
-    [aroundSetC (f in) (list 'aroundset (exp-syntax f) (exp-syntax in))]
     [fileC (path) (list 'file path)]
     [writeC (l a) (list 'write l (exp-syntax a))]
     [readC (l) (list 'read l)]))
