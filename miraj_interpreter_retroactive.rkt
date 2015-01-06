@@ -478,7 +478,8 @@
                   [_ (write-struct-to-file (mirajTrace trace) trace-path)])
              v)]))
 
-(define miraj-ns (current-namespace))
+;; TODO-RS: Gah, can't figure out how to get a hold of the current module
+(define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
 
 (define (interp-query (trace-path path-string?) (exprs list?)) Value?
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
