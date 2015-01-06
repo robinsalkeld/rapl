@@ -478,7 +478,7 @@
                   [_ (write-struct-to-file (mirajTrace trace) trace-path)])
              v)]))
 
-(define miraj-ns (module->namespace "miraj_interpreter_retroactive.rkt"))
+(define miraj-ns (current-namespace))
 
 (define (interp-query (trace-path path-string?) (exprs list?)) Value?
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
