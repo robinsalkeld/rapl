@@ -1,6 +1,6 @@
 (lambda (f a)
-  ((file "examples/around.rkt") 
-   ((file "examples/call.rkt") 'fact)
+  ((file "around.ttpl") 
+   ((file "call.ttpl") 'fact)
    (lambda (proceed y) 
      (seq (proceed y) (proceed y)))
    f

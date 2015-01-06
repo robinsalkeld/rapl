@@ -6,6 +6,7 @@
 (require "miraj_serialization.rkt")
 
 (print-only-errors)
+(current-directory (build-path (current-directory) "examples"))
 
 (test (parse '(let ([const5 (lambda (_) 5)])
                  (+ 10 (const5 10))))
@@ -39,12 +40,12 @@
       (numV 22))
 
 (test (interp-exp (parse
-                   '((file "examples/around.rkt") 
-                     ((file "examples/call.rkt") 'change)
+                   '((file "around.ttpl") 
+                     ((file "call.ttpl") 'change)
                      (lambda (proceed y) (proceed (* y 2)))
                      (lambda (dummy)
-                       ((file "examples/around.rkt") 
-                        ((file "examples/call.rkt") 'change)
+                       ((file "around.ttpl") 
+                        ((file "call.ttpl") 'change)
                         (lambda (proceed y) (proceed (+ y 3))) 
                         (lambda (dummy)
                           (let ([change (tag 'change (lambda (x) (+ x 5)))])
@@ -54,12 +55,12 @@
       (numV 15))
 
 (test (interp-exp (parse
-                   '((file "examples/around.rkt") 
-                     ((file "examples/call.rkt") 'change)
+                   '((file "around.ttpl") 
+                     ((file "call.ttpl") 'change)
                      (lambda (proceed y) (proceed (+ y 3)))
                      (lambda (dummy)
-                       ((file "examples/around.rkt") 
-                        ((file "examples/call.rkt") 'change)
+                       ((file "around.ttpl") 
+                        ((file "call.ttpl") 'change)
                         (lambda (proceed) (lambda (y) (proceed (* y 2))))
                         (lambda (dummy)
                           (let ([change (tag 'change (lambda (x) (+ x 5)))])
@@ -85,10 +86,10 @@
 (test (interp-exp-with-output (writeC "The answer" (numC 42)))
       (v*o (numV 42) '("The answer: 42")))
 
-(test (interp-exp (parse '((file "examples/fact.alpha") 4)))
+(test (interp-exp (parse '((file "fact.ttpl") 4)))
       (numV 24))
 
-(test (interp-exp-with-output (appC (appC (fileC "examples/fact_advice.alpha") (fileC "examples/fact.alpha")) (numC 3)))
+(test (interp-exp-with-output (appC (appC (fileC "fact_advice.ttpl") (fileC "fact.ttpl")) (numC 3)))
       (v*o (numV 6) '("y: 0"
                       "result: 1"
                       "y: 1"
@@ -98,7 +99,7 @@
                       "y: 3"
                       "result: 6")))
 
-(test (interp-exp-with-output (appC (appC (fileC "examples/fact_boxes_advice.rkt") (fileC "examples/fact_boxes.alpha")) (numC 3)))
+(test (interp-exp-with-output (appC (appC (fileC "fact_boxes_advice.rkt") (fileC "fact_boxes.alpha")) (numC 3)))
       (v*o (numV 6) '("y before: 3"
                       "y before: 2"
                       "y before: 1"
@@ -126,7 +127,7 @@
 (define (interp-query-with-output [trace-file string?] [exps list?]) ValueWithOutput?
   (with-output (lambda () (interp-query trace-file exps))))
 
-(test (interp-query-with-output "traces/fact_trace.txt" (list (fileC "examples/fact_advice.alpha")))
+(test (interp-query-with-output "traces/fact_trace.txt" (list (fileC "fact_advice.ttpl")))
       (v*o (numV 6) '("y: 0"
                       "result: 1"
                       "y: 1"
@@ -136,19 +137,19 @@
                       "y: 3"
                       "result: 6")))
 
-(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_arg.rkt")))
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_arg.rkt")))
       "retroactive-side-effect: incorrect argument passed retroactively: expected\n #(struct:numV 3) but got\n #(struct:numV 2)")
 
-(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_base_case.rkt")))
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_base_case.rkt")))
       "retroactive-side-effect: incorrect retroactive result: expected\n #(struct:numV 1) but got\n #(struct:numV 7)")
 
-(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_double_proceed.rkt")))
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_double_proceed.rkt")))
       "retroactive-side-effect: retroactive advice proceeded out of order")
 
-(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "examples/fact_advice_bad_read.rkt")))
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_bad_read.rkt")))
       "retroactive-side-effect: attempt to retroactively read input")
 
-(test (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "examples/fact_boxes_advice.rkt")))
+(test (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice.rkt")))
       (v*o (numV 6) '("y before: 3"
                       "y before: 2"
                       "y before: 1"
@@ -162,7 +163,7 @@
                       "y after: 42"
                       "result: 6")))
 
-(test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "examples/fact_boxes_advice_bad_set_box.rkt")))
+(test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice_bad_set_box.rkt")))
       "retroactive-side-effect: attempt to retroactively set box")
 
 (define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6)) (cell 3 (boxV 4)) (cell 4 (numV 42)) (cell 5 (boxV 6)) (cell 6 (boxV 5))) mt-trace))
@@ -187,7 +188,7 @@
 
 (set-box! retroactive-error-checking #f)
 
-(test (interp-exp-with-output (appC (appC (fileC "examples/fact_advice.alpha") (fileC "examples/fact.alpha")) (numC 3)))
+(test (interp-exp-with-output (appC (appC (fileC "fact_advice.ttpl") (fileC "fact.ttpl")) (numC 3)))
       (v*o (numV 6) '("y: 0"
                       "result: 1"
                       "y: 1"

@@ -1,0 +1,10 @@
+(lambda (advice thunk)
+  ((file "around.ttpl")
+   (lambda (t) (equal? t 'bar))
+   (lambda (bar)
+     (lambda (x) 
+       ((file "around.ttpl")
+        (lambda (t) (equal? t 'foo))
+        advice
+        (bar x))))
+   thunk))

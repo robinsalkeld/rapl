@@ -4,8 +4,8 @@
   (aroundbox 
    "inputs"
    (lambda (inputs)
-     ((file "examples/around.rkt")  
-      ((file "examples/call.rkt") "fact_loop")
+     ((file "around.ttpl")  
+      ((file "call.ttpl") "fact_loop")
       (lambda (proceed y) 
         (let ([result (proceed y)])
           (seq (write "y" y)

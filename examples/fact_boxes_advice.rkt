@@ -1,6 +1,6 @@
 (lambda (thunk)
-  ((file "examples/around.rkt") 
-   ((file "examples/call.rkt") 'fact_boxes)
+  ((file "around.ttpl") 
+   ((file "call.ttpl") 'fact_boxes)
    (lambda (proceed ybox) 
      (seq (write "y before" (unbox ybox))
           (let ([result (proceed ybox)])

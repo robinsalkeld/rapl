@@ -1,5 +1,5 @@
 (let ([fact_recursive 
-       ((file "examples/y-comb.rkt")
+       ((file "Z.ttpl")
         (lambda (fact) 
           (tag 'fact_boxes
                (lambda (bx)
