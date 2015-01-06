@@ -9,17 +9,19 @@
 ;; Miraj interpreter CLI
 ;;
 
+(define eval-expr (make-parameter #f))
+(define file-paths (make-parameter '()))
 (define recording-path (make-parameter #f))
 (define replay-path (make-parameter #f))
 (define trace-path (make-parameter #f))
 (define query-path (make-parameter #f))
-(define file-paths (make-parameter '()))
 (define verbose (make-parameter #f))
 (define unsafe (make-parameter #f))
 
 (command-line 
- #:program "miraj"
+ #:program "ttpl"
  #:once-each
+ [("-e" "--eval") expr "Evaluate expression" (eval-expr expr)]
  ;[("-r" "--record") path "Record execution" (recording-path path)]
  ;[("-p" "--replay") path "Replay execution" (replay-path path)]
  [("-t" "--trace") path "Trace execution" (trace-path path)]
@@ -31,10 +33,15 @@
 (set-box! verbose-interp (verbose))
 (set-box! retroactive-error-checking (not (unsafe)))
 
-(define exps (map parse-file (file-paths)))
-
 (define (interp-program [exps list?]) Value?
   (interp-exp (app-chain exps)))
+
+(define exps
+  (cond
+    [(eval-expr)
+     (list (parse (read (open-input-string (eval-expr)))))]
+    [else
+     (map parse-file (file-paths))]))
 
 (let ([result
        (cond
