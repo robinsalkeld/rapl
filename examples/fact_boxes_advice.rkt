@@ -1,4 +1,4 @@
-(lambda (f a)
+(lambda (thunk)
   ((file "examples/around.rkt") 
    ((file "examples/call.rkt") 'fact_boxes)
    (lambda (proceed ybox) 
@@ -7,5 +7,4 @@
             (seq (write "y after" (unbox ybox))
                  (seq (write "result" result)
                       result)))))
-   f
-   a))
+   thunk))

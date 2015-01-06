@@ -1,0 +1,1 @@
+(lambda (thunk) (thunk (void)))

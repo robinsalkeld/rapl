@@ -1,6 +1,895 @@
 (mirajTrace
- (numV 3)
  (list
+  (state (interp-init) (list) (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'thunk
+     (appC (appC (fileC "examples/fact_advice.alpha") (idC 'thunk)) (voidC))
+     (list))
+    (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'thunk
+     (appC
+      (appC
+       (appC
+        (fileC "examples/around.rkt")
+        (appC (fileC "examples/call.rkt") (symbolC 'fact)))
+       (lamC
+        'proceed
+        (lamC
+         'y
+         (letC
+          'result
+          (appC (idC 'proceed) (idC 'y))
+          (seqC
+           (writeC "y" (idC 'y))
+           (seqC (writeC "result" (idC 'result)) (idC 'result)))))))
+      (idC 'thunk))
+     (list))
+    (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV 'label (lamC 'tag (equalC (idC 'tag) (idC 'label))) (list))
+    (symbolV 'fact))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'tag
+     (equalC (idC 'tag) (idC 'label))
+     (list (bind 'label (symbolV 'fact)))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'pc
+     (lamC
+      'advice
+      (lamC
+       'thunk
+       (lamC
+        'v
+        (aroundAppC
+         (lamC
+          'tag
+          (lamC
+           'g
+           (ifC
+            (appC (idC 'pc) (idC 'tag))
+            (appC (idC 'advice) (idC 'g))
+            (idC 'g))))
+         (appC (idC 'thunk) (idC 'v))))))
+     (list))
+    (closV
+     'tag
+     (equalC (idC 'tag) (idC 'label))
+     (list (bind 'label (symbolV 'fact)))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'advice
+     (lamC
+      'thunk
+      (lamC
+       'v
+       (aroundAppC
+        (lamC
+         'tag
+         (lamC
+          'g
+          (ifC
+           (appC (idC 'pc) (idC 'tag))
+           (appC (idC 'advice) (idC 'g))
+           (idC 'g))))
+        (appC (idC 'thunk) (idC 'v)))))
+     (list
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact))))))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'advice
+     (lamC
+      'thunk
+      (lamC
+       'v
+       (aroundAppC
+        (lamC
+         'tag
+         (lamC
+          'g
+          (ifC
+           (appC (idC 'pc) (idC 'tag))
+           (appC (idC 'advice) (idC 'g))
+           (idC 'g))))
+        (appC (idC 'thunk) (idC 'v)))))
+     (list
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact)))))))
+    (closV
+     'proceed
+     (lamC
+      'y
+      (letC
+       'result
+       (appC (idC 'proceed) (idC 'y))
+       (seqC
+        (writeC "y" (idC 'y))
+        (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'thunk
+     (lamC
+      'v
+      (aroundAppC
+       (lamC
+        'tag
+        (lamC
+         'g
+         (ifC
+          (appC (idC 'pc) (idC 'tag))
+          (appC (idC 'advice) (idC 'g))
+          (idC 'g))))
+       (appC (idC 'thunk) (idC 'v))))
+     (list
+      (bind
+       'advice
+       (closV
+        'proceed
+        (lamC
+         'y
+         (letC
+          'result
+          (appC (idC 'proceed) (idC 'y))
+          (seqC
+           (writeC "y" (idC 'y))
+           (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+        (list
+         (bind
+          'thunk
+          (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact))))))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'thunk
+     (lamC
+      'v
+      (aroundAppC
+       (lamC
+        'tag
+        (lamC
+         'g
+         (ifC
+          (appC (idC 'pc) (idC 'tag))
+          (appC (idC 'advice) (idC 'g))
+          (idC 'g))))
+       (appC (idC 'thunk) (idC 'v))))
+     (list
+      (bind
+       'advice
+       (closV
+        'proceed
+        (lamC
+         'y
+         (letC
+          'result
+          (appC (idC 'proceed) (idC 'y))
+          (seqC
+           (writeC "y" (idC 'y))
+           (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+        (list
+         (bind
+          'thunk
+          (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact)))))))
+    (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'v
+     (aroundAppC
+      (lamC
+       'tag
+       (lamC
+        'g
+        (ifC
+         (appC (idC 'pc) (idC 'tag))
+         (appC (idC 'advice) (idC 'g))
+         (idC 'g))))
+      (appC (idC 'thunk) (idC 'v)))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+      (bind
+       'advice
+       (closV
+        'proceed
+        (lamC
+         'y
+         (letC
+          'result
+          (appC (idC 'proceed) (idC 'y))
+          (seqC
+           (writeC "y" (idC 'y))
+           (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+        (list
+         (bind
+          'thunk
+          (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact))))))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'v
+     (aroundAppC
+      (lamC
+       'tag
+       (lamC
+        'g
+        (ifC
+         (appC (idC 'pc) (idC 'tag))
+         (appC (idC 'advice) (idC 'g))
+         (idC 'g))))
+      (appC (idC 'thunk) (idC 'v)))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+      (bind
+       'advice
+       (closV
+        'proceed
+        (lamC
+         'y
+         (letC
+          'result
+          (appC (idC 'proceed) (idC 'y))
+          (seqC
+           (writeC "y" (idC 'y))
+           (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+        (list
+         (bind
+          'thunk
+          (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact))))))))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'v
+     (aroundAppC
+      (lamC
+       'tag
+       (lamC
+        'g
+        (ifC
+         (appC (idC 'pc) (idC 'tag))
+         (appC (idC 'advice) (idC 'g))
+         (idC 'g))))
+      (appC (idC 'thunk) (idC 'v)))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+      (bind
+       'advice
+       (closV
+        'proceed
+        (lamC
+         'y
+         (letC
+          'result
+          (appC (idC 'proceed) (idC 'y))
+          (seqC
+           (writeC "y" (idC 'y))
+           (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+        (list
+         (bind
+          'thunk
+          (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+      (bind
+       'pc
+       (closV
+        'tag
+        (equalC (idC 'tag) (idC 'label))
+        (list (bind 'label (symbolV 'fact)))))))
+    (voidV))
+   (list)
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))
+    (voidV))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'f
+     (appC
+      (lamC
+       'x
+       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y)))))
+      (lamC
+       'x
+       (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))))
+     (list))
+    (closV
+     'fact
+     (tagC
+      (symbolC 'fact)
+      (lamC
+       'x
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (numC 1)
+        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+     (list)))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          'x
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+        (list)))))
+    (closV
+     'x
+     (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+     (list
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          'x
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+        (list))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'fact
+     (tagC
+      (symbolC 'fact)
+      (lamC
+       'x
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (numC 1)
+        (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+     (list))
+    (closV
+     'y
+     (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+     (list
+      (bind
+       'x
+       (closV
+        'x
+        (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+        (list
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        'fact
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          'x
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+        (list))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact)
+     (closV
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact)
+                (lamC
+                 'x
+                 (ifC
+                  (equalC (idC 'x) (numC 0))
+                  (numC 1)
+                  (multC
+                   (idC 'x)
+                   (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact)
+             (lamC
+              'x
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (numC 1)
+               (multC
+                (idC 'x)
+                (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+            (list))))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact)
+     (closV
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact)
+                (lamC
+                 'x
+                 (ifC
+                  (equalC (idC 'x) (numC 0))
+                  (numC 1)
+                  (multC
+                   (idC 'x)
+                   (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact)
+             (lamC
+              'x
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (numC 1)
+               (multC
+                (idC 'x)
+                (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+            (list))))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (taggedV
+     (symbolV 'fact)
+     (closV
+      'x
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+      (list
+       (bind
+        'fact
+        (closV
+         'y
+         (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+         (list
+          (bind
+           'x
+           (closV
+            'x
+            (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+            (list
+             (bind
+              'f
+              (closV
+               'fact
+               (tagC
+                (symbolC 'fact)
+                (lamC
+                 'x
+                 (ifC
+                  (equalC (idC 'x) (numC 0))
+                  (numC 1)
+                  (multC
+                   (idC 'x)
+                   (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+               (list))))))
+          (bind
+           'f
+           (closV
+            'fact
+            (tagC
+             (symbolC 'fact)
+             (lamC
+              'x
+              (ifC
+               (equalC (idC 'x) (numC 0))
+               (numC 1)
+               (multC
+                (idC 'x)
+                (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+            (list))))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
   (state
    (app-call
     (taggedV
@@ -55,7 +944,422 @@
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list)))))))))
     (numV 3))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'tag
+     (equalC (idC 'tag) (idC 'label))
+     (list (bind 'label (symbolV 'fact))))
+    (symbolV 'fact))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (boolV #t))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'proceed
+     (lamC
+      'y
+      (letC
+       'result
+       (appC (idC 'proceed) (idC 'y))
+       (seqC
+        (writeC "y" (idC 'y))
+        (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))))
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list)))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'y
+     (letC
+      'result
+      (appC (idC 'proceed) (idC 'y))
+      (seqC
+       (writeC "y" (idC 'y))
+       (seqC (writeC "result" (idC 'result)) (idC 'result))))
+     (list
+      (bind
+       'proceed
+       (closV
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+        (list
+         (bind
+          'fact
+          (closV
+           'y
+           (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+           (list
+            (bind
+             'x
+             (closV
+              'x
+              (appC
+               (idC 'f)
+               (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+              (list
+               (bind
+                'f
+                (closV
+                 'fact
+                 (tagC
+                  (symbolC 'fact)
+                  (lamC
+                   'x
+                   (ifC
+                    (equalC (idC 'x) (numC 0))
+                    (numC 1)
+                    (multC
+                     (idC 'x)
+                     (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+                 (list))))))
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list)))))))))
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list))))))))
+    (numV 3))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -96,7 +1400,43 @@
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list)))))
     (numV 2))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -134,7 +1474,43 @@
            (numC 1)
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -185,7 +1561,43 @@
            (numC 1)
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-result
@@ -240,7 +1652,43 @@
                 (idC 'x)
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list))))))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-result
@@ -295,7 +1743,43 @@
                 (idC 'x)
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list))))))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -351,7 +1835,422 @@
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list)))))))))
     (numV 2))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'tag
+     (equalC (idC 'tag) (idC 'label))
+     (list (bind 'label (symbolV 'fact))))
+    (symbolV 'fact))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (boolV #t))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'proceed
+     (lamC
+      'y
+      (letC
+       'result
+       (appC (idC 'proceed) (idC 'y))
+       (seqC
+        (writeC "y" (idC 'y))
+        (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))))
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list)))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'y
+     (letC
+      'result
+      (appC (idC 'proceed) (idC 'y))
+      (seqC
+       (writeC "y" (idC 'y))
+       (seqC (writeC "result" (idC 'result)) (idC 'result))))
+     (list
+      (bind
+       'proceed
+       (closV
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+        (list
+         (bind
+          'fact
+          (closV
+           'y
+           (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+           (list
+            (bind
+             'x
+             (closV
+              'x
+              (appC
+               (idC 'f)
+               (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+              (list
+               (bind
+                'f
+                (closV
+                 'fact
+                 (tagC
+                  (symbolC 'fact)
+                  (lamC
+                   'x
+                   (ifC
+                    (equalC (idC 'x) (numC 0))
+                    (numC 1)
+                    (multC
+                     (idC 'x)
+                     (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+                 (list))))))
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list)))))))))
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list))))))))
+    (numV 2))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -392,7 +2291,43 @@
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list)))))
     (numV 1))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -430,7 +2365,43 @@
            (numC 1)
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -481,7 +2452,43 @@
            (numC 1)
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-result
@@ -536,7 +2543,43 @@
                 (idC 'x)
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list))))))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-result
@@ -591,7 +2634,43 @@
                 (idC 'x)
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list))))))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -647,7 +2726,422 @@
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list)))))))))
     (numV 1))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'tag
+     (equalC (idC 'tag) (idC 'label))
+     (list (bind 'label (symbolV 'fact))))
+    (symbolV 'fact))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (boolV #t))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'proceed
+     (lamC
+      'y
+      (letC
+       'result
+       (appC (idC 'proceed) (idC 'y))
+       (seqC
+        (writeC "y" (idC 'y))
+        (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))))
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list)))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'y
+     (letC
+      'result
+      (appC (idC 'proceed) (idC 'y))
+      (seqC
+       (writeC "y" (idC 'y))
+       (seqC (writeC "result" (idC 'result)) (idC 'result))))
+     (list
+      (bind
+       'proceed
+       (closV
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+        (list
+         (bind
+          'fact
+          (closV
+           'y
+           (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+           (list
+            (bind
+             'x
+             (closV
+              'x
+              (appC
+               (idC 'f)
+               (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+              (list
+               (bind
+                'f
+                (closV
+                 'fact
+                 (tagC
+                  (symbolC 'fact)
+                  (lamC
+                   'x
+                   (ifC
+                    (equalC (idC 'x) (numC 0))
+                    (numC 1)
+                    (multC
+                     (idC 'x)
+                     (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+                 (list))))))
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list)))))))))
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list))))))))
+    (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -688,7 +3182,43 @@
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list)))))
     (numV 0))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -726,7 +3256,43 @@
            (numC 1)
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -777,7 +3343,43 @@
            (numC 1)
            (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
         (list))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-result
@@ -832,7 +3434,43 @@
                 (idC 'x)
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list))))))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-result
@@ -887,7 +3525,43 @@
                 (idC 'x)
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list))))))))))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
   (state
    (app-call
@@ -943,12 +3617,903 @@
                 (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
             (list)))))))))
     (numV 0))
-   (list)
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
    (store (list) (list)))
-  (state (app-result (numV 1)) (list) (store (list) (list)))
-  (state (app-result (numV 1)) (list) (store (list) (list)))
-  (state (app-result (numV 1)) (list) (store (list) (list)))
-  (state (app-result (numV 1)) (list) (store (list) (list)))
-  (state (app-result (numV 2)) (list) (store (list) (list)))
-  (state (app-result (numV 2)) (list) (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'tag
+     (equalC (idC 'tag) (idC 'label))
+     (list (bind 'label (symbolV 'fact))))
+    (symbolV 'fact))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (boolV #t))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'proceed
+     (lamC
+      'y
+      (letC
+       'result
+       (appC (idC 'proceed) (idC 'y))
+       (seqC
+        (writeC "y" (idC 'y))
+        (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+     (list
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))))
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list)))))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result
+    (closV
+     'y
+     (letC
+      'result
+      (appC (idC 'proceed) (idC 'y))
+      (seqC
+       (writeC "y" (idC 'y))
+       (seqC (writeC "result" (idC 'result)) (idC 'result))))
+     (list
+      (bind
+       'proceed
+       (closV
+        'x
+        (ifC
+         (equalC (idC 'x) (numC 0))
+         (numC 1)
+         (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+        (list
+         (bind
+          'fact
+          (closV
+           'y
+           (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+           (list
+            (bind
+             'x
+             (closV
+              'x
+              (appC
+               (idC 'f)
+               (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+              (list
+               (bind
+                'f
+                (closV
+                 'fact
+                 (tagC
+                  (symbolC 'fact)
+                  (lamC
+                   'x
+                   (ifC
+                    (equalC (idC 'x) (numC 0))
+                    (numC 1)
+                    (multC
+                     (idC 'x)
+                     (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+                 (list))))))
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list)))))))))
+      (bind
+       'thunk
+       (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-call
+    (closV
+     'x
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))
+     (list
+      (bind
+       'fact
+       (closV
+        'y
+        (appC (appC (idC 'x) (idC 'x)) (idC 'y))
+        (list
+         (bind
+          'x
+          (closV
+           'x
+           (appC (idC 'f) (lamC 'y (appC (appC (idC 'x) (idC 'x)) (idC 'y))))
+           (list
+            (bind
+             'f
+             (closV
+              'fact
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                'x
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           'fact
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             'x
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC (idC 'x) (appC (idC 'fact) (plusC (idC 'x) (numC -1)))))))
+           (list))))))))
+    (numV 0))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 1))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 2))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 2))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 2))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 6))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 6))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state
+   (app-result (numV 6))
+   (list
+    (aroundAppV
+     (closV
+      'tag
+      (lamC
+       'g
+       (ifC
+        (appC (idC 'pc) (idC 'tag))
+        (appC (idC 'advice) (idC 'g))
+        (idC 'g)))
+      (list
+       (bind 'v (voidV))
+       (bind
+        'thunk
+        (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list)))
+       (bind
+        'advice
+        (closV
+         'proceed
+         (lamC
+          'y
+          (letC
+           'result
+           (appC (idC 'proceed) (idC 'y))
+           (seqC
+            (writeC "y" (idC 'y))
+            (seqC (writeC "result" (idC 'result)) (idC 'result)))))
+         (list
+          (bind
+           'thunk
+           (closV 'v (appC (fileC "examples/fact.alpha") (numC 3)) (list))))))
+       (bind
+        'pc
+        (closV
+         'tag
+         (equalC (idC 'tag) (idC 'label))
+         (list (bind 'label (symbolV 'fact)))))))))
+   (store (list) (list)))
+  (state (app-result (numV 6)) (list) (store (list) (list)))
+  (state (app-result (numV 6)) (list) (store (list) (list)))
   (state (app-result (numV 6)) (list) (store (list) (list)))))
