@@ -104,13 +104,13 @@
                       "y before: 2"
                       "y before: 1"
                       "y before: 0"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 1"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 1"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 2"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 6")))
 
 (test (struct->list/recursive (numC 4)) '(numC 4))
@@ -154,13 +154,13 @@
                       "y before: 2"
                       "y before: 1"
                       "y before: 0"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 1"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 1"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 2"
-                      "y after: 42"
+                      "y after: 0"
                       "result: 6")))
 
 (test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice_bad_set_box.rkt")))
@@ -174,13 +174,13 @@
 (test (fetch sto 1) (numV 5))
 (test (fetch sto 2) (boxV 3))
 
-(type-case Result (map-box 3 sto)
+(type-case Result (map-trace-location 3 sto)
   (v*s*t (v s t)
          (let ([b (fetch s (boxV-l v))])
            (test (fetch s (boxV-l b)) (numV 42)))))
 
 ;; Watch out for infinite recursion on recursive data
-(type-case Result (map-box 5 sto)
+(type-case Result (map-trace-location 5 sto)
   (v*s*t (v s t)
          (test v (boxV 4))))
  

@@ -1,6 +1,6 @@
 (lambda (thunk)
   ((file "around.ttpl") 
-   ((file "call.ttpl") 'fact_boxes)
+   ((file "call.ttpl") 'fact_helper)
    (lambda (proceed ybox) 
      (seq (write "y before" (unbox ybox))
           (let ([result (proceed ybox)])

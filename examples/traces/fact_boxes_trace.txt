@@ -3,18 +3,6 @@
   (state (interp-init) (list) (store (list) (list)))
   (state
    (app-call
-    (closV 'thunk (appC (idC 'thunk) (voidC)) (list))
-    (closV 'v (appC (fileC "examples/fact_boxes.alpha") (numC 3)) (list)))
-   (list)
-   (store (list) (list)))
-  (state
-   (app-call
-    (closV 'v (appC (fileC "examples/fact_boxes.alpha") (numC 3)) (list))
-    (voidV))
-   (list)
-   (store (list) (list)))
-  (state
-   (app-call
     (closV
      'f
      (appC
@@ -28,7 +16,7 @@
     (closV
      'fact
      (tagC
-      (symbolC 'fact_boxes)
+      (symbolC 'fact_helper)
       (lamC
        'bx
        (letC
@@ -36,7 +24,7 @@
         (unboxC (idC 'bx))
         (ifC
          (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (numC 1)
          (seqC
           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -54,7 +42,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -62,7 +50,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -76,7 +64,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -84,7 +72,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -96,7 +84,7 @@
     (closV
      'fact
      (tagC
-      (symbolC 'fact_boxes)
+      (symbolC 'fact_helper)
       (lamC
        'bx
        (letC
@@ -104,7 +92,7 @@
         (unboxC (idC 'bx))
         (ifC
          (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (numC 1)
          (seqC
           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -124,7 +112,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -132,7 +120,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -142,7 +130,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -150,7 +138,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -160,7 +148,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -168,7 +156,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -190,7 +178,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -198,7 +186,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -208,7 +196,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -216,7 +204,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -226,7 +214,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -234,7 +222,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -256,7 +244,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -264,7 +252,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -274,7 +262,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -282,7 +270,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -292,7 +280,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -300,7 +288,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -322,7 +310,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -330,7 +318,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -340,7 +328,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -348,7 +336,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -359,12 +347,12 @@
    (app-call
     (closV
      'x
-     (appC (idC 'fact_recursive) (boxC (idC 'x)))
+     (appC (idC 'fact_helper) (boxC (idC 'x)))
      (list
       (bind
-       'fact_recursive
+       'fact_helper
        (taggedV
-        (symbolV 'fact_boxes)
+        (symbolV 'fact_helper)
         (closV
          'bx
          (letC
@@ -372,7 +360,7 @@
           (unboxC (idC 'bx))
           (ifC
            (equalC (idC 'x) (numC 0))
-           (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+           (numC 1)
            (seqC
             (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
             (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -396,7 +384,7 @@
                  (closV
                   'fact
                   (tagC
-                   (symbolC 'fact_boxes)
+                   (symbolC 'fact_helper)
                    (lamC
                     'bx
                     (letC
@@ -404,7 +392,7 @@
                      (unboxC (idC 'bx))
                      (ifC
                       (equalC (idC 'x) (numC 0))
-                      (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                      (numC 1)
                       (seqC
                        (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                        (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -414,7 +402,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -422,7 +410,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -433,7 +421,7 @@
   (state
    (app-call
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -441,7 +429,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -463,7 +451,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -471,7 +459,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -481,7 +469,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -489,7 +477,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -514,7 +502,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -522,7 +510,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -532,7 +520,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -540,7 +528,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -559,7 +547,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -567,7 +555,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -581,7 +569,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -589,7 +577,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -601,7 +589,7 @@
     (closV
      'fact
      (tagC
-      (symbolC 'fact_boxes)
+      (symbolC 'fact_helper)
       (lamC
        'bx
        (letC
@@ -609,7 +597,7 @@
         (unboxC (idC 'bx))
         (ifC
          (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (numC 1)
          (seqC
           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -629,7 +617,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -637,7 +625,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -647,7 +635,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -655,7 +643,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -665,7 +653,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -673,7 +661,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -695,7 +683,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -703,7 +691,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -713,7 +701,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -721,7 +709,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -731,7 +719,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -739,7 +727,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -761,7 +749,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -769,7 +757,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -779,7 +767,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -787,7 +775,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -797,7 +785,7 @@
   (state
    (app-call
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -805,7 +793,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -827,7 +815,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -835,7 +823,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -845,7 +833,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -853,7 +841,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -878,7 +866,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -886,7 +874,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -896,7 +884,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -904,7 +892,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -923,7 +911,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -931,7 +919,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -945,7 +933,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -953,7 +941,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -965,7 +953,7 @@
     (closV
      'fact
      (tagC
-      (symbolC 'fact_boxes)
+      (symbolC 'fact_helper)
       (lamC
        'bx
        (letC
@@ -973,7 +961,7 @@
         (unboxC (idC 'bx))
         (ifC
          (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (numC 1)
          (seqC
           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -993,7 +981,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -1001,7 +989,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1011,7 +999,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -1019,7 +1007,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1029,7 +1017,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -1037,7 +1025,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -1059,7 +1047,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -1067,7 +1055,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1077,7 +1065,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -1085,7 +1073,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1095,7 +1083,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -1103,7 +1091,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -1125,7 +1113,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -1133,7 +1121,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1143,7 +1131,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -1151,7 +1139,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1161,7 +1149,7 @@
   (state
    (app-call
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -1169,7 +1157,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -1191,7 +1179,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -1199,7 +1187,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1209,7 +1197,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -1217,7 +1205,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1242,7 +1230,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -1250,7 +1238,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1260,7 +1248,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -1268,7 +1256,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1293,7 +1281,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -1301,7 +1289,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1315,7 +1303,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -1323,7 +1311,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1341,7 +1329,7 @@
     (closV
      'fact
      (tagC
-      (symbolC 'fact_boxes)
+      (symbolC 'fact_helper)
       (lamC
        'bx
        (letC
@@ -1349,7 +1337,7 @@
         (unboxC (idC 'bx))
         (ifC
          (equalC (idC 'x) (numC 0))
-         (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+         (numC 1)
          (seqC
           (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
           (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1369,7 +1357,7 @@
           (closV
            'fact
            (tagC
-            (symbolC 'fact_boxes)
+            (symbolC 'fact_helper)
             (lamC
              'bx
              (letC
@@ -1377,7 +1365,7 @@
               (unboxC (idC 'bx))
               (ifC
                (equalC (idC 'x) (numC 0))
-               (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+               (numC 1)
                (seqC
                 (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                 (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1387,7 +1375,7 @@
        (closV
         'fact
         (tagC
-         (symbolC 'fact_boxes)
+         (symbolC 'fact_helper)
          (lamC
           'bx
           (letC
@@ -1395,7 +1383,7 @@
            (unboxC (idC 'bx))
            (ifC
             (equalC (idC 'x) (numC 0))
-            (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+            (numC 1)
             (seqC
              (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
              (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1411,7 +1399,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -1419,7 +1407,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -1441,7 +1429,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -1449,7 +1437,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1459,7 +1447,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -1467,7 +1455,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1483,7 +1471,7 @@
   (state
    (app-result
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -1491,7 +1479,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -1513,7 +1501,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -1521,7 +1509,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1531,7 +1519,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -1539,7 +1527,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1555,7 +1543,7 @@
   (state
    (app-call
     (taggedV
-     (symbolV 'fact_boxes)
+     (symbolV 'fact_helper)
      (closV
       'bx
       (letC
@@ -1563,7 +1551,7 @@
        (unboxC (idC 'bx))
        (ifC
         (equalC (idC 'x) (numC 0))
-        (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+        (numC 1)
         (seqC
          (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
          (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))
@@ -1585,7 +1573,7 @@
               (closV
                'fact
                (tagC
-                (symbolC 'fact_boxes)
+                (symbolC 'fact_helper)
                 (lamC
                  'bx
                  (letC
@@ -1593,7 +1581,7 @@
                   (unboxC (idC 'bx))
                   (ifC
                    (equalC (idC 'x) (numC 0))
-                   (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                   (numC 1)
                    (seqC
                     (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                     (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1603,7 +1591,7 @@
            (closV
             'fact
             (tagC
-             (symbolC 'fact_boxes)
+             (symbolC 'fact_helper)
              (lamC
               'bx
               (letC
@@ -1611,7 +1599,7 @@
                (unboxC (idC 'bx))
                (ifC
                 (equalC (idC 'x) (numC 0))
-                (seqC (setboxC (idC 'bx) (numC 42)) (numC 1))
+                (numC 1)
                 (seqC
                  (setboxC (idC 'bx) (plusC (idC 'x) (numC -1)))
                  (multC (idC 'x) (appC (idC 'fact) (idC 'bx))))))))
@@ -1630,7 +1618,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1641,7 +1628,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1652,7 +1638,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1663,7 +1648,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1674,7 +1658,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1685,7 +1668,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1696,7 +1678,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1707,7 +1688,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))
@@ -1718,29 +1698,6 @@
    (list)
    (store
     (list
-     (cell 0 (numV 42))
-     (cell 0 (numV 0))
-     (cell 0 (numV 1))
-     (cell 0 (numV 2))
-     (cell 0 (numV 3)))
-    (list)))
-  (state
-   (app-result (numV 6))
-   (list)
-   (store
-    (list
-     (cell 0 (numV 42))
-     (cell 0 (numV 0))
-     (cell 0 (numV 1))
-     (cell 0 (numV 2))
-     (cell 0 (numV 3)))
-    (list)))
-  (state
-   (app-result (numV 6))
-   (list)
-   (store
-    (list
-     (cell 0 (numV 42))
      (cell 0 (numV 0))
      (cell 0 (numV 1))
      (cell 0 (numV 2))

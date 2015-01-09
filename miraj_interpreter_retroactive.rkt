@@ -129,11 +129,11 @@
     [store (cells t)
            (let ([storage (storage-at cells loc)])
              (if storage
-                 (type-case Storage (storage-at cells loc)
+                 (type-case Storage storage
                    [cell (l val) val]
                    [mapping (l t-loc)
-                            (let* ([trace-value (fetch (trace-store sto) t-loc)])
-                              (type-case Result (map-value trace-value sto)
+                            (let ([trace-value (fetch (trace-store sto) t-loc)])
+                              (type-case Result (map-trace-value trace-value sto)
                                 [v*s*t (v s-v t-v) v]))])
                  (error 'fetch "location not found")))]))
 
@@ -171,16 +171,17 @@
                [(= loc t-loc) l]
                [else (mapped-location (rest cells) loc)])])]))
 
-(define (map-box [t-loc Location?] [sto Store?]) Result?
+(define (map-trace-location [trace-loc Location?] [sto Store?]) Result?
   (type-case Store sto
     [store (cells t)
-           (let ([mapped-loc (mapped-location cells t-loc)])
+           (let ([mapped-loc (mapped-location cells trace-loc)])
              (if mapped-loc
                  (v*s*t (boxV mapped-loc) sto mt-trace)
-                 (let* ([to-loc (new-loc sto)]
-                        [sto2 (store (cons (mapping to-loc t-loc) cells) t)]
-                        [value-result (map-value (fetch (trace-store sto) t-loc) sto2)])
-                   (v*s*t (boxV to-loc) (v*s*t-s value-result) mt-trace))))]))
+                 (let* ([loc (new-loc sto)]
+                        [sto2 (store (cons (mapping loc trace-loc) cells) t)]
+                        [trace-value (fetch (trace-store sto2) trace-loc)]
+                        [value-result (map-trace-value trace-value sto2)])
+                   (v*s*t (boxV loc) (v*s*t-s value-result) mt-trace))))]))
 
 (define (map-binding [b Binding?] [result Result?]) Result?
   (type-case Binding b
@@ -189,7 +190,7 @@
             [v*s*t (c sto t)
                    (type-case Value c
                      [closV (arg body env)
-                            (type-case Result (map-value value sto)
+                            (type-case Result (map-trace-value value sto)
                               [v*s*t (m s-m t-m)
                                      (v*s*t (closV arg body (cons (bind name m) env)) s-m mt-trace)])]
                      [else (error 'map-binding "result parametmer must wrap a closure")])])]))
@@ -197,7 +198,7 @@
 (define (map-closure [arg symbol?] [body ExprC?] [env Env?] [sto Store?]) Result?
   (foldr map-binding (v*s*t (closV arg body mt-env) sto mt-trace) env))
                   
-(define (map-value (v Value?) (sto Store?)) Result?
+(define (map-trace-value (v Value?) (sto Store?)) Result?
   (type-case Value v
     [numV (_) 
           (v*s*t v sto mt-trace)]
@@ -207,14 +208,14 @@
           (v*s*t v sto mt-trace)]
     [closV (arg body env)
            (map-closure arg body env sto)]
-    [boxV (loc)
-          (map-box loc sto)]
+    [boxV (trace-loc)
+          (map-trace-location trace-loc sto)]
     [voidV ()
            (v*s*t v sto mt-trace)]
     [taggedV (tag tagged) 
-             (type-case Result (map-value tag sto)
+             (type-case Result (map-trace-value tag sto)
                [v*s*t (mapped-tag s-tag t-tag)
-                      (type-case Result (map-value tagged s-tag)
+                      (type-case Result (map-trace-value tagged s-tag)
                         [v*s*t (mapped-tagged s-tagged t-tagged)
                                (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
     [resumeV (label pos) (v*s*t v sto mt-trace)]))
@@ -533,11 +534,11 @@
            (type-case Cont c
              [interp-init () s]
              [app-call (abs arg) 
-                       (type-case Result (map-value arg sto)
+                       (type-case Result (map-trace-value arg sto)
                            (v*s*t (v-a s-a t-a)
                                   (state (app-call (rw-resume-value-no-error abs) v-a) adv s-a)))]
              [app-result (r)
-                         (type-case Result (map-value r sto)
+                         (type-case Result (map-trace-value r sto)
                            (v*s*t (v-r s-r t-r)
                                   (state (app-result v-r) adv s-r)))])]))
 
@@ -577,11 +578,11 @@
            (type-case Cont c
              [interp-init () s]
              [app-call (abs arg) 
-                       (type-case Result (map-value arg sto)
+                       (type-case Result (map-trace-value arg sto)
                            (v*s*t (v-a s-a t-a)
                                   (state (app-call (rw-resume-value abs s-a) v-a) adv s-a)))]
              [app-result (r)
-                         (type-case Result (map-value r sto)
+                         (type-case Result (map-trace-value r sto)
                            (v*s*t (v-r s-r t-r)
                                   (state (app-result v-r) adv s-r)))])]))
 
