@@ -1,8 +1,8 @@
-(lambda (pc advice thunk)
+(lambda (tagtest wrapper thunk)
   (lambda (v)
     (aroundapp 
      (lambda (tag g)
-       (if (pc tag)
-           (advice g)
+       (if (tagtest tag)
+           (wrapper g)
            g))
      (thunk v))))
