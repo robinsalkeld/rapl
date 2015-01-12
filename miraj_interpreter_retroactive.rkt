@@ -423,10 +423,10 @@
                      [v*s*t (v-v s-v t-v)
                             (v*s*t (taggedV v-tag v-v) s-v (append t-tag t-v))])])]
     
-    [aroundAppC (wrapper extent) 
-            (type-case Result (interp wrapper env adv sto)
-              [v*s*t (v-w s-w t-w)
-                     (prepend-trace t-w (interp extent env (cons (aroundappsA v-w) adv) s-w))])]
+    [aroundappsC (wrapper extent) 
+                 (type-case Result (interp wrapper env adv sto)
+                   [v*s*t (v-w s-w t-w)
+                          (prepend-trace t-w (interp extent env (cons (aroundappsA v-w) adv) s-w))])]
     
     ;; Input/Output
     

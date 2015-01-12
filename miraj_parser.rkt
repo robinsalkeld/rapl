@@ -45,8 +45,8 @@
              ;; Advice
              ['tag
               (tagC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
-             ['aroundapp
-              (aroundAppC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
+             ['aroundapps
+              (aroundappsC (parse (list-ref tail 0)) (parse (list-ref tail 1)))]
              ;; Input/Output
              ['read
               (readC (list-ref tail 0))]
@@ -83,7 +83,7 @@
     [seqC (b1 b2) (list 'seq (exp-syntax b1) (exp-syntax b2))]
     [voidC () (list 'void)]
     [tagC (tag v) (list 'tag (exp-syntax tag) (exp-syntax v))]
-    [aroundAppC (f in) (list 'aroundapp (exp-syntax f) (exp-syntax in))]
+    [aroundappsC (f in) (list 'aroundapps (exp-syntax f) (exp-syntax in))]
     [fileC (path) (list 'file path)]
     [writeC (l a) (list 'write l (exp-syntax a))]
     [readC (l) (list 'read l)]))

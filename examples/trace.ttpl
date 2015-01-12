@@ -1,6 +1,7 @@
-(lambda (f a)
-  (onapp
-   (lambda (proceed)
-     (seq (write "call" proceed)
-          proceed))
-   (f a)))
+(lambda (thunk)
+  (lambda (v)
+    (aroundapps
+     (lambda (tag proceed)
+       (seq (write "call" proceed)
+            proceed))
+     (thunk (v)))))

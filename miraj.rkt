@@ -23,7 +23,7 @@
   ;; Advice
   [symbolC (s symbol?)]
   [tagC (tag ExprC?) (v ExprC?)]
-  [aroundAppC (fun ExprC?) (in ExprC?)]
+  [aroundappsC (fun ExprC?) (in ExprC?)]
   ;; Input/Output
   [fileC (path string?)]
   [writeC (l string?) (v ExprC?)]
