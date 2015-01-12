@@ -2,6 +2,6 @@
   (lambda (v)
     (aroundapps
      (lambda (tag proceed)
-       (seq (write "call" proceed)
+       (seq (write "call" tag)
             proceed))
      (thunk (v)))))

@@ -1,0 +1,3 @@
+(tag 'tag1
+     (tag 'tag2
+          (lambda (x) (+ x 1))))

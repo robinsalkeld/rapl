@@ -243,8 +243,9 @@
 (define (weave [adv AdvStack?] [f Value?] [sto Store?]) Result?
   (type-case Value f
     [taggedV (tag tagged)
-             (let ([helper (lambda (advice accum) (weave-advice adv tag advice accum))])
-               (foldr helper (v*s*t tagged sto mt-trace) adv))]
+             (let ([woven-tagged-result (weave adv tagged sto)]
+                   [helper (lambda (advice accum) (weave-advice adv tag advice accum))])
+               (foldr helper woven-tagged-result adv))]
     [else (v*s*t f sto mt-trace)]))
 
 (define (apply-with-weaving [f Value?] [arg Value?] [adv AdvStack?] [sto Store?]) Result?

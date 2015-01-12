@@ -113,6 +113,12 @@
                       "y after: 0"
                       "result: 6")))
 
+(test (interp-exp-with-output (fileC "double_trace_of_double_thunk.ttpl"))
+      (v*o (numV 4) '("call: tag2"
+                      "call: tag2"
+                      "call: tag1"
+                      "call: tag1")))
+
 (test (struct->list/recursive (numC 4)) '(numC 4))
 (test (struct->list/recursive (plusC (numC 3) (numC 4))) '(plusC (numC 3) (numC 4)))
 (test (struct->list/recursive (appC (idC 'foo) (numC 4))) '(appC (idC 'foo) (numC 4)))
