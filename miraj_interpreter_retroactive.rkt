@@ -97,6 +97,10 @@
                            (prepend-trace t (apply-without-weaving f v adv sto))]))])
     (foldl helper (v*s*t value sto mt-trace) values)))
 
+(define z-combinator
+  (parse-string "(lambda (f) ((lambda (x) (f (lambda (y) ((x x) y))))
+                              (lambda (x) (f (lambda (y) ((x x) y))))))"))
+
 ;; Mutations and side-effects
 
 (define-type Storage
@@ -244,7 +248,8 @@
   (type-case Value f
     [taggedV (tag tagged)
              (let ([woven-tagged-result (weave adv tagged sto)]
-                   [helper (lambda (advice accum) (weave-advice adv tag advice accum))])
+                   [helper (lambda (advice accum) 
+                             (weave-advice adv tag advice accum))])
                (foldr helper woven-tagged-result adv))]
     [else (v*s*t f sto mt-trace)]))
 
@@ -382,6 +387,8 @@
                                   (type-case Result (apply-with-weaving v-f v-a adv s-a)
                                     [v*s*t (v-r s-r t-r)
                                            (v*s*t v-r s-r (append t-f t-a t-r))])])])]
+    
+    [recC (f) (interp (appC z-combinator f) env adv sto)]
     
     [letC (s v in) (type-case Result (interp v env adv sto)
                             [v*s*t (v-v s-v t-v)

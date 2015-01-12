@@ -1,7 +1,6 @@
-((file "Z.ttpl")
- (lambda (fact) 
-   (tag 'fact
-        (lambda (x) 
-          (if (equal? x 0) 
-              1 
-              (* x (fact (+ x -1))))))))
+(rec (lambda (fact) 
+       (tag 'fact
+            (lambda (x) 
+              (if (equal? x 0) 
+                  1 
+                  (* x (fact (+ x -1))))))))

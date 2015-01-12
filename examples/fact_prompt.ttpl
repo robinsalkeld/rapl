@@ -1,9 +1,8 @@
 (let ([fact (file "fact.ttpl")])
-  ((file "Z.ttpl")
-   (lambda (fact_prompt)
-     (lambda (v)
-       (let ([in (read "x")])
-         (if (equal? in 0) 
-             in 
-             (seq (write "fact(x)" (fact in))
-                  (fact_prompt v))))))))
+  (rec (lambda (fact_prompt)
+         (lambda (v)
+           (let ([in (read "x")])
+             (if (equal? in 0) 
+                 in 
+                 (seq (write "fact(x)" (fact in))
+                      (fact_prompt v))))))))

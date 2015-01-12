@@ -39,7 +39,7 @@
 (define exps
   (cond
     [(eval-expr)
-     (list (parse (read (open-input-string (eval-expr)))))]
+     (list (parse-string eval-expr))]
     [else
      (map parse-file (file-paths))]))
 

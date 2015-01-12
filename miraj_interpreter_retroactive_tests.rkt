@@ -17,7 +17,7 @@
       (lamC 'x (lamC 'y (lamC 'z (appC (appC (idC 'x) (idC 'y)) (idC 'z))))))
 
 (test/exn (parse '(+ 1 2 3))
-      "#<procedure:plusC27> \"Wrong number of arguments\"")
+      "#<procedure:plusC29> \"Wrong number of arguments\"")
 
 (test (parse '(quote a)) (symbolC 'a))
 

@@ -28,6 +28,8 @@
              ['lambda
               (let ([args (list-ref tail 0)])
                 (foldr lamC (parse (list-ref tail 1)) args))]
+             ['rec
+              (apply-parsed-args recC tail)]
              ['let
               (let ([defpair (car (list-ref tail 0))])
                 (letC (list-ref defpair 0) (parse (list-ref defpair 1)) (parse (list-ref tail 1))))]
@@ -76,6 +78,7 @@
     [idC (s) s]
     [lamC (a b) (list 'lambda (list a) (exp-syntax b))]
     [appC (f a) (list (exp-syntax f) (exp-syntax a))]
+    [recC (f) (list 'rec (exp-syntax f))]
     [letC (s val in) (list 'let (list (list s (exp-syntax val))) (exp-syntax in))]
     [boxC (a) (list 'box (exp-syntax a))]
     [unboxC (a) (list 'unbox (exp-syntax a))]
@@ -88,5 +91,8 @@
     [writeC (l a) (list 'write l (exp-syntax a))]
     [readC (l) (list 'read l)]))
     
+(define (parse-string (s string?)) ExprC?
+  (parse (read (open-input-string s))))
+
 (define (parse-file (path path-string?)) ExprC?
   (call-with-input-file path (lambda (port) (parse (read port)))))

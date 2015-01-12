@@ -5,6 +5,7 @@
   [idC (s symbol?)]
   [appC (fun ExprC?) (arg ExprC?)]
   [lamC (arg symbol?) (body ExprC?)]
+  [recC (fun ExprC?)]
   [letC (s symbol?) (v ExprC?) (in ExprC?)]
   ;; Numbers and arithmetic
   [numC (n number?)]
