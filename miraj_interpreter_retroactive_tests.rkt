@@ -90,13 +90,13 @@
       (numV 24))
 
 (test (interp-exp-with-output (appC (appC (fileC "fact_advice.ttpl") (fileC "fact.ttpl")) (numC 3)))
-      (v*o (numV 6) '("y: 0"
-                      "result: 1"
-                      "y: 1"
-                      "result: 1"
+      (v*o (numV 6) '("y: 3"
                       "y: 2"
+                      "y: 1"
+                      "y: 0"
+                      "result: 1"
+                      "result: 1"
                       "result: 2"
-                      "y: 3"
                       "result: 6")))
 
 (test (interp-exp-with-output (appC (appC (fileC "fact_boxes_advice.ttpl") (fileC "fact_boxes.ttpl")) (numC 3)))
@@ -142,13 +142,13 @@
       (numV 6))
 
 (test (interp-query-with-output fact-trace-path (list (fileC "fact_advice.ttpl")))
-      (v*o (numV 6) '("y: 0"
-                      "result: 1"
-                      "y: 1"
-                      "result: 1"
+      (v*o (numV 6) '("y: 3"
                       "y: 2"
+                      "y: 1"
+                      "y: 0"
+                      "result: 1"
+                      "result: 1"
                       "result: 2"
-                      "y: 3"
                       "result: 6")))
 
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_arg.ttpl")))
@@ -212,13 +212,13 @@
 (set-box! retroactive-error-checking #f)
 
 (test (interp-exp-with-output (appC (appC (fileC "fact_advice.ttpl") (fileC "fact.ttpl")) (numC 3)))
-      (v*o (numV 6) '("y: 0"
-                      "result: 1"
-                      "y: 1"
-                      "result: 1"
+      (v*o (numV 6) '("y: 3"
                       "y: 2"
+                      "y: 1"
+                      "y: 0"
+                      "result: 1"
+                      "result: 1"
                       "result: 2"
-                      "y: 3"
                       "result: 6")))
 
 ;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))

@@ -1,10 +1,10 @@
 (let ([fact_helper
        (rec (lambda (fact) 
-              (tag 'fact_helper
-                   (lambda (bx)
-                     (let ([x (unbox bx)])
-                       (if (equal? x 0) 
-                           1
-                           (seq (set-box! bx (+ x -1))
-                                (* x (fact bx)))))))))])
+         (tag 'fact_helper
+              (lambda (bx)
+                (let ([x (unbox bx)])
+                  (if (equal? x 0) 
+                      1
+                      (seq (set-box! bx (+ x -1))
+                           (* x (fact bx)))))))))])
   (lambda (x) (fact_helper (box x))))

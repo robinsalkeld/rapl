@@ -231,17 +231,15 @@
 ;; Advice
 
 (define-type Advice
-  [aroundappsA (value Value?)])
+  [aroundappsA (advice Value?)])
 (define AdvStack? (listof Advice?))  
 (define mt-adv empty)
 
 ; Wraps f with a single advice function
 (define (weave-advice [adv AdvStack?] [tag Value?] [advice Advice?] [accum Result?]) Result?
-  (type-case Advice advice
-    [aroundappsA (advice-func)
-                (type-case Result accum
-                  [v*s*t (f sto t)
-                         (prepend-trace t (apply-args advice-func (list tag f) adv sto))])]))
+  (type-case Result accum
+    [v*s*t (f sto t)
+           (prepend-trace t (apply-args (aroundappsA-advice advice) (list tag f) adv sto))]))
 
 ; Wraps f according to all of the advice currently in scope
 (define (weave [adv AdvStack?] [f Value?] [sto Store?]) Result?
