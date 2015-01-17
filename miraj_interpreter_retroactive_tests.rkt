@@ -130,6 +130,7 @@
 (test (struct->list/recursive (numC 4)) '(numC 4))
 (test (struct->list/recursive (plusC (numC 3) (numC 4))) '(plusC (numC 3) (numC 4)))
 (test (struct->list/recursive (appC (idC 'foo) (list (numC 4)))) '(appC (idC 'foo) (list (numC 4))))
+(test (struct->list/recursive (lamC (list 'foo) (idC 'foo))) '(lamC (list 'foo) (idC 'foo)))
 
 (define (test-roundtrip e) (test (list->struct/recursive miraj-ns (struct->list/recursive e)) e))
 

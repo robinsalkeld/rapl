@@ -4,33 +4,33 @@
   (state
    (app-call
     (closV
-     (list f)
+     (list 'f)
      (appC
       (lamC
-       (list x)
+       (list 'x)
        (appC
         (idC 'f)
         (list
          (lamC
-          (list y)
+          (list 'y)
           (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))))))
       (list
        (lamC
-        (list x)
+        (list 'x)
         (appC
          (idC 'f)
          (list
           (lamC
-           (list y)
+           (list 'y)
            (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))))))))
      (list))
     (list
      (closV
-      (list fact)
+      (list 'fact)
       (tagC
        (symbolC 'fact_helper)
        (lamC
-        (list bx)
+        (list 'bx)
         (letC
          'x
          (unboxC (idC 'bx))
@@ -46,20 +46,22 @@
   (state
    (app-call
     (closV
-     (list x)
+     (list 'x)
      (appC
       (idC 'f)
       (list
-       (lamC (list y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
      (list
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -72,22 +74,22 @@
         (list)))))
     (list
      (closV
-      (list x)
+      (list 'x)
       (appC
        (idC 'f)
        (list
         (lamC
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
       (list
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -103,11 +105,11 @@
   (state
    (app-call
     (closV
-     (list fact)
+     (list 'fact)
      (tagC
       (symbolC 'fact_helper)
       (lamC
-       (list bx)
+       (list 'bx)
        (letC
         'x
         (unboxC (idC 'bx))
@@ -120,28 +122,28 @@
      (list))
     (list
      (closV
-      (list y)
+      (list 'y)
       (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
       (list
        (bind
         'x
         (closV
-         (list x)
+         (list 'x)
          (appC
           (idC 'f)
           (list
            (lamC
-            (list y)
+            (list 'y)
             (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
          (list
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -155,11 +157,11 @@
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -177,7 +179,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -191,28 +193,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -226,11 +228,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -248,7 +250,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -262,28 +264,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -297,11 +299,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -319,7 +321,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -333,28 +335,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -368,11 +370,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -388,7 +390,7 @@
   (state
    (app-call
     (closV
-     (list x)
+     (list 'x)
      (appC (idC 'fact_helper) (list (boxC (idC 'x))))
      (list
       (bind
@@ -396,7 +398,7 @@
        (taggedV
         (symbolV 'fact_helper)
         (closV
-         (list bx)
+         (list 'bx)
          (letC
           'x
           (unboxC (idC 'bx))
@@ -410,28 +412,28 @@
           (bind
            'fact
            (closV
-            (list y)
+            (list 'y)
             (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
             (list
              (bind
               'x
               (closV
-               (list x)
+               (list 'x)
                (appC
                 (idC 'f)
                 (list
                  (lamC
-                  (list y)
+                  (list 'y)
                   (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
                (list
                 (bind
                  'f
                  (closV
-                  (list fact)
+                  (list 'fact)
                   (tagC
                    (symbolC 'fact_helper)
                    (lamC
-                    (list bx)
+                    (list 'bx)
                     (letC
                      'x
                      (unboxC (idC 'bx))
@@ -447,11 +449,11 @@
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -470,7 +472,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -484,28 +486,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -519,11 +521,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -540,28 +542,28 @@
   (state
    (app-call
     (closV
-     (list y)
+     (list 'y)
      (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
      (list
       (bind
        'x
        (closV
-        (list x)
+        (list 'x)
         (appC
          (idC 'f)
          (list
           (lamC
-           (list y)
+           (list 'y)
            (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
         (list
          (bind
           'f
           (closV
-           (list fact)
+           (list 'fact)
            (tagC
             (symbolC 'fact_helper)
             (lamC
-             (list bx)
+             (list 'bx)
              (letC
               'x
               (unboxC (idC 'bx))
@@ -575,11 +577,11 @@
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -596,20 +598,22 @@
   (state
    (app-call
     (closV
-     (list x)
+     (list 'x)
      (appC
       (idC 'f)
       (list
-       (lamC (list y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
      (list
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -622,22 +626,22 @@
         (list)))))
     (list
      (closV
-      (list x)
+      (list 'x)
       (appC
        (idC 'f)
        (list
         (lamC
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
       (list
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -653,11 +657,11 @@
   (state
    (app-call
     (closV
-     (list fact)
+     (list 'fact)
      (tagC
       (symbolC 'fact_helper)
       (lamC
-       (list bx)
+       (list 'bx)
        (letC
         'x
         (unboxC (idC 'bx))
@@ -670,28 +674,28 @@
      (list))
     (list
      (closV
-      (list y)
+      (list 'y)
       (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
       (list
        (bind
         'x
         (closV
-         (list x)
+         (list 'x)
          (appC
           (idC 'f)
           (list
            (lamC
-            (list y)
+            (list 'y)
             (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
          (list
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -705,11 +709,11 @@
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -727,7 +731,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -741,28 +745,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -776,11 +780,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -798,7 +802,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -812,28 +816,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -847,11 +851,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -869,7 +873,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -883,28 +887,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -918,11 +922,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -939,28 +943,28 @@
   (state
    (app-call
     (closV
-     (list y)
+     (list 'y)
      (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
      (list
       (bind
        'x
        (closV
-        (list x)
+        (list 'x)
         (appC
          (idC 'f)
          (list
           (lamC
-           (list y)
+           (list 'y)
            (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
         (list
          (bind
           'f
           (closV
-           (list fact)
+           (list 'fact)
            (tagC
             (symbolC 'fact_helper)
             (lamC
-             (list bx)
+             (list 'bx)
              (letC
               'x
               (unboxC (idC 'bx))
@@ -974,11 +978,11 @@
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -995,20 +999,22 @@
   (state
    (app-call
     (closV
-     (list x)
+     (list 'x)
      (appC
       (idC 'f)
       (list
-       (lamC (list y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
      (list
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -1021,22 +1027,22 @@
         (list)))))
     (list
      (closV
-      (list x)
+      (list 'x)
       (appC
        (idC 'f)
        (list
         (lamC
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
       (list
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -1052,11 +1058,11 @@
   (state
    (app-call
     (closV
-     (list fact)
+     (list 'fact)
      (tagC
       (symbolC 'fact_helper)
       (lamC
-       (list bx)
+       (list 'bx)
        (letC
         'x
         (unboxC (idC 'bx))
@@ -1069,28 +1075,28 @@
      (list))
     (list
      (closV
-      (list y)
+      (list 'y)
       (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
       (list
        (bind
         'x
         (closV
-         (list x)
+         (list 'x)
          (appC
           (idC 'f)
           (list
            (lamC
-            (list y)
+            (list 'y)
             (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
          (list
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1104,11 +1110,11 @@
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -1126,7 +1132,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -1140,28 +1146,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -1175,11 +1181,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1197,7 +1203,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -1211,28 +1217,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -1246,11 +1252,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1268,7 +1274,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -1282,28 +1288,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -1317,11 +1323,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1338,28 +1344,28 @@
   (state
    (app-call
     (closV
-     (list y)
+     (list 'y)
      (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
      (list
       (bind
        'x
        (closV
-        (list x)
+        (list 'x)
         (appC
          (idC 'f)
          (list
           (lamC
-           (list y)
+           (list 'y)
            (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
         (list
          (bind
           'f
           (closV
-           (list fact)
+           (list 'fact)
            (tagC
             (symbolC 'fact_helper)
             (lamC
-             (list bx)
+             (list 'bx)
              (letC
               'x
               (unboxC (idC 'bx))
@@ -1373,11 +1379,11 @@
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -1400,20 +1406,22 @@
   (state
    (app-call
     (closV
-     (list x)
+     (list 'x)
      (appC
       (idC 'f)
       (list
-       (lamC (list y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
      (list
       (bind
        'f
        (closV
-        (list fact)
+        (list 'fact)
         (tagC
          (symbolC 'fact_helper)
          (lamC
-          (list bx)
+          (list 'bx)
           (letC
            'x
            (unboxC (idC 'bx))
@@ -1426,22 +1434,22 @@
         (list)))))
     (list
      (closV
-      (list x)
+      (list 'x)
       (appC
        (idC 'f)
        (list
         (lamC
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
       (list
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -1463,11 +1471,11 @@
   (state
    (app-call
     (closV
-     (list fact)
+     (list 'fact)
      (tagC
       (symbolC 'fact_helper)
       (lamC
-       (list bx)
+       (list 'bx)
        (letC
         'x
         (unboxC (idC 'bx))
@@ -1480,28 +1488,28 @@
      (list))
     (list
      (closV
-      (list y)
+      (list 'y)
       (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
       (list
        (bind
         'x
         (closV
-         (list x)
+         (list 'x)
          (appC
           (idC 'f)
           (list
            (lamC
-            (list y)
+            (list 'y)
             (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
          (list
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1515,11 +1523,11 @@
        (bind
         'f
         (closV
-         (list fact)
+         (list 'fact)
          (tagC
           (symbolC 'fact_helper)
           (lamC
-           (list bx)
+           (list 'bx)
            (letC
             'x
             (unboxC (idC 'bx))
@@ -1543,7 +1551,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -1557,28 +1565,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -1592,11 +1600,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1620,7 +1628,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -1634,28 +1642,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -1669,11 +1677,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
@@ -1697,7 +1705,7 @@
     (taggedV
      (symbolV 'fact_helper)
      (closV
-      (list bx)
+      (list 'bx)
       (letC
        'x
        (unboxC (idC 'bx))
@@ -1711,28 +1719,28 @@
        (bind
         'fact
         (closV
-         (list y)
+         (list 'y)
          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
          (list
           (bind
            'x
            (closV
-            (list x)
+            (list 'x)
             (appC
              (idC 'f)
              (list
               (lamC
-               (list y)
+               (list 'y)
                (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
             (list
              (bind
               'f
               (closV
-               (list fact)
+               (list 'fact)
                (tagC
                 (symbolC 'fact_helper)
                 (lamC
-                 (list bx)
+                 (list 'bx)
                  (letC
                   'x
                   (unboxC (idC 'bx))
@@ -1746,11 +1754,11 @@
           (bind
            'f
            (closV
-            (list fact)
+            (list 'fact)
             (tagC
              (symbolC 'fact_helper)
              (lamC
-              (list bx)
+              (list 'bx)
               (letC
                'x
                (unboxC (idC 'bx))
