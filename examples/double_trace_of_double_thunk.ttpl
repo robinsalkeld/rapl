@@ -1,2 +1,2 @@
-(let ([thunk (lambda (v) ((file "double_tags.ttpl") 3))])
-  (((file "trace.ttpl") ((file "trace.ttpl") thunk)) (void)))
+(let ([thunk (lambda () ((file "double_tags.ttpl") 3))])
+  (((file "trace.ttpl") ((file "trace.ttpl") thunk))))

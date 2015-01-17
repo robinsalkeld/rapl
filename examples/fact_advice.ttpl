@@ -1,10 +1,14 @@
 (lambda (thunk)
+  
   ((file "around.ttpl") 
+    
    ((file "call.ttpl") 'fact)
+    
    (lambda (original)
      (lambda (y) 
        (seq (write "y" y)
             (let ([result (original y)])
               (seq (write "result" result)
                    result)))))
-   thunk))
+    
+    thunk))

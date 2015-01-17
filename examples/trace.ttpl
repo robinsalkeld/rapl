@@ -1,7 +1,7 @@
 (lambda (thunk)
-  (lambda (v)
+  (lambda ()
     (aroundapps
      (lambda (tag proceed)
        (seq (write "call" tag)
             proceed))
-     (thunk (v)))))
+     (thunk))))

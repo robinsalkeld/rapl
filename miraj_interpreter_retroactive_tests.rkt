@@ -40,33 +40,44 @@
       (numV 22))
 
 (test (interp-exp (parse
-                   '((file "around.ttpl") 
-                     ((file "call.ttpl") 'change)
-                     (lambda (proceed y) (proceed (* y 2)))
-                     (lambda (dummy)
-                       ((file "around.ttpl") 
-                        ((file "call.ttpl") 'change)
-                        (lambda (proceed y) (proceed (+ y 3))) 
-                        (lambda (dummy)
-                          (let ([change (tag 'change (lambda (x) (+ x 5)))])
-                            (change 2)))
-                        0))
-                     0)))
+                   '(let ([sum (lambda (x y z) (+ x (+ y z)))])
+                      (sum 1 2 3))))
+      (numV 6))
+
+(test (interp-exp (parse '((file "fact.ttpl") 4)))
+      (numV 24))
+
+(test (interp-exp (parse
+                   '(((file "around.ttpl") 
+                      ((file "call.ttpl") 'change)
+                      (lambda (proceed) (lambda (y) (proceed (* y 2))))
+                      (lambda ()
+                        (let ([change (tag 'change (lambda (x) (+ x 5)))])
+                          (change 2)))))))
+      (numV 9))
+
+(test (interp-exp (parse
+                   '(((file "around.ttpl") 
+                      ((file "call.ttpl") 'change)
+                      (lambda (proceed) (lambda (y) (proceed (* y 2))))
+                      ((file "around.ttpl") 
+                       ((file "call.ttpl") 'change)
+                       (lambda (proceed) (lambda (y) (proceed (+ y 3))))
+                       (lambda ()
+                         (let ([change (tag 'change (lambda (x) (+ x 5)))])
+                           (change 2))))))))
       (numV 15))
 
 (test (interp-exp (parse
-                   '((file "around.ttpl") 
-                     ((file "call.ttpl") 'change)
-                     (lambda (proceed y) (proceed (+ y 3)))
-                     (lambda (dummy)
-                       ((file "around.ttpl") 
-                        ((file "call.ttpl") 'change)
-                        (lambda (proceed) (lambda (y) (proceed (* y 2))))
-                        (lambda (dummy)
-                          (let ([change (tag 'change (lambda (x) (+ x 5)))])
-                              (change 2)))
-                        0))
-                     0)))
+                   '(((file "around.ttpl") 
+                      ((file "call.ttpl") 'change)
+                      (lambda (proceed) (lambda (y) (proceed (+ y 3))))
+                      ((file "around.ttpl") 
+                       ((file "call.ttpl") 'change)
+                       (lambda (proceed) (lambda (y) (proceed (* y 2))))
+                       (lambda ()
+                         (let ([change (tag 'change (lambda (x) (+ x 5)))])
+                           (change 2))))))))
       (numV 12))
 
 (define-type ValueWithOutput
@@ -86,10 +97,7 @@
 (test (interp-exp-with-output (writeC "The answer" (numC 42)))
       (v*o (numV 42) '("The answer: 42")))
 
-(test (interp-exp (parse '((file "fact.ttpl") 4)))
-      (numV 24))
-
-(test (interp-exp-with-output (appC (appC (fileC "fact_advice.ttpl") (fileC "fact.ttpl")) (numC 3)))
+(test (interp-exp-with-output (parse '(((file "fact_advice.ttpl") (lambda () ((file "fact.ttpl") 3))))))
       (v*o (numV 6) '("y: 3"
                       "y: 2"
                       "y: 1"
@@ -99,7 +107,7 @@
                       "result: 2"
                       "result: 6")))
 
-(test (interp-exp-with-output (appC (appC (fileC "fact_boxes_advice.ttpl") (fileC "fact_boxes.ttpl")) (numC 3)))
+(test (interp-exp-with-output (parse '(((file "fact_boxes_advice.ttpl") (lambda () ((file "fact_boxes.ttpl") 3))))))
       (v*o (numV 6) '("y before: 3"
                       "y before: 2"
                       "y before: 1"
@@ -121,7 +129,7 @@
 
 (test (struct->list/recursive (numC 4)) '(numC 4))
 (test (struct->list/recursive (plusC (numC 3) (numC 4))) '(plusC (numC 3) (numC 4)))
-(test (struct->list/recursive (appC (idC 'foo) (numC 4))) '(appC (idC 'foo) (numC 4)))
+(test (struct->list/recursive (appC (idC 'foo) (list (numC 4)))) '(appC (idC 'foo) (list (numC 4))))
 
 (define (test-roundtrip e) (test (list->struct/recursive miraj-ns (struct->list/recursive e)) e))
 
@@ -138,7 +146,7 @@
 (if (file-exists? fact-trace-path)
     (delete-file fact-trace-path)
     (void))
-(test (interp-with-tracing (list (appC (fileC "fact.ttpl") (numC 3))) fact-trace-path)
+(test (interp-with-tracing (list (parse '((file "fact.ttpl") 3))) fact-trace-path)
       (numV 6))
 
 (test (interp-query-with-output fact-trace-path (list (fileC "fact_advice.ttpl")))
@@ -168,7 +176,7 @@
 (if (file-exists? fact-boxes-trace-path)
     (delete-file fact-boxes-trace-path)
     (void))
-(test (interp-with-tracing (list (appC (fileC "fact_boxes.ttpl") (numC 3))) fact-boxes-trace-path)
+(test (interp-with-tracing (list (parse '((file "fact_boxes.ttpl") 3))) fact-boxes-trace-path)
       (numV 6))
 
 
@@ -211,7 +219,7 @@
 
 (set-box! retroactive-error-checking #f)
 
-(test (interp-exp-with-output (appC (appC (fileC "fact_advice.ttpl") (fileC "fact.ttpl")) (numC 3)))
+(test (interp-exp-with-output (parse '(((file "fact_advice.ttpl") (lambda () ((file "fact.ttpl") 3))))))
       (v*o (numV 6) '("y: 3"
                       "y: 2"
                       "y: 1"

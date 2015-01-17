@@ -389,7 +389,7 @@
                                     [v*s*t (v-r s-r t-r)
                                            (v*s*t v-r s-r (append t-f t-args t-r))])])])]
     
-    [recC (f) (interp (appC z-combinator f) env adv sto)]
+    [recC (f) (interp (appC z-combinator (list f)) env adv sto)]
     
     [letC (s v in) (type-case Result (interp v env adv sto)
                             [v*s*t (v-v s-v t-v)

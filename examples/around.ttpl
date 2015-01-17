@@ -1,8 +1,8 @@
 (lambda (tagtest wrapper thunk)
-  (lambda (v)
+  (lambda ()
     (aroundapps 
      (lambda (tag g)
        (if (tagtest tag)
            (wrapper g)
            g))
-     (thunk v))))
+     (thunk))))
