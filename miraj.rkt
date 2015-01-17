@@ -3,8 +3,8 @@
 (define-type ExprC
   ;; Identifiers and functions
   [idC (s symbol?)]
-  [appC (fun ExprC?) (arg ExprC?)]
-  [lamC (arg symbol?) (body ExprC?)]
+  [appC (fun ExprC?) (args (listof ExprC?))]
+  [lamC (params (listof symbol?)) (body ExprC?)]
   [recC (fun ExprC?)]
   [letC (s symbol?) (v ExprC?) (in ExprC?)]
   ;; Numbers and arithmetic

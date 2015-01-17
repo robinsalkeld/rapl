@@ -5,4 +5,4 @@
              (if (equal? in 0) 
                  in 
                  (seq (write "fact(x)" (fact in))
-                      (fact_prompt v))))))))
+                      (fact_prompt (void)))))))))

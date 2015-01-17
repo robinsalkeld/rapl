@@ -26,8 +26,7 @@
               (apply-parsed-args ifC tail)]
              ;; Identifiers and functions
              ['lambda
-              (let ([args (list-ref tail 0)])
-                (foldr lamC (parse (list-ref tail 1)) args))]
+              (lamC (list-ref tail 0) (parse (list-ref tail 1)))]
              ['rec
               (apply-parsed-args recC tail)]
              ['let
@@ -58,8 +57,7 @@
               (fileC (list-ref tail 0))]
              ;; Application
              [else
-              (let ([parsed (map parse s)])
-                (foldl (lambda (x y) (appC y x)) (car parsed) (cdr parsed)))]))]
+              (appC (parse head) (map parse tail))]))]
         [(number? s) (numC s)]
         [(boolean? s) (boolC s)]
         [(symbol? s) (idC s)] 
@@ -76,8 +74,8 @@
     [equalC (l r) (list 'equal? (exp-syntax l) (exp-syntax r))]
     [ifC (c t f) (list 'if (exp-syntax c) (exp-syntax t) (exp-syntax f))]
     [idC (s) s]
-    [lamC (a b) (list 'lambda (list a) (exp-syntax b))]
-    [appC (f a) (list (exp-syntax f) (exp-syntax a))]
+    [lamC (params b) (list 'lambda params (exp-syntax b))]
+    [appC (f args) (cons (exp-syntax f) (map exp-syntax args))]
     [recC (f) (list 'rec (exp-syntax f))]
     [letC (s val in) (list 'let (list (list s (exp-syntax val))) (exp-syntax in))]
     [boxC (a) (list 'box (exp-syntax a))]

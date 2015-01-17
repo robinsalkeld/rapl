@@ -5,16 +5,16 @@
 (require "miraj_interpreter_retroactive.rkt")
 (require "miraj_serialization.rkt")
 
-(print-only-errors)
+;(print-only-errors)
 (current-directory (build-path (current-directory) "examples"))
 
 (test (parse '(let ([const5 (lambda (_) 5)])
                  (+ 10 (const5 10))))
-      (letC 'const5 (lamC '_ (numC 5)) 
-            (plusC (numC 10) (appC (idC 'const5) (numC 10)))))
+      (letC 'const5 (lamC '(_) (numC 5)) 
+            (plusC (numC 10) (appC (idC 'const5) (list (numC 10))))))
 
 (test (parse '(lambda (x y z) (x y z)))
-      (lamC 'x (lamC 'y (lamC 'z (appC (appC (idC 'x) (idC 'y)) (idC 'z))))))
+      (lamC '(x y z) (appC (idC 'x) (list (idC 'y) (idC 'z)))))
 
 (test/exn (parse '(+ 1 2 3))
       "#<procedure:plusC29> \"Wrong number of arguments\"")
@@ -126,8 +126,8 @@
 (define (test-roundtrip e) (test (list->struct/recursive miraj-ns (struct->list/recursive e)) e))
 
 (test-roundtrip (plusC (numC 3) (numC 4)))
-(test-roundtrip (appC (idC 'foo) (numC 4)))
-(test-roundtrip (lamC 'bar (multC (numC 4) (idC 'bar))))
+(test-roundtrip (appC (idC 'foo) (list (numC 4))))
+(test-roundtrip (lamC (list 'bar) (multC (numC 4) (idC 'bar))))
 
 
 (define (interp-query-with-output [trace-file string?] [exps list?]) ValueWithOutput?
