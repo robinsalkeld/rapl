@@ -1,7 +1,7 @@
-(lambda (f a)
+(lambda (thunk)
   ((file "around.ttpl") 
    ((file "call.ttpl") 'fact)
-   (lambda (proceed y) 
-     (seq (proceed y) (proceed y)))
-   f
-   a))
+   (lambda (proceed)
+     (lambda (y) 
+       (seq (proceed y) (proceed y))))
+   thunk))

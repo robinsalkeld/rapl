@@ -513,15 +513,15 @@
                            [query-result (interp (app-chain exprs) mt-env mt-adv sto)]
                            [app-state (trace-state (v*s*t-s query-result))]
                            [weave-closure (resumeV "top-level thunk" (length app-trace))]
-                           [x (apply-with-weaving (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
-                           [result (apply-with-weaving (v*s*t-v x) (voidV) mt-adv (v*s*t-s x))])
+                           [x (apply-with-weaving (v*s*t-v query-result) (list weave-closure) mt-adv (v*s*t-s query-result))]
+                           [result (apply-with-weaving (v*s*t-v x) '() mt-adv (v*s*t-s x))])
                       (v*s*t-v result))
                     (let* ([sto (map-trace-state-no-error (store empty app-trace))]
                            [query-result (interp (app-chain exprs) mt-env mt-adv sto)]
                            [app-state (trace-state (v*s*t-s query-result))]
                            [weave-closure (resumeV "dummy" 0)]
-                           [x (apply-with-weaving (v*s*t-v query-result) weave-closure mt-adv (v*s*t-s query-result))]
-                           [result (apply-with-weaving (v*s*t-v x) (voidV) mt-adv (v*s*t-s x))])
+                           [x (apply-with-weaving (v*s*t-v query-result) (list weave-closure) mt-adv (v*s*t-s query-result))]
+                           [result (apply-with-weaving (v*s*t-v x) '() mt-adv (v*s*t-s x))])
                       (v*s*t-v result)))]))
 
 
@@ -567,8 +567,8 @@
 (define (rw-resume-value-no-error [v Value?]) Value?
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
 
-(define (rw-replay-call-no-error [abs Value?] [arg Value?] [adv AdvStack?] [sto Store?]) Result?
-  (apply-with-weaving abs arg adv sto))
+(define (rw-replay-call-no-error [abs Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
+  (apply-with-weaving abs args adv sto))
 
 (define (rw-call-no-error [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
   (rw-result-no-error adv (map-trace-state-no-error (next-trace-state sto))))
@@ -608,8 +608,8 @@
                            (v*s*t (v-r s-r t-r)
                                   (state (app-result v-r) adv s-r)))])]))
 
-(define (rw-replay-call [abs Value?] [arg Value?] [adv AdvStack?] [sto Store?]) Result?
-  (rw-check-result (apply-with-weaving abs arg adv sto)))
+(define (rw-replay-call [abs Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
+  (rw-check-result (apply-with-weaving abs args adv sto)))
 
 (define (rw-check-result [result Result?] [sto Store?]) Result?
   (type-case Result result
@@ -639,7 +639,7 @@
                                        (if (andmap equal-values passed args)
                                            (rw-result adv (map-trace-state (next-trace-state sto)))
                                            (error 'retroactive-side-effect
-                                                  (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" passed args)))]
+                                                  (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
                              [else (error 'rw-call "Unexpected state")])])]
                  [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])]))
 

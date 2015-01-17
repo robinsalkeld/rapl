@@ -5,7 +5,7 @@
 (require "miraj_interpreter_retroactive.rkt")
 (require "miraj_serialization.rkt")
 
-;(print-only-errors)
+(print-only-errors)
 (current-directory (build-path (current-directory) "examples"))
 
 (test (parse '(let ([const5 (lambda (_) 5)])
@@ -161,7 +161,7 @@
                       "result: 6")))
 
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_arg.ttpl")))
-      "retroactive-side-effect: incorrect argument passed retroactively: expected\n #(struct:numV 3) but got\n #(struct:numV 2)")
+      "retroactive-side-effect: incorrect argument passed retroactively: expected\n (#(struct:numV 3)) but got\n (#(struct:numV 2))")
 
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_base_case.ttpl")))
       "retroactive-side-effect: incorrect retroactive result: expected\n #(struct:numV 1) but got\n #(struct:numV 7)")
