@@ -4,6 +4,13 @@
 (require "miraj_parser.rkt")
 (require "miraj_serialization.rkt")
 
+(define (check x contract)
+  (if (contract x)
+      x
+      (raise-arguments-error 'check "contract violated"
+                             "contract" contract
+                             "given" x)))
+
 ;;
 ;; Miraj interpreter
 ;;
@@ -80,11 +87,10 @@
                [(symbol=? for name) value]
                [else (lookup for (rest env))])])]))
 
-(define (apply-without-weaving [closure Value?] [args (listof Value?)] [env Env?] [adv AdvStack?] [sto Store?]) Result? 
+(define (apply-without-weaving [closure Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result? 
   (type-case Value (deep-untag closure)
     [closV (params body env)
-           (begin (display sto)
-                  (interp body (append (map bind params args) env) adv sto))]
+           (interp body (append (map bind params args) env) adv (check sto Store?))]
     [resumeV (label pos)
              (if (unbox retroactive-error-checking)
                  (rw-call pos args adv sto)
@@ -233,7 +239,7 @@
 (define (weave-advice [adv AdvStack?] [tag Value?] [advice Advice?] [accum Result?]) Result?
   (type-case Result accum
     [v*s*t (f sto t)
-           (prepend-trace t (apply-without-weaving (aroundappsA-advice advice) (list tag f) adv sto))]))
+           (prepend-trace t (apply-without-weaving (aroundappsA-advice advice) (list tag f) adv (check sto Store?)))]))
 
 ; Wraps f according to all of the advice currently in scope
 (define (weave [adv AdvStack?] [f Value?] [sto Store?]) Result?
@@ -246,9 +252,9 @@
     [else (v*s*t f sto mt-trace)]))
 
 (define (apply-with-weaving [f Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
-  (type-case Result (weave adv f sto)
+  (type-case Result (weave adv f (check sto Store?))
       (v*s*t (woven-f s-w t-w)
-             (type-case Result (apply-without-weaving woven-f args adv s-w)
+             (type-case Result (apply-without-weaving woven-f args adv (check s-w Store?))
                  (v*s*t (r s-r t-r)
                         (let ([call-state (state (app-call f args) adv sto)]
                               [return-state (state (app-result r) adv s-r)])
@@ -327,6 +333,7 @@
 (begin 
   (if (unbox verbose-interp)
       (begin
+        (check sto Store?)
         (display "Expression: ") (display (exp-syntax expr)) (newline)
         (display-context env sto (current-output-port)) 
         (newline))
@@ -378,7 +385,7 @@
                   [v*s*t (v-f s-f t-f)
                          (type-case ResultList (map-expr-list (lambda (e s) (interp e env adv s)) args s-f)
                            [vs*s*t (v-args s-args t-args)
-                                  (type-case Result (apply-with-weaving v-f v-args adv s-args)
+                                  (type-case Result (apply-with-weaving v-f v-args adv (check s-args Store?))
                                     [v*s*t (v-r s-r t-r)
                                            (v*s*t v-r s-r (append t-f t-args t-r))])])])]
     
