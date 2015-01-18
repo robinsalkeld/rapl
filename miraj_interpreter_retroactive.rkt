@@ -21,6 +21,7 @@
   (symbolV (s symbol?))
   (closV (params (listof symbol?)) (body ExprC?) (env Env?))
   (boxV (l Location?))
+  (traceValueV (v Value?))
   (voidV)
   (taggedV (tag Value?) (value Value?))
   (resumeV (label string?) (pos number?)))
@@ -32,8 +33,7 @@
 (define mt-env empty)
 
 (define-type Storage
-  [cell (location Location?) (val Value?)]
-  [mapping (location Location?) (trace-loc Location?)])
+  [cell (location Location?) (val Value?)])
 (define-type Store 
   [store (cells (listof Storage?)) (t Trace?)])
 
@@ -127,24 +127,20 @@
          [cell (l val) 
                (cond
                  [(= loc l) s]
-                 [else (storage-at (rest storage) loc)])]
-         [mapping (l t-loc) 
-                  (cond
-                    [(= loc l) s]
-                    [else (storage-at (rest storage) loc)])]))]))
+                 [else (storage-at (rest storage) loc)])]))]))
 
-(define/contract (fetch sto loc) (-> Store? Location? Result?)
+(define/contract (fetch sto box) (-> Store? Value? Value?)
   (type-case Store sto
     [store (cells t)
-           (let ([storage (storage-at cells loc)])
-             (if storage
-                 (type-case Storage storage
-                   [cell (l val) (v*s*t val sto mt-trace)]
-                   [mapping (l t-loc)
-                            (type-case Result (fetch (trace-store sto) t-loc)
-                              [v*s*t (v s t)
-                                     (map-trace-value v sto)])])
-                 (error 'fetch "location not found")))]))
+           (type-case Value box
+             [boxV (loc)
+                   (let ([storage (storage-at cells loc)])
+                     (if storage
+                         (type-case Storage storage
+                           [cell (l val) val])
+                         (error 'fetch "location not found")))]
+             [traceValueV (v) (fetch (trace-store sto) v)]
+             [else (error 'interp "attempt to unbox a non-box")])]))
 
 (define/contract (trace-state s) (-> Store? State?)
   (first (store-t s)))
@@ -160,73 +156,36 @@
 (define/contract (override-store sto loc value) (-> Store? Location? Value? Store?)
   (type-case Store sto
     [store (cells trace)
-           (if (mapping? (storage-at cells loc))
-               (error 'retroactive-side-effect "attempt to retroactively set box")
-               (store (cons (cell loc value) cells) trace))]))
+           (store (cons (cell loc value) cells) trace)]))
 
 (define mt-store (store empty empty))
 
 ;; Mapping trace values
 
-; (listof Storage) Location -> Location or #f
-(define/contract (mapped-location cells loc) (-> (listof Storage?) Location? any/c)
-  (cond
-    [(empty? cells) #f]
-    [else 
-     (type-case Storage (first cells)
-       [cell (l val)
-             (mapped-location (rest cells) loc)]
-       [mapping (l t-loc)
-             (cond
-               [(= loc t-loc) l]
-               [else (mapped-location (rest cells) loc)])])]))
-
-(define/contract (map-trace-location trace-loc sto) (-> Location? Store? Result?)
-  (type-case Store sto
-    [store (cells t)
-           (let ([mapped-loc (mapped-location cells trace-loc)])
-             (if mapped-loc
-                 (v*s*t (boxV mapped-loc) sto mt-trace)
-                 (let* ([loc (new-loc sto)]
-                        [sto2 (store (cons (mapping loc trace-loc) cells) t)])
-                   (v*s*t (boxV loc) sto2 mt-trace))))]))
-
-(define/contract (map-binding b result) (-> Binding? Result? Result?)
+(define/contract (map-binding b c) (-> Binding? Value? Value?)
   (type-case Binding b
     [bind (name value)
-          (type-case Result result
-            [v*s*t (c sto t)
-                   (type-case Value c
-                     [closV (params body env)
-                            (type-case Result (map-trace-value value sto)
-                              [v*s*t (m s-m t-m)
-                                     (v*s*t (closV params body (cons (bind name m) env)) s-m mt-trace)])]
-                     [else (error 'map-binding "result parametmer must wrap a closure")])])]))
+          (type-case Value c
+            [closV (params body env)
+                   (closV params body (cons (bind name (map-trace-value value)) env))]
+            [else (error 'map-binding "result parametmer must wrap a closure")])]))
 
-(define/contract (map-closure params body env sto) (-> (listof symbol?) ExprC? Env? Store? Result?)
-  (foldr map-binding (v*s*t (closV params body mt-env) sto mt-trace) env))
+(define/contract (map-closure params body env) (-> (listof symbol?) ExprC? Env? Value?)
+  (foldr map-binding (closV params body mt-env) env))
                   
-(define/contract (map-trace-value v sto) (-> Value? Store? Result?)
+(define/contract (map-trace-value v) (-> Value? Value?)
   (type-case Value v
-    [numV (_) 
-          (v*s*t v sto mt-trace)]
-    [boolV (_) 
-          (v*s*t v sto mt-trace)]
-    [symbolV (_) 
-          (v*s*t v sto mt-trace)]
+    [numV (_) v]
+    [boolV (_) v]
+    [symbolV (_) v]
     [closV (params body env)
-           (map-closure params body env sto)]
-    [boxV (trace-loc)
-          (map-trace-location trace-loc sto)]
-    [voidV ()
-           (v*s*t v sto mt-trace)]
+           (map-closure params body env)]
+    [boxV (l) (traceValueV v)]
+    [traceValueV (tv) (traceValueV v)]
+    [voidV () v]
     [taggedV (tag tagged) 
-             (type-case Result (map-trace-value tag sto)
-               [v*s*t (mapped-tag s-tag t-tag)
-                      (type-case Result (map-trace-value tagged s-tag)
-                        [v*s*t (mapped-tagged s-tagged t-tagged)
-                               (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
-    [resumeV (label pos) (v*s*t v sto mt-trace)]))
+             (taggedV (map-trace-value tag) (map-trace-value tagged))]
+    [resumeV (label pos) v]))
 
 (define (prepend-trace [t Trace?] [r Result?]) Result?
   (type-case Result r
@@ -271,6 +230,8 @@
            (begin (display params out) (display " -> " out) (display (exp-syntax body) out) (newline out) (display-env env out))]
     [boxV (l)
           (begin (display "box(" out) (display l out) (display ")" out))]
+    [traceValueV (v)
+          (begin (display "tracevalue(" out) (display v out) (display ")" out))]
     [voidV ()
            (display "(void)" out)]
     [taggedV (t v)
@@ -304,9 +265,7 @@
   (map (lambda (c) 
          (type-case Storage c
            [cell (l v)
-                 (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))]
-           [mapping (l t-l)
-                    (begin (display "\t" out) (display l out) (display " -> [" out) (display t-l out) (display "]\n" out))])) 
+                 (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
        (store-cells sto)))
 
 (define (display-state [s State?] [out output-port?])
@@ -406,14 +365,16 @@
     
     [unboxC (a) (type-case Result (interp a env adv sto)
                   [v*s*t (v-a s-a t-a)
-                         (fetch s-a (boxV-l (deep-untag v-a)))])]
+                         (v*s*t (fetch s-a v-a) s-a t-a)])]
     
     [setboxC (b val) (type-case Result (interp b env adv sto)
                        [v*s*t (v-b s-b t-b)
                               (type-case Result (interp val env adv s-b)
                                 [v*s*t (v-v s-v t-v)
-                                       (let ([where (boxV-l (deep-untag v-b))])
-                                         (v*s*t v-v (override-store s-v where v-v) (append t-b t-v)))])])]
+                                       (type-case Value (deep-untag v-b)
+                                           [boxV (l) (v*s*t v-v (override-store s-v l v-v) (append t-b t-v))]
+                                           [traceValueV (v) (error 'retroactive-side-effect "attempt to retroactively set box")]
+                                           [else (error 'interp "attempt to set-box! on a non-box")])])])]
     
     [seqC (b1 b2) (type-case Result (interp b1 env adv sto)
                [v*s*t (v-b1 s-b1 t-b1)
@@ -556,11 +517,9 @@
            (type-case Control c
              [interp-init () s]
              [app-call (abs args) 
-                       (type-case ResultList (map-expr-list map-trace-value args sto)
-                           (vs*s*t (vs-a s-a t-a)
-                                  (state (app-call (rw-resume-value-no-error abs) vs-a) adv s-a)))]
+                       (state (app-call (rw-resume-value-no-error abs) (map map-trace-value args) adv sto))]
              [app-result (r)
-                         (type-case Result (map-trace-value r sto)
+                         (type-case Result (map-trace-value r)
                            (v*s*t (v-r s-r t-r)
                                   (state (app-result v-r) adv s-r)))])]))
 
@@ -600,13 +559,9 @@
            (type-case Control c
              [interp-init () s]
              [app-call (abs args) 
-                       (type-case ResultList (map-expr-list map-trace-value args sto)
-                           (vs*s*t (vs-a s-a t-a)
-                                  (state (app-call (rw-resume-value abs s-a) vs-a) adv s-a)))]
+                       (state (app-call (rw-resume-value abs sto) (map map-trace-value args)) adv sto)]
              [app-result (r)
-                         (type-case Result (map-trace-value r sto)
-                           (v*s*t (v-r s-r t-r)
-                                  (state (app-result v-r) adv s-r)))])]))
+                         (state (app-result (map-trace-value r)) adv sto)])]))
 
 (define (rw-replay-call [abs Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
   (rw-check-result (apply-with-weaving abs args adv sto)))

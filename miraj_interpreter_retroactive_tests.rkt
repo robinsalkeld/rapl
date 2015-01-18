@@ -198,25 +198,6 @@
 (test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice_bad_set_box.ttpl")))
       "retroactive-side-effect: attempt to retroactively set box")
 
-(define t-sto (store (list (cell 0 (numV 5)) (cell 1 (boxV 2)) (cell 2 (numV 6)) (cell 3 (boxV 4)) (cell 4 (numV 42)) (cell 5 (boxV 6)) (cell 6 (boxV 5))) mt-trace))
-(define sto-cells (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)))
-(define sto (store sto-cells (list (state (app-result (numV 0)) mt-adv t-sto))))
-
-(test (v*s*t-v (fetch sto 0)) (numV 7))
-(test (v*s*t-v (fetch sto 1)) (numV 5))
-(test (v*s*t-v (fetch sto 2)) (boxV 3))
-
-(type-case Result (map-trace-location 3 sto)
-  [v*s*t (v-b1 s-b1 t-b1)
-         (type-case Result (fetch s-b1 (boxV-l v-b1))
-           [v*s*t (v-b2 s-b2 t-b2)
-                  (test (v*s*t-v (fetch s-b2 (boxV-l v-b2))) (numV 42))])])
-
-;; Watch out for infinite recursion on recursive data
-(type-case Result (map-trace-location 5 sto)
-  (v*s*t (v s t)
-         (test v (boxV 4))))
- 
 ;; Check the unsafe but much simpler versions used for the purpose of presentation
 
 (set-box! retroactive-error-checking #f)
