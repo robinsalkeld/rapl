@@ -132,17 +132,17 @@
                     [(= loc l) s]
                     [else (storage-at (rest storage) loc)])]))]))
 
-(define (fetch [sto Store?] [loc Location?]) Value?
+(define/contract (fetch sto loc) (-> Store? Location? Result?)
   (type-case Store sto
     [store (cells t)
            (let ([storage (storage-at cells loc)])
              (if storage
                  (type-case Storage storage
-                   [cell (l val) val]
+                   [cell (l val) (v*s*t val sto mt-trace)]
                    [mapping (l t-loc)
-                            (let ([trace-value (fetch (trace-store sto) t-loc)])
-                              (type-case Result (map-trace-value trace-value sto)
-                                [v*s*t (v s-v t-v) v]))])
+                            (type-case Result (fetch (trace-store sto) t-loc)
+                              [v*s*t (v s t)
+                                     (map-trace-value v sto)])])
                  (error 'fetch "location not found")))]))
 
 (define (trace-state [s Store?]) State?
@@ -186,10 +186,8 @@
              (if mapped-loc
                  (v*s*t (boxV mapped-loc) sto mt-trace)
                  (let* ([loc (new-loc sto)]
-                        [sto2 (store (cons (mapping loc trace-loc) cells) t)]
-                        [trace-value (fetch (trace-store sto2) trace-loc)]
-                        [value-result (map-trace-value trace-value sto2)])
-                   (v*s*t (boxV loc) (v*s*t-s value-result) mt-trace))))]))
+                        [sto2 (store (cons (mapping loc trace-loc) cells) t)])
+                   (v*s*t (boxV loc) sto2 mt-trace))))]))
 
 (define (map-binding [b Binding?] [result Result?]) Result?
   (type-case Binding b
@@ -406,7 +404,7 @@
     
     [unboxC (a) (type-case Result (interp a env adv sto)
                   [v*s*t (v-a s-a t-a)
-                         (v*s*t (fetch s-a (boxV-l (deep-untag v-a))) s-a t-a)])]
+                         (fetch s-a (boxV-l (deep-untag v-a)))])]
     
     [setboxC (b val) (type-case Result (interp b env adv sto)
                        [v*s*t (v-b s-b t-b)

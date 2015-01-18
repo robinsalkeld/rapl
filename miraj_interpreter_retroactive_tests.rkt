@@ -202,14 +202,15 @@
 (define sto-cells (list (cell 0 (numV 7)) (mapping 1 0) (mapping 2 1) (mapping 3 2)))
 (define sto (store sto-cells (list (state (app-result (numV 0)) mt-adv t-sto))))
 
-(test (fetch sto 0) (numV 7))
-(test (fetch sto 1) (numV 5))
-(test (fetch sto 2) (boxV 3))
+(test (v*s*t-v (fetch sto 0)) (numV 7))
+(test (v*s*t-v (fetch sto 1)) (numV 5))
+(test (v*s*t-v (fetch sto 2)) (boxV 3))
 
 (type-case Result (map-trace-location 3 sto)
-  (v*s*t (v s t)
-         (let ([b (fetch s (boxV-l v))])
-           (test (fetch s (boxV-l b)) (numV 42)))))
+  [v*s*t (v-b1 s-b1 t-b1)
+         (type-case Result (fetch s-b1 (boxV-l v-b1))
+           [v*s*t (v-b2 s-b2 t-b2)
+                  (test (v*s*t-v (fetch s-b2 (boxV-l v-b2))) (numV 42))])])
 
 ;; Watch out for infinite recursion on recursive data
 (type-case Result (map-trace-location 5 sto)
