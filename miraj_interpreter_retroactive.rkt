@@ -64,14 +64,14 @@
     [else
      (error 'num+ "one argument was not a number")]))
 
-(define (num* l r) Value?
+(define (num* l r)
   (cond
     [(and (numV? l) (numV? r))
      (numV (* (numV-n l) (numV-n r)))]
     [else
      (error 'num* "one argument was not a number")]))
 
-(define (numWrite (v Value?))
+(define (numWrite v)
    (cond
     [(numV? v)
      (write (numV-n v))]
@@ -80,13 +80,13 @@
 
 ;; Booleans and conditionals
 
-(define (deep-untag [v Value?])
+(define/contract (deep-untag v) (-> Value? Value?)
   (type-case Value v
     [taggedV (tag tagged)
              (deep-untag tagged)]
     [else v]))
 
-(define (equal-values [l Value?] [r Value?]) Value?
+(define/contract (equal-values l r) (-> Value? Value? boolean?)
   (equal? l r))
      
 ;; Identifiers and functions
@@ -117,7 +117,8 @@
 
 ;; Mutations and side-effects
 
-(define (storage-at [storage (listof Storage?)] [loc Location?]) Storage?
+; (listof Storage) Location -> Storage or #f
+(define/contract (storage-at storage loc) (-> (listof Storage?) Location? any/c)
   (cond
     [(empty? storage) #f]
     [else 
@@ -145,18 +146,18 @@
                                      (map-trace-value v sto)])])
                  (error 'fetch "location not found")))]))
 
-(define (trace-state [s Store?]) State?
+(define/contract (trace-state s) (-> Store? State?)
   (first (store-t s)))
 
-(define (trace-store [s Store?]) Store?
+(define/contract (trace-store s) (-> Store? Store?)
   (state-sto (trace-state s)))
 
-(define (new-loc [sto Store?]) Location?
+(define/contract (new-loc sto) (-> Store? Location?)
   (type-case Store sto
     [store (cells t)
            (length cells)]))
 
-(define (override-store [sto Store?] [loc Location?] [value Value?]) Store?
+(define/contract (override-store sto loc value) (-> Store? Location? Value? Store?)
   (type-case Store sto
     [store (cells trace)
            (if (mapping? (storage-at cells loc))
@@ -167,7 +168,8 @@
 
 ;; Mapping trace values
 
-(define (mapped-location [cells (listof Storage?)] [loc Location?]) Value?
+; (listof Storage) Location -> Location or #f
+(define/contract (mapped-location cells loc) (-> (listof Storage?) Location? any/c)
   (cond
     [(empty? cells) #f]
     [else 
@@ -179,7 +181,7 @@
                [(= loc t-loc) l]
                [else (mapped-location (rest cells) loc)])])]))
 
-(define (map-trace-location [trace-loc Location?] [sto Store?]) Result?
+(define/contract (map-trace-location trace-loc sto) (-> Location? Store? Result?)
   (type-case Store sto
     [store (cells t)
            (let ([mapped-loc (mapped-location cells trace-loc)])
@@ -189,7 +191,7 @@
                         [sto2 (store (cons (mapping loc trace-loc) cells) t)])
                    (v*s*t (boxV loc) sto2 mt-trace))))]))
 
-(define (map-binding [b Binding?] [result Result?]) Result?
+(define/contract (map-binding b result) (-> Binding? Result? Result?)
   (type-case Binding b
     [bind (name value)
           (type-case Result result
@@ -201,10 +203,10 @@
                                      (v*s*t (closV params body (cons (bind name m) env)) s-m mt-trace)])]
                      [else (error 'map-binding "result parametmer must wrap a closure")])])]))
 
-(define (map-closure [params (listof symbol?)] [body ExprC?] [env Env?] [sto Store?]) Result?
+(define/contract (map-closure params body env sto) (-> (listof symbol?) ExprC? Env? Store? Result?)
   (foldr map-binding (v*s*t (closV params body mt-env) sto mt-trace) env))
                   
-(define (map-trace-value (v Value?) (sto Store?)) Result?
+(define/contract (map-trace-value v sto) (-> Value? Store? Result?)
   (type-case Value v
     [numV (_) 
           (v*s*t v sto mt-trace)]
