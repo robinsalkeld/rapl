@@ -123,17 +123,17 @@
                  [else (storage-at (rest storage) loc)])]))]))
 
 (define/contract (fetch sto box) (-> Store? Value? Value?)
-  (type-case Store sto
-    [store (cells t)
-           (type-case Value box
-             [boxV (loc)
+  (type-case Value box
+    [boxV (loc)
+          (type-case Store sto
+            [store (cells t)
                    (let ([storage (storage-at cells loc)])
                      (if storage
                          (type-case Storage storage
                            [cell (l val) val])
-                         (error 'fetch "location not found")))]
-             [traceValueV (v) (fetch (trace-store sto) v)]
-             [else (error 'interp "attempt to unbox a non-box")])]))
+                         (error 'fetch "location not found")))])]
+    [traceValueV (v) (fetch (trace-store sto) v)]
+    [else (error 'interp "attempt to unbox a non-box")]))
 
 (define/contract (trace-state s) (-> Store? State?)
   (first (store-t s)))
