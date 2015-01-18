@@ -25,13 +25,33 @@
   (taggedV (tag Value?) (value Value?))
   (resumeV (label string?) (pos number?)))
 
-(define-type Cont
+(define-type Binding
+  [bind (name symbol?) (value Value?)])
+(define Location? number?)
+(define Env? (listof Binding?))
+(define mt-env empty)
+
+(define-type Storage
+  [cell (location Location?) (val Value?)]
+  [mapping (location Location?) (trace-loc Location?)])
+(define-type Store 
+  [store (cells (listof Storage?)) (t Trace?)])
+
+(define-type Result
+  [v*s*t (v Value?) (s Store?) (t Trace?)])
+
+(define-type Advice
+  [aroundappsA (advice Value?)])
+(define AdvStack? (listof Advice?))  
+(define mt-adv empty)
+
+(define-type Control
   [interp-init]
   [app-call (abs Value?) (args (listof Value?))]
   [app-result (r Value?)])
 
 (define-type State
-  [state (c Cont?) (adv AdvStack?) (sto Store?)])
+  [state (c Control?) (adv AdvStack?) (sto Store?)])
 (define Trace? (listof State?))
 (define mt-trace empty)
 
@@ -71,13 +91,7 @@
      
 ;; Identifiers and functions
 
-(define-type Binding
-  [bind (name symbol?) (value Value?)])
-(define Location? number?)
-(define Env? (listof Binding?))
-(define mt-env empty)
-
-(define (lookup [for symbol?] [env Env?]) Value?
+(define/contract (lookup for env) (-> symbol? Env? Value?)
   (cond
     [(empty? env) (error 'lookup (string-append "name not found: " (symbol->string for)))]
     [else 
@@ -87,27 +101,21 @@
                [(symbol=? for name) value]
                [else (lookup for (rest env))])])]))
 
-(define (apply-without-weaving [closure Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result? 
-  (type-case Value (deep-untag closure)
+(define/contract (apply-without-weaving f args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
+  (type-case Value (deep-untag f)
     [closV (params body env)
            (interp body (append (map bind params args) env) adv (check sto Store?))]
     [resumeV (label pos)
              (if (unbox retroactive-error-checking)
                  (rw-call pos args adv sto)
                  (rw-call-no-error args adv sto))]
-    [else (error 'interp (string-append "only abstractions can be applied: " (value->string closure)))]))
+    [else (error 'interp (string-append "only functions can be applied: " (value->string f)))]))
 
 (define z-combinator
   (parse-string "(lambda (f) ((lambda (x) (f (lambda (y) ((x x) y))))
                               (lambda (x) (f (lambda (y) ((x x) y))))))"))
 
 ;; Mutations and side-effects
-
-(define-type Storage
-  [cell (location Location?) (val Value?)]
-  [mapping (location Location?) (trace-loc Location?)])
-(define-type Store 
-  [store (cells (listof Storage?)) (t Trace?)])
 
 (define (storage-at [storage (listof Storage?)] [loc Location?]) Storage?
   (cond
@@ -220,20 +228,12 @@
                                (v*s*t (taggedV mapped-tag mapped-tagged) s-tagged mt-trace)])])]
     [resumeV (label pos) (v*s*t v sto mt-trace)]))
 
-(define-type Result
-  [v*s*t (v Value?) (s Store?) (t Trace?)])
-
 (define (prepend-trace [t Trace?] [r Result?]) Result?
   (type-case Result r
     [v*s*t (v-r s-r t-r)
            (v*s*t v-r s-r (append t t-r))]))
 
 ;; Advice
-
-(define-type Advice
-  [aroundappsA (advice Value?)])
-(define AdvStack? (listof Advice?))  
-(define mt-adv empty)
 
 ; Wraps f with a single advice function
 (define (weave-advice [adv AdvStack?] [tag Value?] [advice Advice?] [accum Result?]) Result?
@@ -312,7 +312,7 @@
 (define (display-state [s State?] [out output-port?])
   (type-case State s
     [state (c adv sto)
-           (type-case Cont c
+           (type-case Control c
              [interp-init ()
                        (begin (display "(interp-init)" out))]
              [app-call (f args)
@@ -553,7 +553,7 @@
 (define (map-state-no-error [s State?] [sto Store?]) State?
   (type-case State s
     [state (c adv t-sto)
-           (type-case Cont c
+           (type-case Control c
              [interp-init () s]
              [app-call (abs args) 
                        (type-case ResultList (map-expr-list map-trace-value args sto)
@@ -576,7 +576,7 @@
 (define (rw-result-no-error [adv AdvStack?] [sto Store?]) Result?
   (type-case State (trace-state sto)
     [state (c t-adv t-sto)
-           (type-case Cont c
+           (type-case Control c
              [interp-init () 
                        (error 'rw-result-no-error "Unexpected state")]
              [app-call (abs args) 
@@ -597,7 +597,7 @@
 (define (map-state [s State?] [sto Store?])
   (type-case State s
     [state (c adv t-sto)
-           (type-case Cont c
+           (type-case Control c
              [interp-init () s]
              [app-call (abs args) 
                        (type-case ResultList (map-expr-list map-trace-value args sto)
@@ -632,7 +632,7 @@
            (cond [(= pos (length t))
                   (type-case State (first t)
                     [state (c t-adv t-sto)
-                           (type-case Cont c
+                           (type-case Control c
                              [interp-init ()
                                           (rw-result adv (map-trace-state (next-trace-state sto)))]
                              [app-call (abs args)
@@ -651,7 +651,7 @@
                 '())])
     (type-case State t-state
       [state (c t-adv t-sto)
-             (type-case Cont c
+             (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
                [app-call (abs args) 
                          (let ([result (rw-replay-call abs args adv sto)])
