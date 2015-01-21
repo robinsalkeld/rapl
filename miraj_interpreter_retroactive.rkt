@@ -28,10 +28,10 @@
 (define-type Storage
   [cell (location Location?) (val Value?)])
 (define-type Store 
-  [store (cells (listof Storage?)) (t Trace?)])
+  [store (cells (listof Storage?))])
 
 (define-type Result
-  [v*s*t (v Value?) (s Store?) (t Trace?)])
+  [v*s*t*t (v Value?) (s Store?) (tin TraceIn?) (tout TraceOut?)])
 
 (define-type Advice
   [aroundappsA (advice Value?)])
@@ -45,8 +45,10 @@
 
 (define-type State
   [state (c Control?) (adv AdvStack?) (sto Store?)])
-(define Trace? (listof State?))
-(define mt-trace empty)
+(define TraceIn? (listof State?))
+(define mt-tracein empty)
+(define TraceOut? (listof State?))
+(define mt-traceout empty)
 
 ;; Numbers and arithmetic
 
@@ -126,7 +128,7 @@
   (type-case Value box
     [boxV (loc)
           (type-case Store sto
-            [store (cells t)
+            [store (cells)
                    (let ([storage (storage-at cells loc)])
                      (if storage
                          (type-case Storage storage
@@ -135,21 +137,21 @@
     [traceValueV (v) (fetch (trace-store sto) v)]
     [else (error 'interp "attempt to unbox a non-box")]))
 
-(define/contract (trace-state s) (-> Store? State?)
-  (first (store-t s)))
+(define/contract (trace-state t) (-> TraceIn? State?)
+  (first t))
 
-(define/contract (trace-store s) (-> Store? Store?)
+(define/contract (trace-store s) (-> TraceIn? Store?)
   (state-sto (trace-state s)))
 
 (define/contract (new-loc sto) (-> Store? Location?)
   (type-case Store sto
-    [store (cells t)
+    [store (cells)
            (length cells)]))
 
 (define/contract (override-store sto loc value) (-> Store? Location? Value? Store?)
   (type-case Store sto
-    [store (cells trace)
-           (store (cons (cell loc value) cells) trace)]))
+    [store (cells)
+           (store (cons (cell loc value) cells))]))
 
 (define mt-store (store empty empty))
 
@@ -180,37 +182,37 @@
              (taggedV (map-trace-value tag) (map-trace-value tagged))]
     [resumeV (label pos) v]))
 
-(define (prepend-trace [t Trace?] [r Result?]) Result?
+(define/contract (prepend-trace t r) (-> TraceOut? Result? Result?)
   (type-case Result r
-    [v*s*t (v-r s-r t-r)
-           (v*s*t v-r s-r (append t t-r))]))
+    [v*s*t*t (v-r s-r tout-r tin-r)
+             (v*s*t*t v-r s-r (append t tout-r) tin-r)]))
 
 ;; Advice
 
 ; Wraps f with a single advice function
 (define (weave-advice [adv AdvStack?] [tag Value?] [advice Advice?] [accum Result?]) Result?
   (type-case Result accum
-    [v*s*t (f sto t)
-           (prepend-trace t (apply-without-weaving (aroundappsA-advice advice) (list tag f) adv sto))]))
+    [v*s*t*t (f sto tin tout)
+           (prepend-trace tout (apply-without-weaving (aroundappsA-advice advice) (list tag f) adv sto tin))]))
 
 ; Wraps f according to all of the advice currently in scope
-(define (weave [adv AdvStack?] [f Value?] [sto Store?]) Result?
+(define (weave [adv AdvStack?] [f Value?] [sto Store?] [tin TraceIn?]) Result?
   (type-case Value f
     [taggedV (tag tagged)
              (let ([woven-tagged-result (weave adv tagged sto)]
                    [helper (lambda (advice accum) 
                              (weave-advice adv tag advice accum))])
                (foldr helper woven-tagged-result adv))]
-    [else (v*s*t f sto mt-trace)]))
+    [else (v*s*t*t f sto mt-traceout tin)]))
 
-(define (apply-with-weaving [f Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
-  (type-case Result (weave adv f sto)
-      (v*s*t (woven-f s-w t-w)
-             (type-case Result (apply-without-weaving woven-f args adv s-w)
-                 (v*s*t (r s-r t-r)
-                        (let ([call-state (state (app-call f args) adv sto)]
-                              [return-state (state (app-result r) adv s-r)])
-                            (v*s*t r s-r (append (list call-state) t-w t-r (list return-state)))))))))
+(define (apply-with-weaving [f Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?] [tin TraceIn?]) Result?
+  (type-case Result (weave adv f sto tin)
+      (v*s*t*t (woven-f s-w tin-w tout-w)
+               (type-case Result (apply-without-weaving woven-f args adv s-w tin-w)
+                 (v*s*t*t (r s-r tin-r tout-r)
+                          (let ([call-state (state (app-call f args) adv sto)]
+                                [return-state (state (app-result r) adv s-r)])
+                            (v*s*t*t r s-r tin-r (append (list call-state) tout-w tout-r (list return-state)))))))))
 
 ;; Debugging
 
@@ -236,16 +238,16 @@
            [_ (display-value v out)])
     (get-output-string out)))
 
-(define (display-context [env Env?] [sto Store?] [out output-port?])
+(define/contract (display-context env sto t out) (-> Env? Store? TraceIn? output-port? void?)
   (begin (display "=======================================\n" out)
          (display "Environment: \n" out)
          (display-env env out)
          (display "Store: \n" out)
          (display-store sto out)
-         (if (empty? (store-t sto))
+         (if (empty? t)
              (void)
              (begin (display "Trace Store: \n" out)
-                    (display-store (trace-store sto) out)))))
+                    (display-store (trace-store t) out)))))
          
 (define (display-env [env Env?] [out output-port?])
   (map (lambda (def) 
@@ -281,7 +283,7 @@
 (define verbose-interp (box false))
 (define retroactive-error-checking (box true))
 
-(define (interp [expr ExprC?] [env Env?] [adv AdvStack?] [sto Store?]) Result?
+(define/contract (interp expr env adv sto tin) (-> ExprC? Env? AdvStack? Store? TraceIn? Result?)
 (begin 
   (if (unbox verbose-interp)
       (begin
@@ -294,132 +296,134 @@
     
     ;; Numbers and arithmetic
     
-    [numC (n) (v*s*t (numV n) sto mt-trace)]
+    [numC (n) (v*s*t*t (numV n) sto tin mt-traceout)]
     
-    [plusC (l r) (type-case Result (interp l env adv sto)
-               [v*s*t (v-l s-l t-l)
-                      (type-case Result (interp r env adv s-l)
-                        [v*s*t (v-r s-r t-r)
-                               (v*s*t (num+ v-l v-r) s-r (append t-l t-r))])])]
+    [plusC (l r) (type-case Result (interp l env adv sto tin)
+               [v*s*t*t (v-l s-l tin-l tout-l)
+                        (type-case Result (interp r env adv s-l)
+                          [v*s*t*t (v-r s-r tin-r tout-r)
+                                   (v*s*t*t (num+ v-l v-r) s-r tin-r (append tout-l tout-r))])])]
 
-    [multC (l r) (type-case Result (interp l env adv sto)
-               [v*s*t (v-l s-l t-l)
-                      (type-case Result (interp r env adv s-l)
-                        [v*s*t (v-r s-r t-r)
-                               (v*s*t (num* v-l v-r) s-r (append t-l t-r))])])]
+    [multC (l r) (type-case Result (interp l env adv sto tin)
+               [v*s*t*t (v-l s-l tin-l tout-l)
+                        (type-case Result (interp r env adv s-l tin-l)
+                          [v*s*t*t (v-r s-r tin-r tout-r)
+                                   (v*s*t*t (num* v-l v-r) s-r tin-r (append tout-l tout-r))])])]
     
     ;; Booleans and conditionals
     
-    [boolC (b) (v*s*t (boolV b) sto mt-trace)]
+    [boolC (b) (v*s*t*t (boolV b) sto tin mt-traceout)]
     
-    [equalC (l r) (type-case Result (interp l env adv sto)
-               [v*s*t (v-l s-l t-l)
-                      (type-case Result (interp r env adv s-l)
-                        [v*s*t (v-r s-r t-r)
-                               (v*s*t (boolV (equal-values v-l v-r)) s-r (append t-l t-r))])])]
+    [equalC (l r) (type-case Result (interp l env adv sto tin)
+                    [v*s*t*t (v-l s-l tin-l tout-l)
+                             (type-case Result (interp r env adv s-l tin-l)
+                               [v*s*t*t (v-r s-r tin-r tout-r)
+                                        (v*s*t*t (boolV (equal-values v-l v-r)) s-r tin-r (append tout-l tout-r))])])]
     
     [ifC (c t f) (type-case Result (interp c env adv sto)
-                   [v*s*t (v-c s-c t-c)
-                          (type-case Result (if (boolV-b v-c)
-                                                (interp t env adv s-c)
-                                                (interp f env adv s-c))
-                            [v*s*t (v-b s-b t-b) 
-                                   (v*s*t v-b s-b (append t-c t-b))])])]
+                   [v*s*t*t (v-c s-c tin-c tout-c)
+                            (type-case Result (if (boolV-b v-c)
+                                                  (interp t env adv s-c tin-c)
+                                                  (interp f env adv s-c tin-c))
+                              [v*s*t*t (v-b s-b tin-b tout-b) 
+                                       (v*s*t*t v-b s-b tin-b (append tout-c tout-b))])])]
     
     ;; Identifiers and abstractions
     
-    [idC (n) (v*s*t (lookup n env) sto mt-trace)]
+    [idC (n) (v*s*t*t (lookup n env) sto tin mt-traceout)]
     
-    [lamC (params b) (v*s*t (closV params b env) sto mt-trace)]
+    [lamC (params b) (v*s*t*t (closV params b env) sto tin mt-traceout)]
     
-    [appC (f args) (type-case Result (interp f env adv sto)
-                  [v*s*t (v-f s-f t-f)
-                         (type-case ResultList (map-expr-list (lambda (e s) (interp e env adv s)) args s-f)
-                           [vs*s*t (v-args s-args t-args)
-                                  (type-case Result (apply-with-weaving v-f v-args adv s-args)
-                                    [v*s*t (v-r s-r t-r)
-                                           (v*s*t v-r s-r (append t-f t-args t-r))])])])]
+    [appC (f args) (type-case Result (interp f env adv sto tin)
+                  [v*s*t*t (v-f s-f tin-f tout-f)
+                           (type-case ResultList (map-expr-list (lambda (e s t) (interp e env adv s t)) args s-f tin-f)
+                             [vs*s*t*t (v-args s-args tin-args tout-args)
+                                       (prepend-trace (append tout-f tout-args) 
+                                                      (apply-with-weaving v-f v-args adv s-args tin-args))])])]
     
-    [recC (f) (interp (appC z-combinator (list f)) env adv sto)]
+    [recC (f) (interp (appC z-combinator (list f)) env adv sto tin)]
     
     [letC (s v in) (type-case Result (interp v env adv sto)
-                            [v*s*t (v-v s-v t-v)
-                                 (prepend-trace t-v (interp in (cons (bind s v-v) env) adv s-v))])]
+                            [v*s*t*t (v-v s-v tin-v tout-v)
+                                 (prepend-trace tout-v (interp in (cons (bind s v-v) env) adv s-v tin-v))])]
     
     ;; Boxes and sequencing
     
-    [boxC (a) (type-case Result (interp a env adv sto)
-                [v*s*t (v-a s-a t-a)
-                       (let ([where (new-loc sto)])
-                         (v*s*t (boxV where)
-                                (override-store s-a where v-a)
-                                t-a))])]
+    [boxC (a) (type-case Result (interp a env adv sto tin)
+                [v*s*t*t (v-a s-a tin-a tout-a)
+                         (let ([where (new-loc sto)])
+                           (v*s*t*t (boxV where)
+                                    (override-store s-a where v-a)
+                                    tin-a
+                                    tout-a))])]
     
-    [unboxC (a) (type-case Result (interp a env adv sto)
-                  [v*s*t (v-a s-a t-a)
-                         (v*s*t (fetch s-a v-a) s-a t-a)])]
+    [unboxC (a) (type-case Result (interp a env adv sto tin)
+                  [v*s*t*t (v-a s-a tin-a tout-a)
+                           (v*s*t*t (fetch s-a v-a) s-a tin-a tout-a)])]
     
-    [setboxC (b val) (type-case Result (interp b env adv sto)
-                       [v*s*t (v-b s-b t-b)
-                              (type-case Result (interp val env adv s-b)
-                                [v*s*t (v-v s-v t-v)
-                                       (type-case Value (deep-untag v-b)
-                                           [boxV (l) (v*s*t v-v (override-store s-v l v-v) (append t-b t-v))]
-                                           [traceValueV (v) (error 'retroactive-side-effect "attempt to retroactively set box")]
-                                           [else (error 'interp "attempt to set-box! on a non-box")])])])]
+    [setboxC (b val) (type-case Result (interp b env adv sto tin)
+                       [v*s*t*t (v-b s-b tin-b tout-b)
+                                (type-case Result (interp val env adv s-b tin-b)
+                                  [v*s*t*t (v-v s-v tin-v tout-v)
+                                           (type-case Value (deep-untag v-b)
+                                             [boxV (l) (v*s*t*t v-v (override-store s-v l v-v) tin-v (append tout-b tout-v))]
+                                             [traceValueV (v) (error 'retroactive-side-effect "attempt to retroactively set box")]
+                                             [else (error 'interp "attempt to set-box! on a non-box")])])])]
     
-    [seqC (b1 b2) (type-case Result (interp b1 env adv sto)
-               [v*s*t (v-b1 s-b1 t-b1)
-                      (prepend-trace t-b1 (interp b2 env adv s-b1))])]
+    [seqC (b1 b2) (type-case Result (interp b1 env adv sto tin)
+               [v*s*t*t (v-b1 s-b1 tin-b1 tout-b1)
+                        (prepend-trace tout-b1 (interp b2 env adv s-b1 tin-b1))])]
     
-    [voidC () (v*s*t (voidV) sto mt-trace)]
+    [voidC () (v*s*t*t (voidV) sto tin mt-traceout)]
     
     ;; Advice
     
-    [symbolC (s) (v*s*t (symbolV s) sto mt-trace)]
+    [symbolC (s) (v*s*t*t (symbolV s) sto tin mt-traceout)]
     
     [tagC (tag v) 
-          (type-case Result (interp tag env adv sto)
-            [v*s*t (v-tag s-tag t-tag)
-                   (type-case Result (interp v env adv s-tag)
-                     [v*s*t (v-v s-v t-v)
-                            (v*s*t (taggedV v-tag v-v) s-v (append t-tag t-v))])])]
+          (type-case Result (interp tag env adv sto tin)
+            [v*s*t*t (v-tag s-tag tin-tag tout-tag)
+                     (type-case Result (interp v env adv s-tag tin-tag)
+                       [v*s*t*t (v-v s-v tin-v tout-v)
+                                (v*s*t*t (taggedV v-tag v-v) s-v (append tout-tag tout-v))])])]
     
     [aroundappsC (wrapper extent) 
                  (type-case Result (interp wrapper env adv sto)
-                   [v*s*t (v-w s-w t-w)
-                          (prepend-trace t-w (interp extent env (cons (aroundappsA v-w) adv) s-w))])]
+                   [v*s*t*t (v-w s-w tin-w tout-w)
+                            (prepend-trace tout-w (interp extent env (cons (aroundappsA v-w) adv) s-w tin-w))])]
     
     ;; Input/Output
     
     [fileC (path) (interp (parse-file path) mt-env adv sto)]
     
     [writeC (l a) (type-case Result (interp a env adv sto)
-               [v*s*t (v-a s-a t-a) 
-                      (begin ((unbox write-sink) (string-append l ": " (value->string v-a)))
-                               (v*s*t v-a s-a t-a))])]
+               [v*s*t*t (v-a s-a tin-a tout-a) 
+                        (begin ((unbox write-sink) (string-append l ": " (value->string v-a)))
+                               (v*s*t*t v-a s-a tin-a tout-a))])]
     
     [readC (l) (let* ([val ((unbox read-source) l)]
                       [_ (record-interp-input val)])
-                 (v*s*t (numV val) sto mt-trace))]))
+                 (v*s*t*t (numV val) sto tin mt-traceout))]))
 )
    
 (define-type ResultList
-  [vs*s*t (vs (listof Value?)) (s Store?) (t Trace?)]) 
+  [vs*s*t*t (vs (listof Value?)) (s Store?) (tin TraceIn?) (tout TraceOut?)]) 
 (define (append-result [rl ResultList?] [r Result?]) ResultList?
   (type-case ResultList rl
-    (vs*s*t (vs old-s old-t)
-            (type-case Result r
-              (v*s*t (v s t)
-                     (vs*s*t (append vs (list v)) s (append old-t t)))))))
+    (vs*s*t*t (vs old-s old-tin old-tout)
+              (type-case Result r
+                (v*s*t*t (v s tin tout)
+                         (vs*s*t*t (append vs (list v)) s tin (append old-tout tout)))))))
 
-(define (map-expr-list [f procedure?] [exprs (listof ExprC?)] [sto Store?]) ResultList?
-  (let ([helper (lambda (e rl) 
-                  (append-result rl (f e (vs*s*t-s rl))))])
-    (foldl helper (vs*s*t '() sto mt-trace) exprs)))
+(define (map-expr-list [f procedure?] [exprs (listof ExprC?)] [sto Store?] [tin TraceIn?]) ResultList?
+  (let ([helper (lambda (e rl t) 
+                  (type-case ResultList rl
+                    [vs*s*t*t (vs s tin-rl tout-rl)
+                              (append-result rl (f e s tin-rl))]))])
+    (foldl helper (vs*s*t*t '() sto tin mt-traceout) exprs)))
 
 (define (interp-exp [exp ExprC?]) Value?
-  (v*s*t-v (interp exp mt-env mt-adv mt-store)))
+  (v*s*t*t-v (interp exp mt-env mt-adv mt-store mt-tracein)))
    
 (define (app-chain [exps list?]) ExprC?
   (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps)))
@@ -489,19 +493,15 @@
 
 ;; TODO-RS: Merge advice in scope properly wherever retroactive execution meets prior state
 
-(define (next-trace-state [s Store?]) Store?
-  (type-case Store s
-    [store (cells trace)
-           (store cells (rest trace))]))
+(define (next-trace-state [trace Trace?]) Trace?
+  (rest trace))
 
 ;; Without error checking
 
-(define (map-trace-state-no-error [sto Store?]) Store?
-  (type-case Store sto
-    [store (cells trace)
-           (type-case State (map-state-no-error (first trace) sto)
-             [state (c adv mapped-sto)
-                    (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))])]))
+(define (map-trace-state-no-error [trace Trace?] [sto Store?]) Trace?
+  (type-case State (map-state-no-error (first trace) sto)
+    [state (c adv mapped-sto)
+           (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))]))
 
 (define (map-state-no-error [s State?] [sto Store?]) State?
   (type-case State s
@@ -511,9 +511,7 @@
              [app-call (abs args) 
                        (state (app-call (rw-resume-value-no-error abs) (map map-trace-value args) adv sto))]
              [app-result (r)
-                         (type-case Result (map-trace-value r)
-                           (v*s*t (v-r s-r t-r)
-                                  (state (app-result v-r) adv s-r)))])]))
+                         (state (app-result (map-trace-value r)) adv sto)])]))
 
 (define (rw-resume-value-no-error [v Value?]) Value?
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
@@ -538,12 +536,10 @@
 
 ;; With error checking 
 
-(define (map-trace-state [sto Store?]) Store?
-  (type-case Store sto
-    [store (cells trace)
-           (type-case State (map-state (first trace) sto)
-             [state (c adv mapped-sto)
-                    (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))])]))
+(define (map-trace-state [trace Trace?] [sto Store?]) Trace?
+  (type-case State (map-state (first trace) sto)
+    [state (c adv mapped-sto)
+           (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))]))
 
 (define (map-state [s State?] [sto Store?])
   (type-case State s
@@ -567,15 +563,14 @@
                  (error 'retroactive-side-effect 
                         (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
   
-(define (rw-resume-value [v Value?] [sto Store?]) Value?
-  (type-case Store sto
-    [store (cells t)
-           (let ([r (resumeV (value->string v) (length t))])
-             (deep-tag (all-tags v) r))]))
+(define (rw-resume-value [v Value?] [t Trace?]) Value?
+  (let ([r (resumeV (value->string v) (length t))])
+             (deep-tag (all-tags v) r)))
 
-(define (rw-call [pos number?] [passed (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
+(define/contract (rw-call [pos number?] [passed (listof Value?)] [adv AdvStack?] [sto Store?] [t Trace?]) 
+                 (-> number? (listof Value?) AdvStack? Store? Trace? Result?)
   (type-case Store sto
-    [store (cells t)
+    [store (cells)
            (cond [(= pos (length t))
                   (type-case State (first t)
                     [state (c t-adv t-sto)
