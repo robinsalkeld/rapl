@@ -190,13 +190,13 @@
 ;; Advice
 
 ; Wraps f with a single advice function
-(define (weave-advice [adv AdvStack?] [tag Value?] [advice Advice?] [accum Result?]) Result?
+(define/contract (weave-advice adv tag advice accum) (-> AdvStack? Value? Advice? Result? Result?)
   (type-case Result accum
     [v*s*t*t (f sto tin tout)
            (prepend-trace tout (apply-without-weaving (aroundappsA-advice advice) (list tag f) adv sto tin))]))
 
-; Wraps f according to all of the advice currently in scope
-(define (weave [adv AdvStack?] [f Value?] [sto Store?] [tin TraceIn?]) Result?
+; Wraps f according to all of the advice currently in scope.
+(define/contract (weave adv f sto tin) (-> AdvStack? Value? Store? TraceIn? Result?)
   (type-case Value f
     [taggedV (tag tagged)
              (let ([woven-tagged-result (weave adv tagged sto)]
@@ -205,7 +205,7 @@
                (foldr helper woven-tagged-result adv))]
     [else (v*s*t*t f sto mt-traceout tin)]))
 
-(define (apply-with-weaving [f Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?] [tin TraceIn?]) Result?
+(define/contract (apply-with-weaving f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (type-case Result (weave adv f sto tin)
       (v*s*t*t (woven-f s-w tin-w tout-w)
                (type-case Result (apply-without-weaving woven-f args adv s-w tin-w)
@@ -216,7 +216,7 @@
 
 ;; Debugging
 
-(define (display-value [v Value?] [out output-port?])
+(define/contract (display-value v out) (-> Value? output-port? void?)
   (type-case Value v
     [numV (n) (display n out)]
     [boolV (b) (display b out)]
@@ -233,7 +233,7 @@
             (begin (display "(tag " out) (display-value t out) (display " " out) (display-value v out) (display ")" out))]
     [resumeV (label f) (display label out)]))
 
-(define (value->string [v Value?]) string?
+(define/contract (value->string v) (-> Value? string?)
   (letrec ([out (open-output-string)]
            [_ (display-value v out)])
     (get-output-string out)))
@@ -249,21 +249,21 @@
              (begin (display "Trace Store: \n" out)
                     (display-store (trace-store t) out)))))
          
-(define (display-env [env Env?] [out output-port?])
+(define/contract (display-env env out) (-> Env? output-port? void?)
   (map (lambda (def) 
          (type-case Binding def
            [bind (n v)
                  (begin (display "\t\t" out) (display n out) (display " -> " out) (display-value v out) (display "\n" out))])) 
        env))
 
-(define (display-store [sto Store?] [out output-port?])
+(define/contract (display-store sto out) (-> Store? output-port? void?)
   (map (lambda (c) 
          (type-case Storage c
            [cell (l v)
                  (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
        (store-cells sto)))
 
-(define (display-state [s State?] [out output-port?])
+(define/contract (display-state s out) (-> State? output-port? void?)
   (type-case State s
     [state (c adv sto)
            (type-case Control c
@@ -275,7 +275,7 @@
                          (begin (display "(app-return " out) (display-value result out) (display ")" out))])]))
     
 
-(define (display-with-label [label string?] [val Value?] [out output-port?])
+(define/contract (display-with-label label val out) (-> string? Value? output-port? void?)
   (begin (display label out) (display ": " out) (display-value val out) (newline out)))
 
 ;; Main interpretation function
@@ -408,24 +408,24 @@
    
 (define-type ResultList
   [vs*s*t*t (vs (listof Value?)) (s Store?) (tin TraceIn?) (tout TraceOut?)]) 
-(define (append-result [rl ResultList?] [r Result?]) ResultList?
+(define/contract (append-result rl r) (-> ResultList? Result? ResultList?)
   (type-case ResultList rl
     (vs*s*t*t (vs old-s old-tin old-tout)
               (type-case Result r
                 (v*s*t*t (v s tin tout)
                          (vs*s*t*t (append vs (list v)) s tin (append old-tout tout)))))))
 
-(define (map-expr-list [f procedure?] [exprs (listof ExprC?)] [sto Store?] [tin TraceIn?]) ResultList?
-  (let ([helper (lambda (e rl t) 
+(define/contract (map-expr-list f exprs sto tin) (-> (-> ExprC? ResultList? TraceIn?) (listof ExprC?) Store? TraceIn? ResultList?)
+  (let ([helper (lambda (e rl) 
                   (type-case ResultList rl
                     [vs*s*t*t (vs s tin-rl tout-rl)
                               (append-result rl (f e s tin-rl))]))])
     (foldl helper (vs*s*t*t '() sto tin mt-traceout) exprs)))
 
-(define (interp-exp [exp ExprC?]) Value?
+(define/contract (interp-exp exp) (-> ExprC? Value?)
   (v*s*t*t-v (interp exp mt-env mt-adv mt-store mt-tracein)))
    
-(define (app-chain [exps list?]) ExprC?
+(define/contract (app-chain exps) (-> (listof ExprC?) ExprC?)
   (foldl (lambda (next chained) (appC chained next)) (first exps) (rest exps)))
 
 ;; Replay
@@ -433,14 +433,14 @@
 (define-type MirajRecording
   [mirajRecForReplay (program list?) (input list?)])
 
-(define (interp-with-recording (exps list?) (recording-path path-string?))
+(define/contract (interp-with-recording exps recording-path) (-> (listof ExprC?) path-string? Result?)
   (let* ([result (interp-exp (app-chain exps))]
          [input (get-interp-input)]
          [recording (mirajRecForReplay exps input)]
          [_ (write-struct-to-file recording recording-path)])
     result))
            
-(define (replay-interp (recording-path path-string?))
+(define/contract (replay-interp recording-path) (-> path-string? Result?)
   (let* ([recording (read-struct-from-file recording-path)]
          [remaining-input (box (mirajRecForReplay-input recording))]
          [_ (set-box! read-source (lambda (prompt) (list-box-pop! remaining-input)))])
@@ -451,7 +451,7 @@
 (define-type MirajTrace
   [mirajTrace (jps TraceOut?)])
 
-(define (interp-with-tracing (exprs (listof ExprC?)) (trace-path path-string?)) Value?
+(define/contract (interp-with-tracing exprs trace-path) (-> (listof ExprC?) path-string? Value?)
   (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store)
     [v*s*t*t (v s tin tout)
            (let* ([trace (append (list (state (interp-init) mt-adv mt-store)) tout (list (state (app-result v) mt-adv s)))]
@@ -461,7 +461,7 @@
 ;; TODO-RS: Gah, can't figure out how to get a hold of the current module
 (define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
 
-(define (interp-query (trace-path path-string?) (exprs list?)) Value?
+(define/contract (interp-query trace-path exprs) (-> path-string? (listof ExprC?) Value?)
   (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
     [mirajTrace (app-trace)
                 (if (unbox retroactive-error-checking)
@@ -482,28 +482,28 @@
                       (v*s*t*t-v result)))]))
 
 
-(define (all-tags [v Value?]) (listof Value?)
+(define/contract (all-tags v) (-> Value? (listof Value?))
   (type-case Value v
     [taggedV (tag tagged)
              (cons tag (all-tags tagged))]
     [else empty]))
 
-(define (deep-tag [tags (listof Value?)] [v Value?]) Value?
+(define (deep-tag tags v) (-> (listof Value?) Value? Value?)
   (foldr taggedV v tags))
 
 ;; TODO-RS: Merge advice in scope properly wherever retroactive execution meets prior state
 
-(define (next-trace-state [trace TraceIn?]) TraceIn?
+(define/contract (next-trace-state trace) (-> TraceIn? TraceIn?)
   (rest trace))
 
 ;; Without error checking
 
-(define (map-trace-state-no-error [trace TraceIn?] [sto Store?]) TraceIn?
+(define/contract (map-trace-state-no-error trace sto) (-> TraceIn? Store? TraceIn?)
   (type-case State (map-state-no-error (first trace) sto)
     [state (c adv mapped-sto)
            (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))]))
 
-(define (map-state-no-error [s State?] [sto Store?]) State?
+(define/contract (map-state-no-error s sto) (-> State? Store? State?)
   (type-case State s
     [state (c adv t-sto)
            (type-case Control c
@@ -513,16 +513,16 @@
              [app-result (r)
                          (state (app-result (map-trace-value r)) adv sto)])]))
 
-(define (rw-resume-value-no-error [v Value?]) Value?
+(define/contract (rw-resume-value-no-error v) (-> Value? Value?)
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
 
-(define (rw-replay-call-no-error [abs Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
+(define/contract (rw-replay-call-no-error abs args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
   (apply-with-weaving abs args adv sto))
 
-(define (rw-call-no-error [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
+(define/contract (rw-call-no-error args adv sto) (-> (listof Value?) AdvStack? Store? Result?)
   (rw-result-no-error adv (map-trace-state-no-error (next-trace-state sto))))
 
-(define (rw-result-no-error [adv AdvStack?] [sto Store?] [tin TraceIn?]) Result?
+(define/contract (rw-result-no-error adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
   (type-case State (trace-state sto)
     [state (c t-adv t-sto)
            (type-case Control c
@@ -536,12 +536,12 @@
 
 ;; With error checking 
 
-(define (map-trace-state [trace TraceIn?] [sto Store?]) TraceIn?
+(define/contract (map-trace-state trace sto) (-> TraceIn? Store? TraceIn?)
   (type-case State (map-state (first trace) sto)
     [state (c adv mapped-sto)
            (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))]))
 
-(define (map-state [s State?] [sto Store?])
+(define/contract (map-state s sto) (-> State? Store? State?)
   (type-case State s
     [state (c adv t-sto)
            (type-case Control c
@@ -551,10 +551,10 @@
              [app-result (r)
                          (state (app-result (map-trace-value r)) adv sto)])]))
 
-(define (rw-replay-call [abs Value?] [args (listof Value?)] [adv AdvStack?] [sto Store?]) Result?
+(define/contract (rw-replay-call abs args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
   (rw-check-result (apply-with-weaving abs args adv sto)))
 
-(define (rw-check-result [result Result?] [sto Store?]) Result?
+(define/contract (rw-check-result result sto) (-> Result? Store? Result?)
   (type-case Result result
     [v*s*t*t (v-r s-r tin-r tout-r)
              (let ([r (app-result-r (state-c (trace-state s-r)))])
@@ -563,11 +563,11 @@
                    (error 'retroactive-side-effect 
                           (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
   
-(define (rw-resume-value [v Value?] [t TraceIn?]) Value?
+(define/contract (rw-resume-value v t) (-> Value? TraceIn? Value?)
   (let ([r (resumeV (value->string v) (length t))])
              (deep-tag (all-tags v) r)))
 
-(define/contract (rw-call [pos number?] [passed (listof Value?)] [adv AdvStack?] [sto Store?] [tin TraceIn?]) 
+(define/contract (rw-call pos passed adv sto tin) 
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (type-case Store sto
     [store (cells)
@@ -585,7 +585,7 @@
                              [else (error 'rw-call "Unexpected state")])])]
                  [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])]))
 
-(define (rw-result [adv AdvStack?] [sto Store?] [tin TraceIn?]) Result?
+(define/contract (rw-result adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
   (let* ([t-state (trace-state sto)]
          [_ (if (unbox verbose-interp)
                 (begin
