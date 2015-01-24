@@ -50,12 +50,11 @@
   [tracein (states (listof State?))])
 (define mt-tracein (tracein empty))
 
-
 (define-type TraceOut
   [traceout (states (listof State?))])
 (define mt-traceout (traceout empty))
-(define append-traceout (lambda ts
-  (traceout (foldl append '() (map traceout-states ts)))))
+(define/contract (append-traceout . ts) (->* () () #:rest (listof TraceOut?) TraceOut?)
+  (traceout (foldl append '() (map traceout-states ts))))
 
 ;; Numbers and arithmetic
 
@@ -109,8 +108,8 @@
            (interp body (append (map bind params args) env) adv sto tin)]
     [resumeV (label pos)
              (if (unbox retroactive-error-checking)
-                 (rw-call pos args adv sto)
-                 (rw-call-no-error args adv sto))]
+                 (rw-call pos args adv sto tin)
+                 (rw-call-no-error args adv sto tin))]
     [else (error 'interp (string-append "only functions can be applied: " (value->string f)))]))
 
 (define z-combinator
@@ -120,7 +119,7 @@
 ;; Mutations and side-effects
 
 ; (listof Storage) Location -> Storage or #f
-(define/contract (storage-at storage loc) (-> (listof Storage?) Location? any/c)
+(define/contract (storage-at storage loc) (-> (listof Storage?) Location? (or/c Storage? #f))
   (cond
     [(empty? storage) #f]
     [else 
@@ -461,7 +460,9 @@
 (define/contract (interp-with-tracing exprs trace-path) (-> (listof ExprC?) path-string? Value?)
   (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store mt-tracein)
     [v*s*t*t (v s tin tout)
-           (let* ([trace (append-traceout (list (state (interp-init) mt-adv mt-store)) tout (list (state (app-result v) mt-adv s)))]
+           (let* ([trace (append (list (state (interp-init) mt-adv mt-store))
+                                 (traceout-states tout) 
+                                 (list (state (app-result v) mt-adv s)))]
                   [_ (write-struct-to-file trace trace-path)])
              v)]))
 
@@ -469,23 +470,13 @@
 (define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
 
 (define/contract (interp-query trace-path exprs) (-> path-string? (listof ExprC?) Value?)
-  (let ([tin (tracein (read-struct-from-file miraj-ns trace-path))])
-    (if (unbox retroactive-error-checking)
-        (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
-               [sto (map-trace-state (store empty))]
-               [query-result (interp (app-chain exprs) mt-env mt-adv sto tin)]
-               [app-state (trace-state (v*s*t*t-s query-result))]
-               [weave-closure (resumeV "top-level thunk" (length (tracein-states tin)))]
-               [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result))]
-               [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x))])
-          (v*s*t*t-v result))
-        (let* ([sto (map-trace-state-no-error (store empty))]
-               [query-result (interp (app-chain exprs) mt-env mt-adv sto mt-tracein)]
-               [app-state (trace-state (v*s*t*t-s query-result))]
-               [weave-closure (resumeV "dummy" 0)]
-               [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result))]
-               [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x))])
-          (v*s*t*t-v result)))))
+  (let* ([tin (tracein (read-struct-from-file miraj-ns trace-path))]
+         [_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
+         [query-result (interp (app-chain exprs) mt-env mt-adv mt-store tin)]
+         [weave-closure (resumeV "top-level thunk" (length (tracein-states tin)))]
+         [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result) (v*s*t*t-tin query-result))]
+         [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x) (v*s*t*t-tin x))])
+    (v*s*t*t-v result)))
 
 
 (define/contract (all-tags v) (-> Value? (listof Value?))
@@ -500,18 +491,13 @@
 ;; TODO-RS: Merge advice in scope properly wherever retroactive execution meets prior state
 
 (define/contract (next-trace-state trace) (-> TraceIn? TraceIn?)
-  (rest trace))
+  (tracein (rest (tracein-states trace))))
 
 ;; Without error checking
 
-(define/contract (map-trace-state-no-error trace sto) (-> TraceIn? Store? TraceIn?)
-  (type-case State (map-state-no-error (first trace) sto)
-    [state (c adv mapped-sto)
-           (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))]))
-
-(define/contract (map-state-no-error s sto) (-> State? Store? State?)
+(define/contract (map-state-no-error s) (-> State? State?)
   (type-case State s
-    [state (c adv t-sto)
+    [state (c adv sto)
            (type-case Control c
              [interp-init () s]
              [app-call (abs args) 
@@ -522,34 +508,30 @@
 (define/contract (rw-resume-value-no-error v) (-> Value? Value?)
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
 
-(define/contract (rw-replay-call-no-error abs args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
-  (apply-with-weaving abs args adv sto))
+(define/contract (rw-replay-call-no-error f args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
+  (apply-with-weaving (map-trace-value f) (map map-trace-value args) adv sto))
 
-(define/contract (rw-call-no-error args adv sto) (-> (listof Value?) AdvStack? Store? Result?)
-  (rw-result-no-error adv (map-trace-state-no-error (next-trace-state sto))))
+(define/contract (rw-call-no-error args adv sto tin) (-> (listof Value?) AdvStack? Store? TraceIn? Result?)
+  (rw-result-no-error adv (next-trace-state tin)))
 
 (define/contract (rw-result-no-error adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
-  (type-case State (trace-state sto)
+  (type-case State (trace-state tin)
     [state (c t-adv t-sto)
            (type-case Control c
              [interp-init () 
                        (error 'rw-result-no-error "Unexpected state")]
              [app-call (abs args) 
-                       (let ([result (rw-replay-call-no-error abs args adv sto)])
-                         (rw-result-no-error adv (map-trace-state-no-error (next-trace-state (v*s*t*t-s result)))))]
+                       (type-case Result (rw-replay-call-no-error abs args adv sto tin)
+                           (v*s*t*t (v-r s-r tin-r tout-r)
+                                    (rw-result adv s-r (next-trace-state tin-r))))]
              [app-result (r) 
                          (v*s*t*t r sto tin mt-traceout)])]))
 
 ;; With error checking 
 
-(define/contract (map-trace-state trace sto) (-> TraceIn? Store? TraceIn?)
-  (type-case State (map-state (first trace) sto)
-    [state (c adv mapped-sto)
-           (store (store-cells mapped-sto) (cons (state c adv (state-sto (first trace))) (rest trace)))]))
-
-(define/contract (map-state s sto) (-> State? Store? State?)
+(define/contract (map-state s) (-> State? State?)
   (type-case State s
-    [state (c adv t-sto)
+    [state (c adv sto)
            (type-case Control c
              [interp-init () s]
              [app-call (abs args) 
@@ -570,39 +552,40 @@
                           (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
   
 (define/contract (rw-resume-value v t) (-> Value? TraceIn? Value?)
-  (let ([r (resumeV (value->string v) (length t))])
+  (let ([r (resumeV (value->string v) (length (tracein-states t)))])
              (deep-tag (all-tags v) r)))
 
 (define/contract (rw-call pos passed adv sto tin) 
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (type-case Store sto
     [store (cells)
-           (cond [(= pos (length tin))
-                  (type-case State (first tin)
+           (cond [(= pos (length (tracein-states tin)))
+                  (type-case State (trace-state tin)
                     [state (c t-adv t-sto)
                            (type-case Control c
                              [interp-init ()
-                                          (rw-result adv (map-trace-state (next-trace-state sto)))]
+                                          (rw-result adv sto (next-trace-state tin))]
                              [app-call (abs args)
-                                       (if (andmap equal-values passed args)
-                                           (rw-result adv (map-trace-state (next-trace-state sto)))
+                                       (if (andmap equal-values passed (map map-trace-value args))
+                                           (rw-result adv sto (next-trace-state tin))
                                            (error 'retroactive-side-effect
                                                   (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
                              [else (error 'rw-call "Unexpected state")])])]
                  [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])]))
 
 (define/contract (rw-result adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
-  (let* ([t-state (trace-state sto)]
+  (let* ([t-state (trace-state tin)]
          [_ (if (unbox verbose-interp)
                 (begin
                   (display "Weaving state: ") (display-state t-state (current-output-port)) (newline))
                 '())])
-    (type-case State t-state
+    (type-case State (map-state t-state)
       [state (c t-adv t-sto)
              (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
                [app-call (abs args) 
-                         (let ([result (rw-replay-call abs args adv sto)])
-                           (rw-result adv (map-trace-state (next-trace-state (v*s*t*t-s result)))))]
+                         (type-case Result (rw-replay-call abs args adv sto tin)
+                           (v*s*t*t (v-r s-r tin-r tout-r)
+                                    (rw-result adv s-r (next-trace-state tin-r))))]
                [app-result (r) 
                            (v*s*t*t r sto tin mt-traceout)])])))
