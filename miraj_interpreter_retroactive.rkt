@@ -259,18 +259,16 @@
                     (display-store (trace-store t) out)))))
          
 (define/contract (display-env env out) (-> Env? output-port? void?)
-  (map (lambda (def) 
-         (type-case Binding def
-           [bind (n v)
-                 (begin (display "\t\t" out) (display n out) (display " -> " out) (display-value v out) (display "\n" out))])) 
-       env))
+  (for ([def env]) 
+    (type-case Binding def
+      [bind (n v)
+            (begin (display "\t\t" out) (display n out) (display " -> " out) (display-value v out) (display "\n" out))])))
 
 (define/contract (display-store sto out) (-> Store? output-port? void?)
-  (map (lambda (c) 
-         (type-case Storage c
-           [cell (l v)
-                 (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])) 
-       (store-cells sto)))
+  (for ([c (store-cells sto)])
+    (type-case Storage c
+      [cell (l v)
+            (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])))
 
 (define/contract (display-state s out) (-> State? output-port? void?)
   (type-case State s
@@ -297,7 +295,7 @@
   (if (unbox verbose-interp)
       (begin
         (display "Expression: ") (display (exp-syntax expr)) (newline)
-        (display-context env sto (current-output-port)) 
+        (display-context env sto tin (current-output-port)) 
         (newline))
       '())
 
