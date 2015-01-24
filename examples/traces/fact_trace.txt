@@ -1,191 +1,93 @@
 (list
  (state (interp-init) (list) (store (list)))
- (state (app-result (numV 6)) (list) (store (list)))
- (state (app-result (numV 2)) (list) (store (list)))
- (state (app-result (numV 2)) (list) (store (list)))
- (state (app-result (numV 1)) (list) (store (list)))
- (state (app-result (numV 1)) (list) (store (list)))
- (state (app-result (numV 1)) (list) (store (list)))
- (state (app-result (numV 1)) (list) (store (list)))
  (state
   (app-call
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+   (closV
+    (list 'f)
+    (appC
+     (lamC
+      (list 'x)
+      (appC
+       (idC 'f)
+       (list
+        (lamC
+         (list 'y)
+         (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))))))
      (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+      (lamC
+       (list 'x)
+       (appC
+        (idC 'f)
         (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list)))))))))
-   (list (numV 0)))
+         (lamC
+          (list 'y)
+          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))))))))
+    (list))
+   (list
+    (closV
+     (list 'fact)
+     (tagC
+      (symbolC 'fact)
+      (lamC
+       (list 'x)
+       (ifC
+        (equalC (idC 'x) (numC 0))
+        (numC 1)
+        (multC
+         (idC 'x)
+         (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+     (list))))
   (list)
   (store (list)))
  (state
-  (app-result
-   (taggedV
-    (symbolV 'fact)
+  (app-call
+   (closV
+    (list 'x)
+    (appC
+     (idC 'f)
+     (list
+      (lamC (list 'y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+    (list
+     (bind
+      'f
+      (closV
+       (list 'fact)
+       (tagC
+        (symbolC 'fact)
+        (lamC
+         (list 'x)
+         (ifC
+          (equalC (idC 'x) (numC 0))
+          (numC 1)
+          (multC
+           (idC 'x)
+           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+       (list)))))
+   (list
     (closV
      (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (appC
+      (idC 'f)
+      (list
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
      (list
       (bind
-       'fact
+       'f
        (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))))))
-  (list)
-  (store (list)))
- (state
-  (app-result
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
-     (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))))))
+        (list 'fact)
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          (list 'x)
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC
+            (idC 'x)
+            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+        (list)))))))
   (list)
   (store (list)))
  (state
@@ -250,168 +152,6 @@
   (list)
   (store (list)))
  (state
-  (app-call
-   (closV
-    (list 'x)
-    (appC
-     (idC 'f)
-     (list
-      (lamC (list 'y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-    (list
-     (bind
-      'f
-      (closV
-       (list 'fact)
-       (tagC
-        (symbolC 'fact)
-        (lamC
-         (list 'x)
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (numC 1)
-          (multC
-           (idC 'x)
-           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-       (list)))))
-   (list
-    (closV
-     (list 'x)
-     (appC
-      (idC 'f)
-      (list
-       (lamC
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-     (list
-      (bind
-       'f
-       (closV
-        (list 'fact)
-        (tagC
-         (symbolC 'fact)
-         (lamC
-          (list 'x)
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (numC 1)
-           (multC
-            (idC 'x)
-            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-        (list)))))))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (closV
-    (list 'y)
-    (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-    (list
-     (bind
-      'x
-      (closV
-       (list 'x)
-       (appC
-        (idC 'f)
-        (list
-         (lamC
-          (list 'y)
-          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-       (list
-        (bind
-         'f
-         (closV
-          (list 'fact)
-          (tagC
-           (symbolC 'fact)
-           (lamC
-            (list 'x)
-            (ifC
-             (equalC (idC 'x) (numC 0))
-             (numC 1)
-             (multC
-              (idC 'x)
-              (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-          (list))))))
-     (bind
-      'f
-      (closV
-       (list 'fact)
-       (tagC
-        (symbolC 'fact)
-        (lamC
-         (list 'x)
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (numC 1)
-          (multC
-           (idC 'x)
-           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-       (list)))))
-   (list (numV 0)))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
-     (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list)))))))))
-   (list (numV 1)))
-  (list)
-  (store (list)))
- (state
   (app-result
    (taggedV
     (symbolV 'fact)
@@ -532,229 +272,6 @@
   (list)
   (store (list)))
  (state
-  (app-call
-   (closV
-    (list 'fact)
-    (tagC
-     (symbolC 'fact)
-     (lamC
-      (list 'x)
-      (ifC
-       (equalC (idC 'x) (numC 0))
-       (numC 1)
-       (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-    (list))
-   (list
-    (closV
-     (list 'y)
-     (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-     (list
-      (bind
-       'x
-       (closV
-        (list 'x)
-        (appC
-         (idC 'f)
-         (list
-          (lamC
-           (list 'y)
-           (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-        (list
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))
-      (bind
-       'f
-       (closV
-        (list 'fact)
-        (tagC
-         (symbolC 'fact)
-         (lamC
-          (list 'x)
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (numC 1)
-           (multC
-            (idC 'x)
-            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-        (list)))))))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (closV
-    (list 'x)
-    (appC
-     (idC 'f)
-     (list
-      (lamC (list 'y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-    (list
-     (bind
-      'f
-      (closV
-       (list 'fact)
-       (tagC
-        (symbolC 'fact)
-        (lamC
-         (list 'x)
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (numC 1)
-          (multC
-           (idC 'x)
-           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-       (list)))))
-   (list
-    (closV
-     (list 'x)
-     (appC
-      (idC 'f)
-      (list
-       (lamC
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-     (list
-      (bind
-       'f
-       (closV
-        (list 'fact)
-        (tagC
-         (symbolC 'fact)
-         (lamC
-          (list 'x)
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (numC 1)
-           (multC
-            (idC 'x)
-            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-        (list)))))))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (closV
-    (list 'y)
-    (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-    (list
-     (bind
-      'x
-      (closV
-       (list 'x)
-       (appC
-        (idC 'f)
-        (list
-         (lamC
-          (list 'y)
-          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-       (list
-        (bind
-         'f
-         (closV
-          (list 'fact)
-          (tagC
-           (symbolC 'fact)
-           (lamC
-            (list 'x)
-            (ifC
-             (equalC (idC 'x) (numC 0))
-             (numC 1)
-             (multC
-              (idC 'x)
-              (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-          (list))))))
-     (bind
-      'f
-      (closV
-       (list 'fact)
-       (tagC
-        (symbolC 'fact)
-        (lamC
-         (list 'x)
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (numC 1)
-          (multC
-           (idC 'x)
-           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-       (list)))))
-   (list (numV 1)))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
-     (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list)))))))))
-   (list (numV 2)))
-  (list)
-  (store (list)))
- (state
   (app-result
    (taggedV
     (symbolV 'fact)
@@ -812,228 +329,6 @@
                (idC 'x)
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
-  (list)
-  (store (list)))
- (state
-  (app-result
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
-     (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))))))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (closV
-    (list 'fact)
-    (tagC
-     (symbolC 'fact)
-     (lamC
-      (list 'x)
-      (ifC
-       (equalC (idC 'x) (numC 0))
-       (numC 1)
-       (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-    (list))
-   (list
-    (closV
-     (list 'y)
-     (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-     (list
-      (bind
-       'x
-       (closV
-        (list 'x)
-        (appC
-         (idC 'f)
-         (list
-          (lamC
-           (list 'y)
-           (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-        (list
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))
-      (bind
-       'f
-       (closV
-        (list 'fact)
-        (tagC
-         (symbolC 'fact)
-         (lamC
-          (list 'x)
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (numC 1)
-           (multC
-            (idC 'x)
-            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-        (list)))))))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (closV
-    (list 'x)
-    (appC
-     (idC 'f)
-     (list
-      (lamC (list 'y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-    (list
-     (bind
-      'f
-      (closV
-       (list 'fact)
-       (tagC
-        (symbolC 'fact)
-        (lamC
-         (list 'x)
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (numC 1)
-          (multC
-           (idC 'x)
-           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-       (list)))))
-   (list
-    (closV
-     (list 'x)
-     (appC
-      (idC 'f)
-      (list
-       (lamC
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-     (list
-      (bind
-       'f
-       (closV
-        (list 'fact)
-        (tagC
-         (symbolC 'fact)
-         (lamC
-          (list 'x)
-          (ifC
-           (equalC (idC 'x) (numC 0))
-           (numC 1)
-           (multC
-            (idC 'x)
-            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-        (list)))))))
-  (list)
-  (store (list)))
- (state
-  (app-call
-   (closV
-    (list 'y)
-    (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-    (list
-     (bind
-      'x
-      (closV
-       (list 'x)
-       (appC
-        (idC 'f)
-        (list
-         (lamC
-          (list 'y)
-          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-       (list
-        (bind
-         'f
-         (closV
-          (list 'fact)
-          (tagC
-           (symbolC 'fact)
-           (lamC
-            (list 'x)
-            (ifC
-             (equalC (idC 'x) (numC 0))
-             (numC 1)
-             (multC
-              (idC 'x)
-              (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-          (list))))))
-     (bind
-      'f
-      (closV
-       (list 'fact)
-       (tagC
-        (symbolC 'fact)
-        (lamC
-         (list 'x)
-         (ifC
-          (equalC (idC 'x) (numC 0))
-          (numC 1)
-          (multC
-           (idC 'x)
-           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-       (list)))))
-   (list (numV 2)))
   (list)
   (store (list)))
  (state
@@ -1098,183 +393,104 @@
   (list)
   (store (list)))
  (state
-  (app-result
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
-     (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+  (app-call
+   (closV
+    (list 'y)
+    (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+    (list
+     (bind
+      'x
+      (closV
+       (list 'x)
+       (appC
+        (idC 'f)
         (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))))))
+         (lamC
+          (list 'y)
+          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (list
+        (bind
+         'f
+         (closV
+          (list 'fact)
+          (tagC
+           (symbolC 'fact)
+           (lamC
+            (list 'x)
+            (ifC
+             (equalC (idC 'x) (numC 0))
+             (numC 1)
+             (multC
+              (idC 'x)
+              (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+          (list))))))
+     (bind
+      'f
+      (closV
+       (list 'fact)
+       (tagC
+        (symbolC 'fact)
+        (lamC
+         (list 'x)
+         (ifC
+          (equalC (idC 'x) (numC 0))
+          (numC 1)
+          (multC
+           (idC 'x)
+           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+       (list)))))
+   (list (numV 2)))
   (list)
   (store (list)))
  (state
-  (app-result
-   (taggedV
-    (symbolV 'fact)
+  (app-call
+   (closV
+    (list 'x)
+    (appC
+     (idC 'f)
+     (list
+      (lamC (list 'y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+    (list
+     (bind
+      'f
+      (closV
+       (list 'fact)
+       (tagC
+        (symbolC 'fact)
+        (lamC
+         (list 'x)
+         (ifC
+          (equalC (idC 'x) (numC 0))
+          (numC 1)
+          (multC
+           (idC 'x)
+           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+       (list)))))
+   (list
     (closV
      (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (appC
+      (idC 'f)
+      (list
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
      (list
       (bind
-       'fact
+       'f
        (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))))))
-  (list)
-  (store (list)))
- (state
-  (app-result
-   (taggedV
-    (symbolV 'fact)
-    (closV
-     (list 'x)
-     (ifC
-      (equalC (idC 'x) (numC 0))
-      (numC 1)
-      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
-     (list
-      (bind
-       'fact
-       (closV
-        (list 'y)
-        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
-        (list
-         (bind
-          'x
-          (closV
-           (list 'x)
-           (appC
-            (idC 'f)
-            (list
-             (lamC
-              (list 'y)
-              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
-           (list
-            (bind
-             'f
-             (closV
-              (list 'fact)
-              (tagC
-               (symbolC 'fact)
-               (lamC
-                (list 'x)
-                (ifC
-                 (equalC (idC 'x) (numC 0))
-                 (numC 1)
-                 (multC
-                  (idC 'x)
-                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-              (list))))))
-         (bind
-          'f
-          (closV
-           (list 'fact)
-           (tagC
-            (symbolC 'fact)
-            (lamC
-             (list 'x)
-             (ifC
-              (equalC (idC 'x) (numC 0))
-              (numC 1)
-              (multC
-               (idC 'x)
-               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-           (list))))))))))
+        (list 'fact)
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          (list 'x)
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC
+            (idC 'x)
+            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+        (list)))))))
   (list)
   (store (list)))
  (state
@@ -1339,6 +555,237 @@
   (list)
   (store (list)))
  (state
+  (app-result
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))))))
+  (list)
+  (store (list)))
+ (state
+  (app-result
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))))))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list)))))))))
+   (list (numV 2)))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (closV
+    (list 'y)
+    (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+    (list
+     (bind
+      'x
+      (closV
+       (list 'x)
+       (appC
+        (idC 'f)
+        (list
+         (lamC
+          (list 'y)
+          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (list
+        (bind
+         'f
+         (closV
+          (list 'fact)
+          (tagC
+           (symbolC 'fact)
+           (lamC
+            (list 'x)
+            (ifC
+             (equalC (idC 'x) (numC 0))
+             (numC 1)
+             (multC
+              (idC 'x)
+              (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+          (list))))))
+     (bind
+      'f
+      (closV
+       (list 'fact)
+       (tagC
+        (symbolC 'fact)
+        (lamC
+         (list 'x)
+         (ifC
+          (equalC (idC 'x) (numC 0))
+          (numC 1)
+          (multC
+           (idC 'x)
+           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+       (list)))))
+   (list (numV 1)))
+  (list)
+  (store (list)))
+ (state
   (app-call
    (closV
     (list 'x)
@@ -1392,40 +839,593 @@
  (state
   (app-call
    (closV
-    (list 'f)
-    (appC
+    (list 'fact)
+    (tagC
+     (symbolC 'fact)
      (lamC
       (list 'x)
-      (appC
-       (idC 'f)
-       (list
-        (lamC
-         (list 'y)
-         (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))))))
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+    (list))
+   (list
+    (closV
+     (list 'y)
+     (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
      (list
-      (lamC
+      (bind
+       'x
+       (closV
+        (list 'x)
+        (appC
+         (idC 'f)
+         (list
+          (lamC
+           (list 'y)
+           (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+        (list
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        (list 'fact)
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          (list 'x)
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC
+            (idC 'x)
+            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+        (list)))))))
+  (list)
+  (store (list)))
+ (state
+  (app-result
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))))))
+  (list)
+  (store (list)))
+ (state
+  (app-result
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))))))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list)))))))))
+   (list (numV 1)))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (closV
+    (list 'y)
+    (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+    (list
+     (bind
+      'x
+      (closV
        (list 'x)
        (appC
         (idC 'f)
         (list
          (lamC
           (list 'y)
-          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))))))))
+          (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+       (list
+        (bind
+         'f
+         (closV
+          (list 'fact)
+          (tagC
+           (symbolC 'fact)
+           (lamC
+            (list 'x)
+            (ifC
+             (equalC (idC 'x) (numC 0))
+             (numC 1)
+             (multC
+              (idC 'x)
+              (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+          (list))))))
+     (bind
+      'f
+      (closV
+       (list 'fact)
+       (tagC
+        (symbolC 'fact)
+        (lamC
+         (list 'x)
+         (ifC
+          (equalC (idC 'x) (numC 0))
+          (numC 1)
+          (multC
+           (idC 'x)
+           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+       (list)))))
+   (list (numV 0)))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (closV
+    (list 'x)
+    (appC
+     (idC 'f)
+     (list
+      (lamC (list 'y) (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+    (list
+     (bind
+      'f
+      (closV
+       (list 'fact)
+       (tagC
+        (symbolC 'fact)
+        (lamC
+         (list 'x)
+         (ifC
+          (equalC (idC 'x) (numC 0))
+          (numC 1)
+          (multC
+           (idC 'x)
+           (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+       (list)))))
+   (list
+    (closV
+     (list 'x)
+     (appC
+      (idC 'f)
+      (list
+       (lamC
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+     (list
+      (bind
+       'f
+       (closV
+        (list 'fact)
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          (list 'x)
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC
+            (idC 'x)
+            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+        (list)))))))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (closV
+    (list 'fact)
+    (tagC
+     (symbolC 'fact)
+     (lamC
+      (list 'x)
+      (ifC
+       (equalC (idC 'x) (numC 0))
+       (numC 1)
+       (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
     (list))
    (list
     (closV
-     (list 'fact)
-     (tagC
-      (symbolC 'fact)
-      (lamC
-       (list 'x)
-       (ifC
-        (equalC (idC 'x) (numC 0))
-        (numC 1)
-        (multC
-         (idC 'x)
-         (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
-     (list))))
+     (list 'y)
+     (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+     (list
+      (bind
+       'x
+       (closV
+        (list 'x)
+        (appC
+         (idC 'f)
+         (list
+          (lamC
+           (list 'y)
+           (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+        (list
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))
+      (bind
+       'f
+       (closV
+        (list 'fact)
+        (tagC
+         (symbolC 'fact)
+         (lamC
+          (list 'x)
+          (ifC
+           (equalC (idC 'x) (numC 0))
+           (numC 1)
+           (multC
+            (idC 'x)
+            (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+        (list)))))))
   (list)
   (store (list)))
+ (state
+  (app-result
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))))))
+  (list)
+  (store (list)))
+ (state
+  (app-result
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list))))))))))
+  (list)
+  (store (list)))
+ (state
+  (app-call
+   (taggedV
+    (symbolV 'fact)
+    (closV
+     (list 'x)
+     (ifC
+      (equalC (idC 'x) (numC 0))
+      (numC 1)
+      (multC (idC 'x) (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))
+     (list
+      (bind
+       'fact
+       (closV
+        (list 'y)
+        (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y)))
+        (list
+         (bind
+          'x
+          (closV
+           (list 'x)
+           (appC
+            (idC 'f)
+            (list
+             (lamC
+              (list 'y)
+              (appC (appC (idC 'x) (list (idC 'x))) (list (idC 'y))))))
+           (list
+            (bind
+             'f
+             (closV
+              (list 'fact)
+              (tagC
+               (symbolC 'fact)
+               (lamC
+                (list 'x)
+                (ifC
+                 (equalC (idC 'x) (numC 0))
+                 (numC 1)
+                 (multC
+                  (idC 'x)
+                  (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+              (list))))))
+         (bind
+          'f
+          (closV
+           (list 'fact)
+           (tagC
+            (symbolC 'fact)
+            (lamC
+             (list 'x)
+             (ifC
+              (equalC (idC 'x) (numC 0))
+              (numC 1)
+              (multC
+               (idC 'x)
+               (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
+           (list)))))))))
+   (list (numV 0)))
+  (list)
+  (store (list)))
+ (state (app-result (numV 1)) (list) (store (list)))
+ (state (app-result (numV 1)) (list) (store (list)))
+ (state (app-result (numV 1)) (list) (store (list)))
+ (state (app-result (numV 1)) (list) (store (list)))
+ (state (app-result (numV 2)) (list) (store (list)))
+ (state (app-result (numV 2)) (list) (store (list)))
+ (state (app-result (numV 6)) (list) (store (list)))
  (state (app-result (numV 6)) (list) (store (list))))

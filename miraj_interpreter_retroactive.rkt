@@ -54,7 +54,7 @@
   [traceout (states (listof State?))])
 (define mt-traceout (traceout empty))
 (define/contract (append-traceout . ts) (->* () () #:rest (listof TraceOut?) TraceOut?)
-  (traceout (foldl append '() (map traceout-states ts))))
+  (traceout (foldl append '() (map traceout-states (reverse ts)))))
 
 ;; Numbers and arithmetic
 
@@ -130,7 +130,7 @@
                  [(= loc l) s]
                  [else (storage-at (rest storage) loc)])]))]))
 
-(define/contract (fetch sto box) (-> Store? Value? Value?)
+(define/contract (fetch sto tin box) (-> Store? TraceIn? Value? Value?)
   (type-case Value box
     [boxV (loc)
           (type-case Store sto
@@ -140,7 +140,10 @@
                          (type-case Storage storage
                            [cell (l val) val])
                          (error 'fetch "location not found")))])]
-    [traceValueV (v) (fetch (trace-store sto) v)]
+    [traceValueV (v) 
+                 ; Note this should actually be the trace's trace
+                 ; if we supported that.
+                 (fetch (trace-store tin) mt-tracein v)]
     [else (error 'interp "attempt to unbox a non-box")]))
 
 (define/contract (trace-state t) (-> TraceIn? State?)
@@ -366,7 +369,7 @@
     
     [unboxC (a) (type-case Result (interp a env adv sto tin)
                   [v*s*t*t (v-a s-a tin-a tout-a)
-                           (v*s*t*t (fetch s-a v-a) s-a tin-a tout-a)])]
+                           (v*s*t*t (fetch s-a tin-a v-a) s-a tin-a tout-a)])]
     
     [setboxC (b val) (type-case Result (interp b env adv sto tin)
                        [v*s*t*t (v-b s-b tin-b tout-b)
@@ -498,8 +501,8 @@
     [state (c adv sto)
            (type-case Control c
              [interp-init () s]
-             [app-call (abs args) 
-                       (state (app-call (rw-resume-value-no-error abs) (map map-trace-value args) adv sto))]
+             [app-call (f args) 
+                       (state (app-call (rw-resume-value-no-error f) (map map-trace-value args) adv sto))]
              [app-result (r)
                          (state (app-result (map-trace-value r)) adv sto)])]))
 
@@ -510,7 +513,7 @@
   (apply-with-weaving (map-trace-value f) (map map-trace-value args) adv sto))
 
 (define/contract (rw-call-no-error args adv sto tin) (-> (listof Value?) AdvStack? Store? TraceIn? Result?)
-  (rw-result-no-error adv (next-trace-state tin)))
+  (rw-result-no-error adv sto (next-trace-state tin)))
 
 (define/contract (rw-result-no-error adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
   (type-case State (trace-state tin)
@@ -527,23 +530,23 @@
 
 ;; With error checking 
 
-(define/contract (map-state s) (-> State? State?)
+(define/contract (map-state s tin) (-> State? TraceIn? State?)
   (type-case State s
     [state (c adv sto)
            (type-case Control c
              [interp-init () s]
-             [app-call (abs args) 
-                       (state (app-call (rw-resume-value abs sto) (map map-trace-value args)) adv sto)]
+             [app-call (f args) 
+                       (state (app-call (rw-resume-value f tin) (map map-trace-value args)) adv sto)]
              [app-result (r)
                          (state (app-result (map-trace-value r)) adv sto)])]))
 
-(define/contract (rw-replay-call abs args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
-  (rw-check-result (apply-with-weaving abs args adv sto)))
+(define/contract (rw-replay-call abs args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
+  (rw-check-result (apply-with-weaving abs args adv sto tin)))
 
-(define/contract (rw-check-result result sto) (-> Result? Store? Result?)
+(define/contract (rw-check-result result) (-> Result? Result?)
   (type-case Result result
     [v*s*t*t (v-r s-r tin-r tout-r)
-             (let ([r (app-result-r (state-c (trace-state s-r)))])
+             (let ([r (app-result-r (state-c (trace-state tin-r)))])
                (if (equal-values v-r r)
                    result
                    (error 'retroactive-side-effect 
@@ -577,12 +580,12 @@
                 (begin
                   (display "Weaving state: ") (display-state t-state (current-output-port)) (newline))
                 '())])
-    (type-case State (map-state t-state)
+    (type-case State (map-state t-state tin)
       [state (c t-adv t-sto)
              (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
-               [app-call (abs args) 
-                         (type-case Result (rw-replay-call abs args adv sto tin)
+               [app-call (f args) 
+                         (type-case Result (rw-replay-call f args adv sto tin)
                            (v*s*t*t (v-r s-r tin-r tout-r)
                                     (rw-result adv s-r (next-trace-state tin-r))))]
                [app-result (r) 
