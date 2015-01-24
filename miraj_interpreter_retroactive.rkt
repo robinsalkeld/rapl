@@ -206,7 +206,7 @@
 (define/contract (weave adv f sto tin) (-> AdvStack? Value? Store? TraceIn? Result?)
   (type-case Value f
     [taggedV (tag tagged)
-             (let ([woven-tagged-result (weave adv tagged sto)]
+             (let ([woven-tagged-result (weave adv tagged sto tin)]
                    [helper (lambda (advice accum) 
                              (weave-advice adv tag advice accum))])
                (foldr helper woven-tagged-result adv))]
@@ -310,7 +310,7 @@
     
     [plusC (l r) (type-case Result (interp l env adv sto tin)
                [v*s*t*t (v-l s-l tin-l tout-l)
-                        (type-case Result (interp r env adv s-l)
+                        (type-case Result (interp r env adv s-l tin-l)
                           [v*s*t*t (v-r s-r tin-r tout-r)
                                    (v*s*t*t (num+ v-l v-r) s-r tin-r (append-traceout tout-l tout-r))])])]
 
@@ -330,7 +330,7 @@
                                [v*s*t*t (v-r s-r tin-r tout-r)
                                         (v*s*t*t (boolV (equal-values v-l v-r)) s-r tin-r (append-traceout tout-l tout-r))])])]
     
-    [ifC (c t f) (type-case Result (interp c env adv sto)
+    [ifC (c t f) (type-case Result (interp c env adv sto tin)
                    [v*s*t*t (v-c s-c tin-c tout-c)
                             (type-case Result (if (boolV-b v-c)
                                                   (interp t env adv s-c tin-c)
@@ -353,7 +353,7 @@
     
     [recC (f) (interp (appC z-combinator (list f)) env adv sto tin)]
     
-    [letC (s v in) (type-case Result (interp v env adv sto)
+    [letC (s v in) (type-case Result (interp v env adv sto tin)
                             [v*s*t*t (v-v s-v tin-v tout-v)
                                  (prepend-trace tout-v (interp in (cons (bind s v-v) env) adv s-v tin-v))])]
     
@@ -398,15 +398,15 @@
                                 (v*s*t*t (taggedV v-tag v-v) s-v tin-v (append-traceout tout-tag tout-v))])])]
     
     [aroundappsC (wrapper extent) 
-                 (type-case Result (interp wrapper env adv sto)
+                 (type-case Result (interp wrapper env adv sto tin)
                    [v*s*t*t (v-w s-w tin-w tout-w)
                             (prepend-trace tout-w (interp extent env (cons (aroundappsA v-w) adv) s-w tin-w))])]
     
     ;; Input/Output
     
-    [fileC (path) (interp (parse-file path) mt-env adv sto)]
+    [fileC (path) (interp (parse-file path) mt-env adv sto tin)]
     
-    [writeC (l a) (type-case Result (interp a env adv sto)
+    [writeC (l a) (type-case Result (interp a env adv sto tin)
                [v*s*t*t (v-a s-a tin-a tout-a) 
                         (begin ((unbox write-sink) (string-append l ": " (value->string v-a)))
                                (v*s*t*t v-a s-a tin-a tout-a))])]
@@ -458,38 +458,34 @@
          
 ;; Tracing
 
-(define-type MirajTrace
-  [mirajTrace (jps TraceOut?)])
-
 (define/contract (interp-with-tracing exprs trace-path) (-> (listof ExprC?) path-string? Value?)
-  (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store)
+  (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store mt-tracein)
     [v*s*t*t (v s tin tout)
            (let* ([trace (append-traceout (list (state (interp-init) mt-adv mt-store)) tout (list (state (app-result v) mt-adv s)))]
-                  [_ (write-struct-to-file (mirajTrace trace) trace-path)])
+                  [_ (write-struct-to-file trace trace-path)])
              v)]))
 
 ;; TODO-RS: Gah, can't figure out how to get a hold of the current module
 (define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
 
 (define/contract (interp-query trace-path exprs) (-> path-string? (listof ExprC?) Value?)
-  (type-case MirajTrace (read-struct-from-file miraj-ns trace-path)
-    [mirajTrace (app-trace)
-                (if (unbox retroactive-error-checking)
-                    (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
-                           [sto (map-trace-state (store empty app-trace))]
-                           [query-result (interp (app-chain exprs) mt-env mt-adv sto)]
-                           [app-state (trace-state (v*s*t*t-s query-result))]
-                           [weave-closure (resumeV "top-level thunk" (length app-trace))]
-                           [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result))]
-                           [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x))])
-                      (v*s*t*t-v result))
-                    (let* ([sto (map-trace-state-no-error (store empty app-trace))]
-                           [query-result (interp (app-chain exprs) mt-env mt-adv sto)]
-                           [app-state (trace-state (v*s*t*t-s query-result))]
-                           [weave-closure (resumeV "dummy" 0)]
-                           [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result))]
-                           [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x))])
-                      (v*s*t*t-v result)))]))
+  (let ([tin (tracein (read-struct-from-file miraj-ns trace-path))])
+    (if (unbox retroactive-error-checking)
+        (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
+               [sto (map-trace-state (store empty))]
+               [query-result (interp (app-chain exprs) mt-env mt-adv sto tin)]
+               [app-state (trace-state (v*s*t*t-s query-result))]
+               [weave-closure (resumeV "top-level thunk" (length (tracein-states tin)))]
+               [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result))]
+               [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x))])
+          (v*s*t*t-v result))
+        (let* ([sto (map-trace-state-no-error (store empty))]
+               [query-result (interp (app-chain exprs) mt-env mt-adv sto mt-tracein)]
+               [app-state (trace-state (v*s*t*t-s query-result))]
+               [weave-closure (resumeV "dummy" 0)]
+               [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result))]
+               [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x))])
+          (v*s*t*t-v result)))))
 
 
 (define/contract (all-tags v) (-> Value? (listof Value?))
