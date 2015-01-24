@@ -5,7 +5,7 @@
 (require "miraj_interpreter_retroactive.rkt")
 (require "miraj_serialization.rkt")
 
-(print-only-errors)
+;(print-only-errors)
 (current-directory (build-path (current-directory) "examples"))
 
 (test (parse '(let ([const5 (lambda (_) 5)])
