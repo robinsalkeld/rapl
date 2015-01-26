@@ -41,17 +41,27 @@
   [app-result (r Value?)])
 
 (define-type State
-  [state (c Control?) (adv AdvStack?) (sto Store?)])
-
-(define-type TraceIn
-  [tracein (states (listof State?))])
-(define mt-tracein (tracein empty))
+  [state (c Control?) (adv AdvStack?) (sto Store?) (tin TraceIn?)])
 
 (define-type TraceOut
   [traceout (states (listof State?))])
 (define mt-traceout (traceout empty))
 (define/contract (append-traceout . ts) (->* () () #:rest (listof TraceOut?) TraceOut?)
   (traceout (foldl append '() (map traceout-states (reverse ts)))))
+
+(define-type TraceIn
+  [tracein (states (listof State?))])
+(define mt-tracein (tracein empty))
+
+(define/contract (trace-state tin) (-> TraceIn? State?)
+  (first (tracein-states tin)))
+
+(define/contract (next-trace-state tin) (-> TraceIn? TraceIn?)
+  (tracein (rest (tracein-states tin))))
+
+(define/contract (trace-store s) (-> TraceIn? Store?)
+  (state-sto (trace-state s)))
+
 
 (define-type Result
   [v*s*t*t (v Value?) (s Store?) (tin TraceIn?) (tout TraceOut?)])
@@ -139,16 +149,10 @@
                   [cell (l val) val])
                 (error 'fetch "location not found")))]
     [traceValueV (v) 
-                 ; Note this should actually be the trace's trace
-                 ; if we supported that.
-                 (fetch (trace-store tin) mt-tracein v)]
+                 (type-case State (trace-state tin)
+                   [state (c adv s-t tin-t)
+                          (fetch s-t tin-t v)])]
     [else (error 'interp "attempt to unbox a non-box")]))
-
-(define/contract (trace-state t) (-> TraceIn? State?)
-  (first (tracein-states t)))
-
-(define/contract (trace-store s) (-> TraceIn? Store?)
-  (state-sto (trace-state s)))
 
 (define/contract (new-loc sto) (-> Store? Location?)
  (length sto))
@@ -210,8 +214,8 @@
       (v*s*t*t (woven-f s-w tin-w tout-w)
                (type-case Result (apply-without-weaving woven-f args adv s-w tin-w)
                  (v*s*t*t (r s-r tin-r tout-r)
-                          (let ([call-state (state (app-call f args) adv sto)]
-                                [return-state (state (app-result r) adv s-r)])
+                          (let ([call-state (state (app-call f args) adv sto tin)]
+                                [return-state (state (app-result r) adv s-r tin-r)])
                             (v*s*t*t r s-r tin-r (append-traceout (traceout (list call-state)) 
                                                                   tout-w 
                                                                   tout-r 
@@ -266,7 +270,7 @@
 
 (define/contract (display-state s out) (-> State? output-port? void?)
   (type-case State s
-    [state (c adv sto)
+    [state (c adv sto tin)
            (type-case Control c
              [interp-init ()
                        (begin (display "(interp-init)" out))]
@@ -391,10 +395,10 @@
                        [v*s*t*t (v-v s-v tin-v tout-v)
                                 (v*s*t*t (taggedV v-tag v-v) s-v tin-v (append-traceout tout-tag tout-v))])])]
     
-    [aroundappsC (wrapper extent) 
-                 (type-case Result (interp wrapper env adv sto tin)
-                   [v*s*t*t (v-w s-w tin-w tout-w)
-                            (prepend-trace tout-w (interp extent env (cons (aroundappsA v-w) adv) s-w tin-w))])]
+    [aroundappsC (advice extent) 
+                 (type-case Result (interp advice env adv sto tin)
+                   [v*s*t*t (v-a s-a tin-a tout-a)
+                            (prepend-trace tout-a (interp extent env (cons (aroundappsA v-a) adv) s-a tin-a))])]
     
     ;; Input/Output
     
@@ -455,9 +459,9 @@
 (define/contract (interp-with-tracing exprs trace-path) (-> (listof ExprC?) path-string? Value?)
   (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store mt-tracein)
     [v*s*t*t (v s tin tout)
-           (let* ([trace (append (list (state (interp-init) mt-adv mt-store))
+           (let* ([trace (append (list (state (interp-init) mt-adv mt-store mt-tracein))
                                  (traceout-states tout) 
-                                 (list (state (app-result v) mt-adv s)))]
+                                 (list (state (app-result v) mt-adv s tin)))]
                   [_ (write-struct-to-file trace trace-path)])
              v)]))
 
@@ -485,20 +489,17 @@
 
 ;; TODO-RS: Merge advice in scope properly wherever retroactive execution meets prior state
 
-(define/contract (next-trace-state trace) (-> TraceIn? TraceIn?)
-  (tracein (rest (tracein-states trace))))
-
 ;; Without error checking
 
 (define/contract (map-state-no-error s) (-> State? State?)
   (type-case State s
-    [state (c adv sto)
+    [state (c adv sto tin)
            (type-case Control c
              [interp-init () s]
              [app-call (f args) 
-                       (state (app-call (rw-resume-value-no-error f) (map map-trace-value args) adv sto))]
+                       (state (app-call (rw-resume-value-no-error f) (map map-trace-value args) adv sto tin))]
              [app-result (r)
-                         (state (app-result (map-trace-value r)) adv sto)])]))
+                         (state (app-result (map-trace-value r)) adv sto tin)])]))
 
 (define/contract (rw-resume-value-no-error v) (-> Value? Value?)
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
@@ -511,7 +512,7 @@
 
 (define/contract (rw-result-no-error adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
   (type-case State (trace-state tin)
-    [state (c t-adv t-sto)
+    [state (c t-adv t-sto t-tin)
            (type-case Control c
              [interp-init () 
                        (error 'rw-result-no-error "Unexpected state")]
@@ -526,13 +527,13 @@
 
 (define/contract (map-state s tin) (-> State? TraceIn? State?)
   (type-case State s
-    [state (c adv sto)
+    [state (c adv sto t-tin)
            (type-case Control c
              [interp-init () s]
              [app-call (f args) 
-                       (state (app-call (rw-resume-value f tin) (map map-trace-value args)) adv sto)]
+                       (state (app-call (rw-resume-value f tin) (map map-trace-value args)) adv sto t-tin)]
              [app-result (r)
-                         (state (app-result (map-trace-value r)) adv sto)])]))
+                         (state (app-result (map-trace-value r)) adv sto t-tin)])]))
 
 (define/contract (rw-replay-call abs args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (rw-check-result (apply-with-weaving abs args adv sto tin)))
@@ -554,7 +555,7 @@
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (cond [(= pos (length (tracein-states tin)))
          (type-case State (trace-state tin)
-           [state (c t-adv t-sto)
+           [state (c t-adv t-sto t-tin)
                   (type-case Control c
                     [interp-init ()
                                  (rw-result adv sto (next-trace-state tin))]
@@ -573,7 +574,7 @@
                   (display "Weaving state: ") (display-state t-state (current-output-port)) (newline))
                 '())])
     (type-case State (map-state t-state tin)
-      [state (c t-adv t-sto)
+      [state (c t-adv t-sto t-tin)
              (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
                [app-call (f args) 

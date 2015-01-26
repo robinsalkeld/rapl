@@ -1,5 +1,5 @@
 (list
- (state (interp-init) (list) (list))
+ (state (interp-init) (list) (list) (tracein (list)))
  (state
   (app-call
    (closV
@@ -38,7 +38,8 @@
          (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
      (list))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -89,7 +90,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -150,7 +152,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -210,7 +213,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -270,7 +274,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -330,7 +335,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (taggedV
@@ -391,7 +397,8 @@
            (list)))))))))
    (list (numV 3)))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -441,7 +448,8 @@
        (list)))))
    (list (numV 2)))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -492,7 +500,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -553,7 +562,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -613,7 +623,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -673,7 +684,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (taggedV
@@ -734,7 +746,8 @@
            (list)))))))))
    (list (numV 2)))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -784,7 +797,8 @@
        (list)))))
    (list (numV 1)))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -835,7 +849,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -896,7 +911,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -956,7 +972,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -1016,7 +1033,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (taggedV
@@ -1077,7 +1095,8 @@
            (list)))))))))
    (list (numV 1)))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -1127,7 +1146,8 @@
        (list)))))
    (list (numV 0)))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -1178,7 +1198,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (closV
@@ -1239,7 +1260,8 @@
             (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
         (list)))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -1299,7 +1321,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-result
    (taggedV
@@ -1359,7 +1382,8 @@
                (appC (idC 'fact) (list (plusC (idC 'x) (numC -1))))))))
            (list))))))))))
   (list)
-  (list))
+  (list)
+  (tracein (list)))
  (state
   (app-call
    (taggedV
@@ -1420,12 +1444,13 @@
            (list)))))))))
    (list (numV 0)))
   (list)
-  (list))
- (state (app-result (numV 1)) (list) (list))
- (state (app-result (numV 1)) (list) (list))
- (state (app-result (numV 1)) (list) (list))
- (state (app-result (numV 1)) (list) (list))
- (state (app-result (numV 2)) (list) (list))
- (state (app-result (numV 2)) (list) (list))
- (state (app-result (numV 6)) (list) (list))
- (state (app-result (numV 6)) (list) (list)))
+  (list)
+  (tracein (list)))
+ (state (app-result (numV 1)) (list) (list) (tracein (list)))
+ (state (app-result (numV 1)) (list) (list) (tracein (list)))
+ (state (app-result (numV 1)) (list) (list) (tracein (list)))
+ (state (app-result (numV 1)) (list) (list) (tracein (list)))
+ (state (app-result (numV 2)) (list) (list) (tracein (list)))
+ (state (app-result (numV 2)) (list) (list) (tracein (list)))
+ (state (app-result (numV 6)) (list) (list) (tracein (list)))
+ (state (app-result (numV 6)) (list) (list) (tracein (list))))
