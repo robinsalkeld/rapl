@@ -1,5 +1,5 @@
 (list
- (state (interp-init) (list) (store (list)))
+ (state (interp-init) (list) (list))
  (state
   (app-call
    (closV
@@ -41,7 +41,7 @@
           (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
      (list))))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-call
    (closV
@@ -98,7 +98,7 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-call
    (closV
@@ -170,7 +170,7 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-result
    (taggedV
@@ -241,7 +241,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-result
    (taggedV
@@ -312,7 +312,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-result
    (taggedV
@@ -383,7 +383,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-call
    (closV
@@ -461,7 +461,7 @@
               (list))))))))))))
    (list (numV 3)))
   (list)
-  (store (list)))
+  (list))
  (state
   (app-call
    (taggedV
@@ -533,7 +533,7 @@
            (list)))))))))
    (list (boxV 0)))
   (list)
-  (store (list (cell 0 (numV 3)))))
+  (list (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -589,7 +589,7 @@
        (list)))))
    (list (boxV 0)))
   (list)
-  (store (list (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -646,7 +646,7 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store (list (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -718,7 +718,7 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store (list (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-result
    (taggedV
@@ -789,7 +789,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-result
    (taggedV
@@ -860,7 +860,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (taggedV
@@ -932,7 +932,7 @@
            (list)))))))))
    (list (boxV 0)))
   (list)
-  (store (list (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -988,7 +988,7 @@
        (list)))))
    (list (boxV 0)))
   (list)
-  (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -1045,7 +1045,7 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -1117,7 +1117,7 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-result
    (taggedV
@@ -1188,7 +1188,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-result
    (taggedV
@@ -1259,7 +1259,7 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (taggedV
@@ -1331,7 +1331,7 @@
            (list)))))))))
    (list (boxV 0)))
   (list)
-  (store (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3)))))
+  (list (cell 0 (numV 1)) (cell 0 (numV 2)) (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -1387,12 +1387,11 @@
        (list)))))
    (list (boxV 0)))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -1449,12 +1448,11 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-call
    (closV
@@ -1526,12 +1524,11 @@
              (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
         (list)))))))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result
    (taggedV
@@ -1602,12 +1599,11 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result
    (taggedV
@@ -1678,12 +1674,11 @@
                 (multC (idC 'x) (appC (idC 'fact) (list (idC 'bx)))))))))
            (list))))))))))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-call
    (taggedV
@@ -1755,90 +1750,80 @@
            (list)))))))))
    (list (boxV 0)))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 1))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 1))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 1))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 1))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 2))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 2))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 6))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 6))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3)))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3))))
  (state
   (app-result (numV 6))
   (list)
-  (store
-   (list
-    (cell 0 (numV 0))
-    (cell 0 (numV 1))
-    (cell 0 (numV 2))
-    (cell 0 (numV 3))))))
+  (list
+   (cell 0 (numV 0))
+   (cell 0 (numV 1))
+   (cell 0 (numV 2))
+   (cell 0 (numV 3)))))

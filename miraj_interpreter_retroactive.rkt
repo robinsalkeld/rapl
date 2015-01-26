@@ -27,11 +27,8 @@
 
 (define-type Storage
   [cell (location Location?) (val Value?)])
-(define-type Store 
-  [store (cells (listof Storage?))])
-
-(define-type Result
-  [v*s*t*t (v Value?) (s Store?) (tin TraceIn?) (tout TraceOut?)])
+(define Store? (listof Storage?))
+(define mt-store empty)
 
 (define-type Advice
   [aroundappsA (advice Value?)])
@@ -55,6 +52,9 @@
 (define mt-traceout (traceout empty))
 (define/contract (append-traceout . ts) (->* () () #:rest (listof TraceOut?) TraceOut?)
   (traceout (foldl append '() (map traceout-states (reverse ts)))))
+
+(define-type Result
+  [v*s*t*t (v Value?) (s Store?) (tin TraceIn?) (tout TraceOut?)])
 
 ;; Numbers and arithmetic
 
@@ -133,13 +133,11 @@
 (define/contract (fetch sto tin box) (-> Store? TraceIn? Value? Value?)
   (type-case Value box
     [boxV (loc)
-          (type-case Store sto
-            [store (cells)
-                   (let ([storage (storage-at cells loc)])
-                     (if storage
-                         (type-case Storage storage
-                           [cell (l val) val])
-                         (error 'fetch "location not found")))])]
+          (let ([storage (storage-at sto loc)])
+            (if storage
+                (type-case Storage storage
+                  [cell (l val) val])
+                (error 'fetch "location not found")))]
     [traceValueV (v) 
                  ; Note this should actually be the trace's trace
                  ; if we supported that.
@@ -153,16 +151,9 @@
   (state-sto (trace-state s)))
 
 (define/contract (new-loc sto) (-> Store? Location?)
-  (type-case Store sto
-    [store (cells)
-           (length cells)]))
+ (length sto))
 
-(define/contract (override-store sto loc value) (-> Store? Location? Value? Store?)
-  (type-case Store sto
-    [store (cells)
-           (store (cons (cell loc value) cells))]))
-
-(define mt-store (store empty))
+(define override-store cons)
 
 ;; Mapping trace values
 
@@ -268,7 +259,7 @@
             (begin (display "\t\t" out) (display n out) (display " -> " out) (display-value v out) (display "\n" out))])))
 
 (define/contract (display-store sto out) (-> Store? output-port? void?)
-  (for ([c (store-cells sto)])
+  (for ([c sto])
     (type-case Storage c
       [cell (l v)
             (begin (display "\t" out) (display l out) (display " -> " out) (display-value v out) (display "\n" out))])))
@@ -363,7 +354,7 @@
                 [v*s*t*t (v-a s-a tin-a tout-a)
                          (let ([where (new-loc sto)])
                            (v*s*t*t (boxV where)
-                                    (override-store s-a where v-a)
+                                    (override-store (cell where v-a) sto)
                                     tin-a
                                     tout-a))])]
     
@@ -376,7 +367,10 @@
                                 (type-case Result (interp val env adv s-b tin-b)
                                   [v*s*t*t (v-v s-v tin-v tout-v)
                                            (type-case Value (deep-untag v-b)
-                                             [boxV (l) (v*s*t*t v-v (override-store s-v l v-v) tin-v (append-traceout tout-b tout-v))]
+                                             [boxV (l) (v*s*t*t v-v 
+                                                                (override-store (cell l v-v) s-v) 
+                                                                tin-v 
+                                                                (append-traceout tout-b tout-v))]
                                              [traceValueV (v) (error 'retroactive-side-effect "attempt to retroactively set box")]
                                              [else (error 'interp "attempt to set-box! on a non-box")])])])]
     
@@ -558,21 +552,19 @@
 
 (define/contract (rw-call pos passed adv sto tin) 
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
-  (type-case Store sto
-    [store (cells)
-           (cond [(= pos (length (tracein-states tin)))
-                  (type-case State (trace-state tin)
-                    [state (c t-adv t-sto)
-                           (type-case Control c
-                             [interp-init ()
-                                          (rw-result adv sto (next-trace-state tin))]
-                             [app-call (abs args)
-                                       (if (andmap equal-values passed (map map-trace-value args))
-                                           (rw-result adv sto (next-trace-state tin))
-                                           (error 'retroactive-side-effect
-                                                  (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
-                             [else (error 'rw-call "Unexpected state")])])]
-                 [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")])]))
+  (cond [(= pos (length (tracein-states tin)))
+         (type-case State (trace-state tin)
+           [state (c t-adv t-sto)
+                  (type-case Control c
+                    [interp-init ()
+                                 (rw-result adv sto (next-trace-state tin))]
+                    [app-call (abs args)
+                              (if (andmap equal-values passed (map map-trace-value args))
+                                  (rw-result adv sto (next-trace-state tin))
+                                  (error 'retroactive-side-effect
+                                         (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
+                    [else (error 'rw-call "Unexpected state")])])]
+        [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")]))
 
 (define/contract (rw-result adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
   (let* ([t-state (trace-state tin)]
