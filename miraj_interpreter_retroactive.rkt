@@ -159,31 +159,31 @@
 
 (define override-store cons)
 
-;; Mapping trace values
+;; Lifting trace values
 
-(define/contract (map-binding b c) (-> Binding? Value? Value?)
+(define/contract (lift-binding b c) (-> Binding? Value? Value?)
   (type-case Binding b
     [bind (name value)
           (type-case Value c
             [closV (params body env)
-                   (closV params body (cons (bind name (map-trace-value value)) env))]
-            [else (error 'map-binding "result parametmer must wrap a closure")])]))
+                   (closV params body (cons (bind name (lift-trace-value value)) env))]
+            [else (error 'lift-binding "result parametmer must wrap a closure")])]))
 
-(define/contract (map-closure params body env) (-> (listof symbol?) ExprC? Env? Value?)
-  (foldr map-binding (closV params body mt-env) env))
+(define/contract (lift-closure params body env) (-> (listof symbol?) ExprC? Env? Value?)
+  (foldr lift-binding (closV params body mt-env) env))
                   
-(define/contract (map-trace-value v) (-> Value? Value?)
+(define/contract (lift-trace-value v) (-> Value? Value?)
   (type-case Value v
     [numV (_) v]
     [boolV (_) v]
     [symbolV (_) v]
     [closV (params body env)
-           (map-closure params body env)]
+           (lift-closure params body env)]
     [boxV (l) (traceValueV v)]
     [traceValueV (tv) (traceValueV v)]
     [voidV () v]
     [taggedV (tag tagged) 
-             (taggedV (map-trace-value tag) (map-trace-value tagged))]
+             (taggedV (lift-trace-value tag) (lift-trace-value tagged))]
     [resumeV (label pos) v]))
 
 (define/contract (prepend-trace t r) (-> TraceOut? Result? Result?)
@@ -495,7 +495,7 @@
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
 
 (define/contract (rw-replay-call-no-error f args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
-  (apply-with-weaving (map-trace-value f) (map map-trace-value args) adv sto))
+  (apply-with-weaving (lift-trace-value f) (map lift-trace-value args) adv sto))
 
 (define/contract (rw-call-no-error args adv sto tin) (-> (listof Value?) AdvStack? Store? TraceIn? Result?)
   (rw-result-no-error adv sto (next-trace-state tin)))
@@ -511,7 +511,7 @@
                          (v*s*t*t (v-r s-r tin-r tout-r)
                                   (rw-result adv s-r (next-trace-state tin-r))))]
              [app-result (r) 
-                         (v*s*t*t (map-trace-value r) sto tin mt-traceout)])]))
+                         (v*s*t*t (lift-trace-value r) sto tin mt-traceout)])]))
 
 ;; With error checking 
 
@@ -521,14 +521,14 @@
            (type-case Control c
              [interp-init () s]
              [app-call (f args) 
-                       (state (app-call (rw-resume-value f tin) (map map-trace-value args)) adv sto t-tin)]
+                       (state (app-call (rw-resume-value f tin) (map lift-trace-value args)) adv sto t-tin)]
              [app-result (r)
-                         (state (app-result (map-trace-value r)) adv sto t-tin)])]))
+                         (state (app-result (lift-trace-valuee r)) adv sto t-tin)])]))
 
 (define/contract (rw-replay-call f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (rw-check-result 
    (apply-with-weaving (rw-resume-value f tin) 
-                       (map map-trace-value args) 
+                       (map lift-trace-value args) 
                        adv sto tin)))
 
 (define/contract (rw-check-result result) (-> Result? Result?)
@@ -553,7 +553,7 @@
                     [interp-init ()
                                  (rw-result adv sto (next-trace-state tin))]
                     [app-call (abs args)
-                              (if (andmap equal-values passed (map map-trace-value args))
+                              (if (andmap equal-values passed (map lift-trace-value args))
                                   (rw-result adv sto (next-trace-state tin))
                                   (error 'retroactive-side-effect
                                          (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
@@ -575,4 +575,4 @@
                            (v*s*t*t (v-r s-r tin-r tout-r)
                                     (rw-result adv s-r (next-trace-state tin-r))))]
                [app-result (r) 
-                           (v*s*t*t (map-trace-value r) sto tin mt-traceout)])])))
+                           (v*s*t*t (lift-trace-value r) sto tin mt-traceout)])])))
