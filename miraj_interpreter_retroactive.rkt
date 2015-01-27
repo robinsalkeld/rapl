@@ -523,7 +523,7 @@
              [app-call (f args) 
                        (state (app-call (rw-resume-value f tin) (map lift-trace-value args)) adv sto t-tin)]
              [app-result (r)
-                         (state (app-result (lift-trace-valuee r)) adv sto t-tin)])]))
+                         (state (app-result (lift-trace-value r)) adv sto t-tin)])]))
 
 (define/contract (rw-replay-call f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (rw-check-result 
