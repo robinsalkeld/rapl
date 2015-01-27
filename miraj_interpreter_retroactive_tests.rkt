@@ -202,14 +202,18 @@
 
 (set-box! retroactive-error-checking #f)
 
-(test (interp-exp-with-output (parse '(((file "fact_advice.ttpl") (lambda () ((file "fact.ttpl") 3))))))
-      (v*o (numV 6) '("y: 3"
-                      "y: 2"
-                      "y: 1"
-                      "y: 0"
+(test (interp-query-with-output fact-boxes-trace-path (list (fileC "fact_boxes_advice.ttpl")))
+      (v*o (numV 6) '("y before: 3"
+                      "y before: 2"
+                      "y before: 1"
+                      "y before: 0"
+                      "y after: 0"
                       "result: 1"
+                      "y after: 0"
                       "result: 1"
+                      "y after: 0"
                       "result: 2"
+                      "y after: 0"
                       "result: 6")))
 
 ;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))

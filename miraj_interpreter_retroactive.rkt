@@ -494,8 +494,8 @@
 (define/contract (rw-resume-value-no-error v) (-> Value? Value?)
   (deep-tag (all-tags v) (resumeV "dummy" 0)))
 
-(define/contract (rw-replay-call-no-error f args adv sto) (-> Value? (listof Value?) AdvStack? Store? Result?)
-  (apply-with-weaving (lift-trace-value f) (map lift-trace-value args) adv sto))
+(define/contract (rw-replay-call-no-error f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
+  (apply-with-weaving (rw-resume-value-no-error f) (map lift-trace-value args) adv sto tin))
 
 (define/contract (rw-call-no-error args adv sto tin) (-> (listof Value?) AdvStack? Store? TraceIn? Result?)
   (rw-result-no-error adv sto (next-trace-state tin)))
@@ -509,21 +509,11 @@
              [app-call (f args) 
                        (type-case Result (rw-replay-call-no-error f args adv sto tin)
                          (v*s*t*t (v-r s-r tin-r tout-r)
-                                  (rw-result adv s-r (next-trace-state tin-r))))]
+                                  (rw-result-no-error adv s-r (next-trace-state tin-r))))]
              [app-result (r) 
                          (v*s*t*t (lift-trace-value r) sto tin mt-traceout)])]))
 
 ;; With error checking 
-
-(define/contract (map-state s tin) (-> State? TraceIn? State?)
-  (type-case State s
-    [state (c adv sto t-tin)
-           (type-case Control c
-             [interp-init () s]
-             [app-call (f args) 
-                       (state (app-call (rw-resume-value f tin) (map lift-trace-value args)) adv sto t-tin)]
-             [app-result (r)
-                         (state (app-result (lift-trace-value r)) adv sto t-tin)])]))
 
 (define/contract (rw-replay-call f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (rw-check-result 
