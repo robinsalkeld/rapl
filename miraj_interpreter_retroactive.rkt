@@ -538,7 +538,7 @@
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (cond [(= pos (length (tracein-states tin)))
          (type-case State (trace-state tin)
-           [state (c t-adv t-sto t-tin)
+           [state (c adv sto-t tin-t)
                   (type-case Control c
                     [interp-init ()
                                  (rw-result adv sto (next-trace-state tin))]
@@ -557,7 +557,7 @@
                   (display "Weaving state: ") (display-state t-state (current-output-port)) (newline))
                 '())])
     (type-case State t-state
-      [state (c t-adv t-sto t-tin)
+      [state (c adv-t sto-t tin-t)
              (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
                [app-call (f args) 
