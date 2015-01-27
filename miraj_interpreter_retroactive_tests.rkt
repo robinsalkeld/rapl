@@ -166,6 +166,9 @@
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_base_case.ttpl")))
       "retroactive-side-effect: incorrect retroactive result: expected\n #(struct:numV 1) but got\n #(struct:numV 7)")
 
+(test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_no_proceed.ttpl")))
+      "retroactive-side-effect: retroactive advice did not proceed")
+
 (test/exn (interp-query "traces/fact_trace.txt" (list (fileC "fact_advice_double_proceed.ttpl")))
       "retroactive-side-effect: retroactive advice proceeded out of order")
 
@@ -197,6 +200,21 @@
 
 (test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice_bad_set_box.ttpl")))
       "retroactive-side-effect: attempt to retroactively set box")
+
+; Create fact_boxes_trace.txt for the next few tests
+(define fact-traced-trace-path "traces/fact_traced_trace.txt")
+(if (file-exists? fact-traced-trace-path)
+    (delete-file fact-traced-trace-path)
+    (void))
+(test (interp-with-tracing (list (parse '(((file "trace.ttpl") (lambda () ((file "fact.ttpl") 3)))))) fact-traced-trace-path)
+      (numV 6))
+
+(test (interp-query-with-output fact-traced-trace-path (list (fileC "inject_fact_boxes.ttpl")))
+      (v*o (numV 6) '("call: fact"
+                      "call: fact_helper"
+                      "call: fact_helper"
+                      "call: fact_helper"
+                      "call: fact_helper")))
 
 ;; Check the unsafe but much simpler versions used for the purpose of presentation
 

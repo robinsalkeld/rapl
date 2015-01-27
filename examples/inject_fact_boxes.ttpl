@@ -1,0 +1,8 @@
+(lambda (thunk)
+  (lambda ()
+    (aroundapps
+     (lambda (tag f)
+       (if (equal? tag 'fact)
+           (file "fact_boxes.ttpl")
+           f))
+     (thunk))))

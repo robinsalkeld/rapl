@@ -1,0 +1,4 @@
+(((file "trace.ttpl") 
+  ((file "inject_fact_boxes.ttpl") 
+   (lambda () 
+     ((file "fact_prompt.ttpl") (void))))))

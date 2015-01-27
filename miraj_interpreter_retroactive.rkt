@@ -59,10 +59,6 @@
 (define/contract (next-trace-state tin) (-> TraceIn? TraceIn?)
   (tracein (rest (tracein-states tin))))
 
-(define/contract (trace-store s) (-> TraceIn? Store?)
-  (state-sto (trace-state s)))
-
-
 (define-type Result
   [v*s*t*t (v Value?) (s Store?) (tin TraceIn?) (tout TraceOut?)])
 
@@ -251,10 +247,10 @@
          (display-env env out)
          (display "Store: \n" out)
          (display-store sto out)
-         (if (empty? t)
+         (if (empty? (tracein-states t))
              (void)
              (begin (display "Trace Store: \n" out)
-                    (display-store (trace-store t) out)))))
+                    (display-store (state-sto (trace-state t)) out)))))
          
 (define/contract (display-env env out) (-> Env? output-port? void?)
   (for ([def env]) 
@@ -469,14 +465,15 @@
 (define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
 
 (define/contract (interp-query trace-path exprs) (-> path-string? (listof ExprC?) Value?)
-  (let* ([tin (tracein (read-struct-from-file miraj-ns trace-path))]
-         [_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
-         [query-result (interp (app-chain exprs) mt-env mt-adv mt-store tin)]
-         [weave-closure (resumeV "top-level thunk" (length (tracein-states tin)))]
-         [x (apply-with-weaving (v*s*t*t-v query-result) (list weave-closure) mt-adv (v*s*t*t-s query-result) (v*s*t*t-tin query-result))]
-         [result (apply-with-weaving (v*s*t*t-v x) '() mt-adv (v*s*t*t-s x) (v*s*t*t-tin x))])
-    (v*s*t*t-v result)))
-
+  (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
+         [tin (tracein (read-struct-from-file miraj-ns trace-path))]
+         [resume (resumeV "top-level thunk" (length (tracein-states tin)))])
+    (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store mt-tracein)
+      [v*s*t*t (v-a s-a tin-a tout-a)
+               (type-case Result (apply-with-weaving v-a (list resume) mt-adv s-a tin)
+                 [v*s*t*t (v-t s-t tin-t tout-t)
+                          (type-case Result (apply-without-weaving v-t (list) mt-adv s-t tin-t)
+                            (v*s*t*t (v-r s-r tin-r tout-r) v-r))])])))
 
 (define/contract (all-tags v) (-> Value? (listof Value?))
   (type-case Value v
@@ -519,16 +516,19 @@
   (rw-check-result 
    (apply-with-weaving (rw-resume-value f tin) 
                        (map lift-trace-value args) 
-                       adv sto tin)))
+                       adv sto tin)
+   tin))
 
-(define/contract (rw-check-result result) (-> Result? Result?)
+(define/contract (rw-check-result result tin-before) (-> Result? TraceIn? Result?)
   (type-case Result result
     [v*s*t*t (v-r s-r tin-r tout-r)
-             (let ([r (app-result-r (state-c (trace-state tin-r)))])
-               (if (equal-values v-r r)
-                   result
-                   (error 'retroactive-side-effect 
-                          (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))]))
+             (if (< (length (tracein-states tin-r)) (length (tracein-states tin-before)))
+                 (let ([r (app-result-r (state-c (trace-state tin-r)))])
+                   (if (equal-values v-r r)
+                       result
+                       (error 'retroactive-side-effect 
+                              (format "incorrect retroactive result: expected\n ~a but got\n ~a" r v-r))))
+                 (error 'retroactive-side-effect "retroactive advice did not proceed"))]))
   
 (define/contract (rw-resume-value v t) (-> Value? TraceIn? Value?)
   (let ([r (resumeV (value->string v) (length (tracein-states t)))])

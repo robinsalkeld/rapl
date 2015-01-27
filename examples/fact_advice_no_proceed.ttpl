@@ -1,0 +1,6 @@
+(lambda (thunk)
+  ((file "around.ttpl") 
+   ((file "call.ttpl") 'fact)
+   (lambda (proceed)
+     (lambda (y) 6))
+   thunk))
