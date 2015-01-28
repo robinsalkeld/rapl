@@ -3,6 +3,12 @@
     (aroundapps
      (lambda (tag f)
        (if (equal? tag 'fact)
-           (file "fact_boxes.ttpl")
+           (lambda (x)
+             (let ([r (f x)])
+               (seq (if (equal? x 3)
+                        (write "check"
+                               (equal? ((file "fact_boxes.ttpl") x) r))
+                        (void))
+                    r)))
            f))
      (thunk))))

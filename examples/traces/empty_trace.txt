@@ -1,0 +1,3 @@
+(list
+ (state (interp-init) (list) (list) (tracein (list)))
+ (state (app-result (numV 42)) (list) (list) (tracein (list))))

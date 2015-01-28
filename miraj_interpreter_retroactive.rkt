@@ -46,6 +46,7 @@
 (define-type TraceOut
   [traceout (states (listof State?))])
 (define mt-traceout (traceout empty))
+
 (define/contract (append-traceout . ts) (->* () () #:rest (listof TraceOut?) TraceOut?)
   (traceout (foldl append '() (map traceout-states (reverse ts)))))
 
@@ -367,7 +368,7 @@
                                 (type-case Result (interp val env adv s-b tin-b)
                                   [v*s*t*t (v-v s-v tin-v tout-v)
                                            (type-case Value (deep-untag v-b)
-                                             [boxV (l) (v*s*t*t v-v 
+                                             [boxV (l) (v*s*t*t (voidV) 
                                                                 (override-store (cell l v-v) s-v) 
                                                                 tin-v 
                                                                 (append-traceout tout-b tout-v))]
@@ -403,7 +404,7 @@
     [writeC (l a) (type-case Result (interp a env adv sto tin)
                [v*s*t*t (v-a s-a tin-a tout-a) 
                         (begin ((unbox write-sink) (string-append l ": " (value->string v-a)))
-                               (v*s*t*t v-a s-a tin-a tout-a))])]
+                               (v*s*t*t (voidV) s-a tin-a tout-a))])]
     
     [readC (l) (let* ([val ((unbox read-source) l)]
                       [_ (record-interp-input val)])
@@ -455,11 +456,15 @@
 (define/contract (interp-with-tracing exprs trace-path) (-> (listof ExprC?) path-string? Value?)
   (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store mt-tracein)
     [v*s*t*t (v s tin tout)
-           (let* ([trace (append (list (state (interp-init) mt-adv mt-store mt-tracein))
-                                 (traceout-states tout) 
-                                 (list (state (app-result v) mt-adv s tin)))]
-                  [_ (write-struct-to-file trace trace-path)])
-             v)]))
+           (let ([trace (append (list (state (interp-init) mt-adv mt-store mt-tracein))
+                                 (traceout-states tout)
+                                 (list (state (app-result v) mt-adv s tin)))])
+             (begin 
+               (if (file-exists? trace-path)
+                   (delete-file trace-path)
+                   (void))
+               (write-struct-to-file trace trace-path)
+               v))]))
 
 ;; TODO-RS: Gah, can't figure out how to get a hold of the current module
 (define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
@@ -473,7 +478,10 @@
                (type-case Result (apply-with-weaving v-a (list resume) mt-adv s-a tin)
                  [v*s*t*t (v-t s-t tin-t tout-t)
                           (type-case Result (apply-without-weaving v-t (list) mt-adv s-t tin-t)
-                            (v*s*t*t (v-r s-r tin-r tout-r) v-r))])])))
+                            [v*s*t*t (v-r s-r tin-r tout-r) 
+                                     (if (or #t (= (length (tracein-states tin-r)) 0))
+                                         v-r
+                                         (error 'interp-query "Trace not fully read ~s" tin-r))])])])))
 
 (define/contract (all-tags v) (-> Value? (listof Value?))
   (type-case Value v
@@ -513,11 +521,13 @@
 ;; With error checking 
 
 (define/contract (rw-replay-call f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
-  (rw-check-result 
-   (apply-with-weaving (rw-resume-value f tin) 
-                       (map lift-trace-value args) 
-                       adv sto tin)
-   tin))
+  (type-case Result (rw-check-result 
+                     (apply-with-weaving (rw-resume-value f tin) 
+                                         (map lift-trace-value args) 
+                                         adv sto tin)
+                     tin)
+    [v*s*t*t (v-r s-r tin-r tout-r)
+             (v*s*t*t v-r s-r (next-trace-state tin-r) tout-r)]))
 
 (define/contract (rw-check-result result tin-before) (-> Result? TraceIn? Result?)
   (type-case Result result
@@ -532,13 +542,13 @@
   
 (define/contract (rw-resume-value v t) (-> Value? TraceIn? Value?)
   (let ([r (resumeV (value->string v) (length (tracein-states t)))])
-             (deep-tag (all-tags v) r)))
+    (deep-tag (all-tags v) r)))
 
-(define/contract (rw-call pos passed adv sto tin) 
+(define/contract (rw-call pos passed adv sto tin)
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (cond [(= pos (length (tracein-states tin)))
          (type-case State (trace-state tin)
-           [state (c adv sto-t tin-t)
+           [state (c adv-t sto-t tin-t)
                   (type-case Control c
                     [interp-init ()
                                  (rw-result adv sto (next-trace-state tin))]
@@ -561,8 +571,8 @@
              (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
                [app-call (f args) 
-                         (type-case Result (rw-replay-call f args adv sto tin)
+                         (type-case Result (rw-replay-call f args (append adv adv-t) sto tin)
                            (v*s*t*t (v-r s-r tin-r tout-r)
-                                    (rw-result adv s-r (next-trace-state tin-r))))]
+                                    (prepend-trace tout-r (rw-result adv s-r tin-r))))]
                [app-result (r) 
                            (v*s*t*t (lift-trace-value r) sto tin mt-traceout)])])))

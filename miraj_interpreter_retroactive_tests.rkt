@@ -95,7 +95,7 @@
   (with-output (lambda () (interp-exp exp))))
 
 (test (interp-exp-with-output (writeC "The answer" (numC 42)))
-      (v*o (numV 42) '("The answer: 42")))
+      (v*o (voidV) '("The answer: 42")))
 
 (test (interp-exp-with-output (parse '(((file "fact_advice.ttpl") (lambda () ((file "fact.ttpl") 3))))))
       (v*o (numV 6) '("y: 3"
@@ -144,9 +144,6 @@
 
 ; Create fact_trace.txt for the next few tests
 (define fact-trace-path "traces/fact_trace.txt")
-(if (file-exists? fact-trace-path)
-    (delete-file fact-trace-path)
-    (void))
 (test (interp-with-tracing (list (parse '((file "fact.ttpl") 3))) fact-trace-path)
       (numV 6))
 
@@ -177,9 +174,6 @@
 
 ; Create fact_boxes_trace.txt for the next few tests
 (define fact-boxes-trace-path "traces/fact_boxes_trace.txt")
-(if (file-exists? fact-boxes-trace-path)
-    (delete-file fact-boxes-trace-path)
-    (void))
 (test (interp-with-tracing (list (parse '((file "fact_boxes.ttpl") 3))) fact-boxes-trace-path)
       (numV 6))
 
@@ -201,20 +195,24 @@
 (test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice_bad_set_box.ttpl")))
       "retroactive-side-effect: attempt to retroactively set box")
 
-; Create fact_boxes_trace.txt for the next few tests
+; Create fact_traced_trace.txt for the next few tests
 (define fact-traced-trace-path "traces/fact_traced_trace.txt")
-(if (file-exists? fact-traced-trace-path)
-    (delete-file fact-traced-trace-path)
-    (void))
 (test (interp-with-tracing (list (parse '(((file "trace.ttpl") (lambda () ((file "fact.ttpl") 3)))))) fact-traced-trace-path)
       (numV 6))
 
 (test (interp-query-with-output fact-traced-trace-path (list (fileC "inject_fact_boxes.ttpl")))
-      (v*o (numV 6) '("call: fact"
+      (v*o (numV 6) '("call: fact_helper"
                       "call: fact_helper"
                       "call: fact_helper"
                       "call: fact_helper"
-                      "call: fact_helper")))
+                      "check: #t")))
+
+(define empty-trace-path "traces/empty_trace.txt")
+(test (interp-with-tracing (list (parse '42)) empty-trace-path)
+      (numV 42))
+
+(test (interp-query-with-output empty-trace-path (list (fileC "fact_advice.ttpl")))
+      (v*o (numV 42) '()))
 
 ;; Check the unsafe but much simpler versions used for the purpose of presentation
 
