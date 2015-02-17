@@ -109,7 +109,7 @@
                [(symbol=? for name) value]
                [else (lookup for (rest env))])])]))
 
-(define/contract (apply-without-weaving f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
+(define/contract (apply f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (type-case Value f
     [closV (params body env)
            (let ([bs (map bind params args)])
@@ -194,7 +194,7 @@
 (define/contract (apply-with-weaving f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (type-case Result (weave adv f sto tin)
       (v*s*t*t (woven-f s-w tin-w tout-w)
-               (type-case Result (apply-without-weaving woven-f args adv s-w tin-w)
+               (type-case Result (apply woven-f args adv s-w tin-w)
                  (v*s*t*t (r s-r tin-r tout-r)
                           (let ([call-state (state (app-call f args) adv sto tin)]
                                 [return-state (state (app-result r) adv s-r tin-r)])
@@ -224,7 +224,7 @@
 (define/contract (weave-advice adv tag advice f sto tin) (-> AdvStack? Value? Advice? Value? Store? TraceIn? Result?)
   (type-case Advice advice
     [aroundappsA (g)
-                 (apply-without-weaving g (list tag f) adv sto tin)]))
+                 (apply g (list tag f) adv sto tin)]))
 
 ;; Debugging
 
@@ -494,7 +494,7 @@
       [v*s*t*t (v-a s-a tin-a tout-a)
                (type-case Result (apply-with-weaving v-a (list resume) mt-adv s-a tin)
                  [v*s*t*t (v-t s-t tin-t tout-t)
-                          (type-case Result (apply-without-weaving v-t (list) mt-adv s-t tin-t)
+                          (type-case Result (apply v-t (list) mt-adv s-t tin-t)
                             [v*s*t*t (v-r s-r tin-r tout-r) 
                                      (if (or #t (= (length (tracein-states tin-r)) 0))
                                          v-r
@@ -523,17 +523,15 @@
   (rw-result-no-error adv sto (next-trace-state tin)))
 
 (define/contract (rw-result-no-error adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
-  (type-case State (trace-state tin)
-    [state (c adv-t sto-t tin-t)
-           (type-case Control c
-             [interp-init () 
-                       (error 'rw-result-no-error "Unexpected state")]
-             [app-call (f args) 
-                       (type-case Result (rw-replay-call-no-error f args adv sto tin)
-                         (v*s*t*t (v-r s-r tin-r tout-r)
-                                  (rw-result-no-error adv s-r (next-trace-state tin-r))))]
-             [app-result (r) 
-                         (v*s*t*t (lift-trace-value r) sto tin mt-traceout)])]))
+  (type-case Control (state-c (trace-state tin))
+    [interp-init () 
+                 (error 'rw-result-no-error "Unexpected state")]
+    [app-call (f args) 
+              (type-case Result (rw-replay-call-no-error f args adv sto tin)
+                (v*s*t*t (v-r s-r tin-r tout-r)
+                         (rw-result-no-error adv s-r (next-trace-state tin-r))))]
+    [app-result (r) 
+                (v*s*t*t (lift-trace-value r) sto tin mt-traceout)]))
 
 ;; With error checking 
 
@@ -564,19 +562,17 @@
 (define/contract (rw-call pos passed adv sto tin)
                  (-> number? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (cond [(= pos (length (tracein-states tin)))
-         (type-case State (trace-state tin)
-           [state (c adv-t sto-t tin-t)
-                  (if (empty? adv-t)
-                      (type-case Control c
-                        [interp-init ()
-                                     (rw-result adv sto (next-trace-state tin))]
-                        [app-call (abs args)
-                                  (if (andmap equal-values passed (map lift-trace-value args))
-                                      (rw-result adv sto (next-trace-state tin))
-                                      (error 'retroactive-side-effect
-                                             (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
-                        [else (error 'rw-call "Unexpected state")])
-                      (error 'retroactive-side-effect "traces with advice are not supported"))])]
+         (if (empty? (state-adv (trace-state tin)))
+             (type-case Control (state-c (trace-state tin))
+               [interp-init ()
+                            (rw-result adv sto (next-trace-state tin))]
+               [app-call (abs args)
+                         (if (andmap equal-values passed (map lift-trace-value args))
+                             (rw-result adv sto (next-trace-state tin))
+                             (error 'retroactive-side-effect
+                                    (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
+               [else (error 'rw-call "Unexpected state")])
+             (error 'retroactive-side-effect "traces with advice are not supported"))]
         [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")]))
 
 (define/contract (rw-result adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
