@@ -1,4 +1,4 @@
-(((file "trace.ttpl") 
-  ((file "inject_fact_boxes.ttpl") 
+(((file "inject_fact_boxes.ttpl") 
+  ((file "trace.ttpl") 
    (lambda () 
-     ((file "fact_prompt.ttpl") (void))))))
+     ((file "fact.ttpl") 3)))))

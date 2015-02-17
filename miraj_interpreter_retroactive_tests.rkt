@@ -66,7 +66,7 @@
                        (lambda ()
                          (let ([change (tag 'change (lambda (x) (+ x 5)))])
                            (change 2))))))))
-      (numV 15))
+      (numV 12))
 
 (test (interp-exp (parse
                    '(((file "around.ttpl") 
@@ -78,7 +78,7 @@
                        (lambda ()
                          (let ([change (tag 'change (lambda (x) (+ x 5)))])
                            (change 2))))))))
-      (numV 12))
+      (numV 15))
 
 (define-type ValueWithOutput
   [v*o (v Value?) (o (listof string?))])
@@ -195,17 +195,24 @@
 (test/exn (interp-query-with-output "traces/fact_boxes_trace.txt" (list (fileC "fact_boxes_advice_bad_set_box.ttpl")))
       "retroactive-side-effect: attempt to retroactively set box")
 
+(test (interp-exp-with-output (fileC "test_advice_in_trace_inline.ttpl"))
+      (v*o (numV 6) '("call: fact"
+                      "call: fact"
+                      "call: fact"
+                      "call: fact"
+                      "call: fact_helper"
+                      "call: fact_helper"
+                      "call: fact_helper"
+                      "call: fact_helper"
+                      "check: #t")))
+
 ; Create fact_traced_trace.txt for the next few tests
 (define fact-traced-trace-path "traces/fact_traced_trace.txt")
 (test (interp-with-tracing (list (parse '(((file "trace.ttpl") (lambda () ((file "fact.ttpl") 3)))))) fact-traced-trace-path)
       (numV 6))
 
-(test (interp-query-with-output fact-traced-trace-path (list (fileC "inject_fact_boxes.ttpl")))
-      (v*o (numV 6) '("call: fact_helper"
-                      "call: fact_helper"
-                      "call: fact_helper"
-                      "call: fact_helper"
-                      "check: #t")))
+(test/exn (interp-query-with-output fact-traced-trace-path (list (fileC "inject_fact_boxes.ttpl")))
+      "retroactive-side-effect: traces with advice are not supported")
 
 (define empty-trace-path "traces/empty_trace.txt")
 (test (interp-with-tracing (list (parse '42)) empty-trace-path)

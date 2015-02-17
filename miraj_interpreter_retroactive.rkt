@@ -110,14 +110,15 @@
                [else (lookup for (rest env))])])]))
 
 (define/contract (apply-without-weaving f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
-  (type-case Value (deep-untag f)
+  (type-case Value f
     [closV (params body env)
-           (interp body (append (map bind params args) env) adv sto tin)]
+           (let ([bs (map bind params args)])
+             (interp body (append bs env) adv sto tin))]
     [resumeV (label pos)
              (if (unbox retroactive-error-checking)
                  (rw-call pos args adv sto tin)
                  (rw-call-no-error args adv sto tin))]
-    [else (error 'interp (string-append "only functions can be applied: " (value->string f)))]))
+    [else (error (string-append "only functions can be applied: " (value->string f)))]))
 
 (define z-combinator
   (parse-string "(lambda (f) ((lambda (x) (f (lambda (y) ((x x) y))))
@@ -144,12 +145,12 @@
             (if storage
                 (type-case Storage storage
                   [cell (l val) val])
-                (error 'fetch "location not found")))]
+                (error "location not found")))]
     [traceValueV (v) 
                  (type-case State (trace-state tin)
                    [state (c adv sto-t tin-t)
                           (fetch sto-t tin-t v)])]
-    [else (error 'interp "attempt to unbox a non-box")]))
+    [else (error "attempt to unbox a non-box")]))
 
 (define/contract (new-loc sto) (-> Store? Location?)
  (length sto))
@@ -164,7 +165,7 @@
           (type-case Value c
             [closV (params body env)
                    (closV params body (cons (bind name (lift-trace-value value)) env))]
-            [else (error 'lift-binding "result parametmer must wrap a closure")])]))
+            [else (error "result parametmer must wrap a closure")])]))
 
 (define/contract (lift-closure params body env) (-> (listof symbol?) ExprC? Env? Value?)
   (foldr lift-binding (closV params body mt-env) env))
@@ -190,22 +191,6 @@
 
 ;; Advice
 
-; Wraps f with a single advice function
-(define/contract (weave-advice adv tag advice accum) (-> AdvStack? Value? Advice? Result? Result?)
-  (type-case Result accum
-    [v*s*t*t (f sto tin tout)
-             (prepend-trace tout (apply-without-weaving (aroundappsA-advice advice) (list tag f) adv sto tin))]))
-
-; Wraps f according to all of the advice currently in scope.
-(define/contract (weave adv f sto tin) (-> AdvStack? Value? Store? TraceIn? Result?)
-  (type-case Value f
-    [taggedV (tag tagged)
-             (let ([woven-tagged-result (weave adv tagged sto tin)]
-                   [helper (lambda (advice accum) 
-                             (weave-advice adv tag advice accum))])
-               (foldr helper woven-tagged-result adv))]
-    [else (v*s*t*t f sto tin mt-traceout)]))
-
 (define/contract (apply-with-weaving f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
   (type-case Result (weave adv f sto tin)
       (v*s*t*t (woven-f s-w tin-w tout-w)
@@ -217,6 +202,29 @@
                                                                   tout-w 
                                                                   tout-r 
                                                                   (traceout (list return-state))))))))))
+
+; Applies all advice in scope for all tags on f
+(define/contract (weave adv f sto tin) (-> AdvStack? Value? Store? TraceIn? Result?)
+  (type-case Value f
+    [taggedV (tag tagged)
+             (type-case Result (weave adv tagged sto tin)
+               [v*s*t*t (v-w s-w tin-w tout-w)
+                        (prepend-trace tout-w (weave-for-tag adv tag v-w s-w tin-w))])]
+    [else (v*s*t*t f sto tin mt-traceout)]))
+
+; Applies all advice in scope for a single tag on f
+(define/contract (weave-for-tag adv tag f sto tin) (-> AdvStack? Value? Value? Store? TraceIn? Result?)
+  (if (empty? adv)
+      (v*s*t*t f sto tin mt-traceout)
+      (type-case Result (weave-advice adv tag (first adv) f sto tin)
+        [v*s*t*t (v-w s-w tin-w tout-w)
+                 (prepend-trace tout-w (weave-for-tag (rest adv) tag v-w s-w tin-w))])))
+
+; Apply a single advice function to f
+(define/contract (weave-advice adv tag advice f sto tin) (-> AdvStack? Value? Advice? Value? Store? TraceIn? Result?)
+  (type-case Advice advice
+    [aroundappsA (g)
+                 (apply-without-weaving g (list tag f) adv sto tin)]))
 
 ;; Debugging
 
@@ -386,16 +394,10 @@
     [symbolC (s) (v*s*t*t (symbolV s) sto tin mt-traceout)]
     
     [tagC (tag v) 
-          (type-case Result (interp tag env adv sto tin)
-            [v*s*t*t (v-tag s-tag tin-tag tout-tag)
-                     (type-case Result (interp v env adv s-tag tin-tag)
-                       [v*s*t*t (v-v s-v tin-v tout-v)
-                                (v*s*t*t (taggedV v-tag v-v) s-v tin-v (append-traceout tout-tag tout-v))])])]
+          (interp-tag tag v env adv sto tin)]
     
-    [aroundappsC (advice extent) 
-                 (type-case Result (interp advice env adv sto tin)
-                   [v*s*t*t (v-a s-a tin-a tout-a)
-                            (prepend-trace tout-a (interp extent env (cons (aroundappsA v-a) adv) s-a tin-a))])]
+    [aroundappsC (advice extent)  
+                 (interp-aroundapps advice extent env adv sto tin)]
     
     ;; Input/Output
     
@@ -410,7 +412,22 @@
                       [_ (record-interp-input val)])
                  (v*s*t*t (numV val) sto tin mt-traceout))]))
 )
-   
+
+;; Separated these cases out to keep the code snippets narrow for the paper
+
+(define/contract (interp-tag tag v env adv sto tin) (-> ExprC? ExprC? Env? AdvStack? Store? TraceIn? Result?)
+  (type-case Result (interp tag env adv sto tin)
+    [v*s*t*t (v-tag s-tag tin-tag tout-tag)
+             (type-case Result (interp v env adv s-tag tin-tag)
+               [v*s*t*t (v-v s-v tin-v tout-v)
+                        (v*s*t*t (taggedV v-tag v-v) s-v tin-v (append-traceout tout-tag tout-v))])]))
+
+(define/contract (interp-aroundapps advice extent env adv sto tin) (-> ExprC? ExprC? Env? AdvStack? Store? TraceIn? Result?)
+  (type-case Result (interp advice env adv sto tin)
+    [v*s*t*t (v-a s-a tin-a tout-a)
+             (let ([new-adv (cons (aroundappsA v-a) adv)])
+               (prepend-trace tout-a (interp extent env new-adv s-a tin-a)))]))
+
 (define-type ResultList
   [vs*s*t*t (vs (listof Value?)) (s Store?) (tin TraceIn?) (tout TraceOut?)]) 
 (define/contract (append-result rl r) (-> ResultList? Result? ResultList?)
@@ -549,15 +566,17 @@
   (cond [(= pos (length (tracein-states tin)))
          (type-case State (trace-state tin)
            [state (c adv-t sto-t tin-t)
-                  (type-case Control c
-                    [interp-init ()
-                                 (rw-result adv sto (next-trace-state tin))]
-                    [app-call (abs args)
-                              (if (andmap equal-values passed (map lift-trace-value args))
-                                  (rw-result adv sto (next-trace-state tin))
-                                  (error 'retroactive-side-effect
-                                         (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
-                    [else (error 'rw-call "Unexpected state")])])]
+                  (if (empty? adv-t)
+                      (type-case Control c
+                        [interp-init ()
+                                     (rw-result adv sto (next-trace-state tin))]
+                        [app-call (abs args)
+                                  (if (andmap equal-values passed (map lift-trace-value args))
+                                      (rw-result adv sto (next-trace-state tin))
+                                      (error 'retroactive-side-effect
+                                             (format "incorrect argument passed retroactively: expected\n ~a but got\n ~a" args passed)))]
+                        [else (error 'rw-call "Unexpected state")])
+                      (error 'retroactive-side-effect "traces with advice are not supported"))])]
         [else (error 'retroactive-side-effect "retroactive advice proceeded out of order")]))
 
 (define/contract (rw-result adv sto tin) (-> AdvStack? Store? TraceIn? Result?)
@@ -571,7 +590,7 @@
              (type-case Control c
                [interp-init () (error 'rw-result "Unexpected state")]
                [app-call (f args) 
-                         (type-case Result (rw-replay-call f args (append adv adv-t) sto tin)
+                         (type-case Result (rw-replay-call f args adv sto tin)
                            (v*s*t*t (v-r s-r tin-r tout-r)
                                     (prepend-trace tout-r (rw-result adv s-r tin-r))))]
                [app-result (r) 
