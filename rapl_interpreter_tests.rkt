@@ -1,9 +1,9 @@
 #lang plai
 
-(require "miraj.rkt")
-(require "miraj_parser.rkt")
-(require "miraj_interpreter_retroactive.rkt")
-(require "miraj_serialization.rkt")
+(require "rapl.rkt")
+(require "rapl_parser.rkt")
+(require "rapl_interpreter.rkt")
+(require "rapl_serialization.rkt")
 
 (print-only-errors)
 (current-directory (build-path (current-directory) "examples"))

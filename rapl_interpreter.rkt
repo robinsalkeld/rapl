@@ -1,11 +1,11 @@
 #lang plai
 
-(require "miraj.rkt")
-(require "miraj_parser.rkt")
-(require "miraj_serialization.rkt")
+(require "rapl.rkt")
+(require "rapl_parser.rkt")
+(require "rapl_serialization.rkt")
 
 ;;
-;; Miraj interpreter
+;; Rapl interpreter
 ;;
 
 (define-type Value
@@ -484,7 +484,7 @@
                v))]))
 
 ;; TODO-RS: Gah, can't figure out how to get a hold of the current module
-(define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/Miraj/miraj_interpreter_retroactive.rkt")))
+(define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/rapl/rapl_interpreter.rkt")))
 
 (define/contract (interp-query trace-path exprs) (-> path-string? (listof ExprC?) Value?)
   (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]

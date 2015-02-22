@@ -1,12 +1,12 @@
 #lang plai
 
-(require "miraj.rkt")
-(require "miraj_interpreter_retroactive.rkt")
-(require "miraj_parser.rkt")
-(require "miraj_serialization.rkt")
+(require "rapl.rkt")
+(require "rapl_interpreter.rkt")
+(require "rapl_parser.rkt")
+(require "rapl_serialization.rkt")
 
 ;;
-;; Miraj interpreter CLI
+;; Rapl interpreter CLI
 ;;
 
 (define eval-expr (make-parameter #f))
@@ -25,7 +25,7 @@
  ;[("-r" "--record") path "Record execution" (recording-path path)]
  ;[("-p" "--replay") path "Replay execution" (replay-path path)]
  [("-t" "--trace") path "Trace execution" (trace-path path)]
- [("-q" "--query") path "Query execution" (query-path path)]
+ [("-w" "--weave") path "Retroactive weaver" (query-path path)]
  [("-v" "--verbose") "Verbose interpretation" (verbose true)]
  [("-u" "--unsafe") "Unsafe interpretation (no retroactive errors)" (unsafe true)]
  #:args sources (file-paths sources))
