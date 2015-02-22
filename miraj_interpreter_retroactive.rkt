@@ -138,8 +138,8 @@
                  [(= loc l) s]
                  [else (storage-at (rest storage) loc)])]))]))
 
-(define/contract (fetch sto tin box) (-> Store? TraceIn? Value? Value?)
-  (type-case Value box
+(define/contract (fetch sto tin b) (-> Store? TraceIn? Value? Value?)
+  (type-case Value b
     [boxV (loc)
           (let ([storage (storage-at sto loc)])
             (if storage
