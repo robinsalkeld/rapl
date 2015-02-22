@@ -157,6 +157,19 @@
 
 (define override-store cons)
 
+(define (list-box-push! b x)
+  (set-box! b (cons x (unbox b))))
+(define (list-box-pop! b)
+  (let* ([next (first (unbox b))]
+         [_ (set-box! b (rest (unbox b)))])
+         next))
+
+(define read-source (box (lambda (prompt) 
+                           (display prompt)
+                           (display "> ")
+                           (string->number (read-line)))))
+(define write-sink (box (lambda (s) (begin (display s) (newline)))))
+
 ;; Lifting trace values
 
 (define/contract (lift-binding b c) (-> Binding? Value? Value?)
@@ -452,21 +465,28 @@
 
 ;; Replay
 
-(define-type MirajRecording
-  [mirajRecForReplay (program list?) (input list?)])
+(define interp-input (box '()))
+
+(define (record-interp-input (x number?))
+  (list-box-push! interp-input x))
+(define get-interp-input 
+  (lambda () (reverse (unbox interp-input))))
+
+(define-type RaplRecording
+  [raplRecForReplay (program list?) (input list?)])
 
 (define/contract (interp-with-recording exps recording-path) (-> (listof ExprC?) path-string? Result?)
   (let* ([result (interp-exp (app-chain exps))]
          [input (get-interp-input)]
-         [recording (mirajRecForReplay exps input)]
+         [recording (raplRecForReplay exps input)]
          [_ (write-struct-to-file recording recording-path)])
     result))
            
 (define/contract (replay-interp recording-path) (-> path-string? Result?)
   (let* ([recording (read-struct-from-file recording-path)]
-         [remaining-input (box (mirajRecForReplay-input recording))]
+         [remaining-input (box (raplRecForReplay-input recording))]
          [_ (set-box! read-source (lambda (prompt) (list-box-pop! remaining-input)))])
-    ((interp-exp (app-chain (mirajRecForReplay-program recording))))))
+    ((interp-exp (app-chain (raplRecForReplay-program recording))))))
          
 ;; Tracing
 
@@ -484,11 +504,11 @@
                v))]))
 
 ;; TODO-RS: Gah, can't figure out how to get a hold of the current module
-(define miraj-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/rapl/rapl_interpreter.rkt")))
+(define rapl-ns (module->namespace (string->path "/Users/robinsalkeld/Documents/UBC/Code/rapl/rapl_interpreter.rkt")))
 
 (define/contract (interp-query trace-path exprs) (-> path-string? (listof ExprC?) Value?)
   (let* ([_ (set-box! read-source (lambda (prompt) (error 'retroactive-side-effect "attempt to retroactively read input")))]
-         [tin (tracein (read-struct-from-file miraj-ns trace-path))]
+         [tin (tracein (read-struct-from-file rapl-ns trace-path))]
          [resume (resumeV "top-level thunk" (length (tracein-states tin)))])
     (type-case Result (interp (app-chain exprs) mt-env mt-adv mt-store mt-tracein)
       [v*s*t*t (v-a s-a tin-a tout-a)

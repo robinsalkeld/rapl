@@ -132,7 +132,7 @@
 (test (struct->list/recursive (appC (idC 'foo) (list (numC 4)))) '(appC (idC 'foo) (list (numC 4))))
 (test (struct->list/recursive (lamC (list 'foo) (idC 'foo))) '(lamC (list 'foo) (idC 'foo)))
 
-(define (test-roundtrip e) (test (list->struct/recursive miraj-ns (struct->list/recursive e)) e))
+(define (test-roundtrip e) (test (list->struct/recursive rapl-ns (struct->list/recursive e)) e))
 
 (test-roundtrip (plusC (numC 3) (numC 4)))
 (test-roundtrip (appC (idC 'foo) (list (numC 4))))
@@ -239,6 +239,6 @@
                       "y after: 0"
                       "result: 6")))
 
-;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (mirajTrace-joinpoints fact-trace))
+;;(map (lambda (jp) (begin (display-joinpoint jp (current-output-port)) (newline))) (raplTrace-joinpoints fact-trace))
 
 (display "Done!")
