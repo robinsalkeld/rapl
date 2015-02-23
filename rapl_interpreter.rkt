@@ -110,7 +110,7 @@
                [else (lookup for (rest env))])])]))
 
 (define/contract (apply f args adv sto tin) (-> Value? (listof Value?) AdvStack? Store? TraceIn? Result?)
-  (type-case Value f
+  (type-case Value (deep-untag f)
     [closV (params body env)
            (let ([bs (map bind params args)])
              (interp body (append bs env) adv sto tin))]
@@ -139,7 +139,7 @@
                  [else (storage-at (rest storage) loc)])]))]))
 
 (define/contract (fetch sto tin b) (-> Store? TraceIn? Value? Value?)
-  (type-case Value b
+  (type-case Value (deep-untag b)
     [boxV (loc)
           (let ([storage (storage-at sto loc)])
             (if storage
@@ -172,24 +172,18 @@
 
 ;; Lifting trace values
 
-(define/contract (lift-binding b c) (-> Binding? Value? Value?)
+(define/contract (lift-binding b) (-> Binding? Binding?)
   (type-case Binding b
     [bind (name value)
-          (type-case Value c
-            [closV (params body env)
-                   (closV params body (cons (bind name (lift-trace-value value)) env))]
-            [else (error "result parametmer must wrap a closure")])]))
+          (bind name (lift-trace-value value))]))
 
-(define/contract (lift-closure params body env) (-> (listof symbol?) ExprC? Env? Value?)
-  (foldr lift-binding (closV params body mt-env) env))
-                  
 (define/contract (lift-trace-value v) (-> Value? Value?)
   (type-case Value v
     [numV (_) v]
     [boolV (_) v]
     [symbolV (_) v]
     [closV (params body env)
-           (lift-closure params body env)]
+           (closV params body (map lift-binding env))]
     [boxV (l) (traceValueV v)]
     [traceValueV (tv) (traceValueV v)]
     [voidV () v]
@@ -325,13 +319,15 @@
                [v*s*t*t (v-l s-l tin-l tout-l)
                         (type-case Result (interp r env adv s-l tin-l)
                           [v*s*t*t (v-r s-r tin-r tout-r)
-                                   (v*s*t*t (num+ v-l v-r) s-r tin-r (append-traceout tout-l tout-r))])])]
+                                   (v*s*t*t (num+ (deep-untag v-l) (deep-untag v-r)) s-r tin-r
+                                            (append-traceout tout-l tout-r))])])]
 
     [multC (l r) (type-case Result (interp l env adv sto tin)
                [v*s*t*t (v-l s-l tin-l tout-l)
                         (type-case Result (interp r env adv s-l tin-l)
                           [v*s*t*t (v-r s-r tin-r tout-r)
-                                   (v*s*t*t (num* v-l v-r) s-r tin-r (append-traceout tout-l tout-r))])])]
+                                   (v*s*t*t (num* (deep-untag v-l) (deep-untag v-r)) s-r tin-r
+                                            (append-traceout tout-l tout-r))])])]
     
     ;; Booleans and conditionals
     
@@ -341,11 +337,12 @@
                     [v*s*t*t (v-l s-l tin-l tout-l)
                              (type-case Result (interp r env adv s-l tin-l)
                                [v*s*t*t (v-r s-r tin-r tout-r)
-                                        (v*s*t*t (boolV (equal-values v-l v-r)) s-r tin-r (append-traceout tout-l tout-r))])])]
+                                        (v*s*t*t (boolV (equal-values (deep-untag v-l) (deep-untag v-r))) s-r tin-r 
+                                                 (append-traceout tout-l tout-r))])])]
     
     [ifC (c t f) (type-case Result (interp c env adv sto tin)
                    [v*s*t*t (v-c s-c tin-c tout-c)
-                            (type-case Result (if (boolV-b v-c)
+                            (type-case Result (if (boolV-b (deep-untag v-c))
                                                   (interp t env adv s-c tin-c)
                                                   (interp f env adv s-c tin-c))
                               [v*s*t*t (v-b s-b tin-b tout-b) 
