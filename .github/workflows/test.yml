@@ -14,7 +14,5 @@ jobs:
     - name: Configure AWS credentials
       uses: robin-aws/configure-aws-credentials@github-token
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        cognito-identity-pool-id: us-west-2:cc186341-855a-42de-b82b-73e91665faf0
         aws-region: us-east-2
