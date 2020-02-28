@@ -12,7 +12,7 @@ jobs:
     - name: Run a one-line script
       run: echo Hello, world!
     - name: Configure AWS credentials
-      uses: robin-aws/configure-aws-credentials@github-token
+      uses: robin-aws/configure-aws-credentials@cognito
       with:
         cognito-identity-pool-id: us-west-2:cc186341-855a-42de-b82b-73e91665faf0
         aws-region: us-east-2
