@@ -14,7 +14,6 @@ jobs:
     - name: Configure AWS credentials
       uses: robin-aws/configure-aws-credentials@github-token
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        role-to-assume: arn:aws:iam::990398840953:role/service-role/codebuild-Dafny-service-role
         aws-region: us-east-2
