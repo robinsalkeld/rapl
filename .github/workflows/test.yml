@@ -12,8 +12,9 @@ jobs:
     - name: Run a one-line script
       run: echo Hello, world!
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: robin-aws/configure-aws-credentials@github-token
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         aws-region: us-east-2
