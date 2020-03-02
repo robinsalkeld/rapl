@@ -14,5 +14,5 @@ jobs:
     - name: Configure AWS credentials
       uses: robin-aws/configure-aws-credentials@cognito
       with:
-        cognito-identity-pool-id: cc186341-855a-42de-b82b-73e91665faf0
-        aws-region: us-east-2
+        cognito-identity-pool-id: us-west:cc186341-855a-42de-b82b-73e91665faf0
+        aws-region: us-west-2
